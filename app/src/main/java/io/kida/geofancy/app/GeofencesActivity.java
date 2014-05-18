@@ -9,6 +9,7 @@ import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -140,7 +141,9 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_add_geofence) {
+            Intent addEditGeofencesIntent = new Intent(this, AddEditGeofenceActivity.class);
+            this.startActivity(addEditGeofencesIntent);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -154,7 +157,7 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        DatabaseUtils.dumpCursor(data);
+        //DatabaseUtils.dumpCursor(data);
 
         while(data.moveToNext()) {
             Geofences.Geofence item = new Geofences.Geofence(data.getString(0), data.getString(data.getColumnIndex("custom_id")));
