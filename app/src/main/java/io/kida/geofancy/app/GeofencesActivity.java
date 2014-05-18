@@ -162,7 +162,6 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
         }
         mGeofenceFragment.refresh();
 
-        data.close();
     }
 
     @Override
