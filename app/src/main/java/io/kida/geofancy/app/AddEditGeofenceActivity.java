@@ -1,6 +1,8 @@
 package io.kida.geofancy.app;
 
 import android.app.FragmentManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SeekBar;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,15 +23,20 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
+import com.schuetz.mapareas.MapAreaManager;
+import com.schuetz.mapareas.MapAreaManager.CircleManagerListener;
+import com.schuetz.mapareas.MapAreaMeasure;
+import com.schuetz.mapareas.MapAreaWrapper;
 
 public class AddEditGeofenceActivity extends FragmentActivity implements LocationListener {
 
     private MapFragment mMapFragment = null;
     private GoogleMap mMap = null;
     private LocationManager mLocationManager = null;
-    private Circle mCircle = null;
     private SeekBar mRadiusSlider = null;
+
+    private MapAreaManager mCircleManager = null;
+    private MapAreaWrapper mCircle = null;
 
     @Override
     public void onProviderEnabled(String provider) {
@@ -46,12 +54,14 @@ public class AddEditGeofenceActivity extends FragmentActivity implements Locatio
         if (mMap != null) {
             zoomToLocation(location);
         }
-        if (mCircle == null) {
-            drawMarkerWithCircle(latLng, 100.0);
-        } else {
-            updateMarkerWithCircle(latLng);
-        }
         mLocationManager.removeUpdates(this);
+
+        // Set Circle
+        if (mMap != null && mCircleManager != null && mCircle == null) {
+            LatLng position = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
+            mCircle = new MapAreaWrapper(mMap, position, 100, 5.0f, 0xffff0000, 0x33ff0000, 1, 1000);
+            mCircleManager.add(mCircle);
+        }
     }
 
     @Override
@@ -70,14 +80,7 @@ public class AddEditGeofenceActivity extends FragmentActivity implements Locatio
         mRadiusSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if (mCircle != null) {
-                    float radius = progress * 10;
-                    if (mMap != null) {
-                        Location location = mMap.getMyLocation();
-                        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-                        updateMarkerWithCircle(latLng, radius);
-                    }
-                }
+                mCircle.setRadius(progress * 10);
             }
 
             @Override
@@ -109,6 +112,8 @@ public class AddEditGeofenceActivity extends FragmentActivity implements Locatio
         String provider = mLocationManager.getBestProvider(criteria, true);
         Location location = mLocationManager.getLastKnownLocation(provider);
         mLocationManager.requestLocationUpdates(provider, 20000, 0, this);
+
+        setupCircleManager();
     }
 
 
@@ -138,27 +143,53 @@ public class AddEditGeofenceActivity extends FragmentActivity implements Locatio
     }
 
     // Radius Circle
-    private void updateMarkerWithCircle(LatLng position) {
-        mCircle.setCenter(position);
-    }
+    private void setupCircleManager() {
+        mCircleManager = new MapAreaManager(mMap,
 
-    private void updateMarkerWithCircle(LatLng position, double radius) {
-        mCircle.remove();
-        mCircle = mMap.addCircle(getCircleOptions(radius, position));
-        mCircle.setFillColor(0xffff0000);
-        mCircle.setZIndex(1000);
-    }
+            4, Color.RED, Color.HSVToColor(70, new float[] {1, 1, 200}), //styling
 
-    private void drawMarkerWithCircle(LatLng position, double radiusInMeters){
-        if (mRadiusSlider != null) {
-            mRadiusSlider.setProgress((int)radiusInMeters / 10);
-        }
-        mCircle = mMap.addCircle(getCircleOptions(radiusInMeters, position));
-    }
+            -1,//custom drawables for move and resize icons
 
-    private CircleOptions getCircleOptions(double radiusInMeters, LatLng position) {
-        int strokeColor = 0xffee0000; //red outline
-        int shadeColor = 0x44ff0000; //opaque red fill
-        return new CircleOptions().center(position).radius(radiusInMeters).fillColor(shadeColor).strokeColor(strokeColor).strokeWidth(8);
+            0.5f, 0.5f, //sets anchor point of move / resize drawable in the middle
+
+            new MapAreaMeasure(100, MapAreaMeasure.Unit.pixels), //circles will start with 100 pixels (independent of zoom level)
+
+            new CircleManagerListener() { //listener for all circle events
+
+                @Override
+                public void onResizeCircleEnd(MapAreaWrapper draggableCircle) {
+
+                }
+
+                @Override
+                public void onCreateCircle(MapAreaWrapper draggableCircle) {
+
+                }
+
+                @Override
+                public void onMoveCircleEnd(MapAreaWrapper draggableCircle) {
+
+                }
+
+                @Override
+                public void onMoveCircleStart(MapAreaWrapper draggableCircle) {
+
+                }
+
+                @Override
+                public void onResizeCircleStart(MapAreaWrapper draggableCircle) {
+
+                }
+
+                @Override
+                public void onMinRadius(MapAreaWrapper draggableCircle) {
+
+                }
+
+                @Override
+                public void onMaxRadius(MapAreaWrapper draggableCircle) {
+
+            }
+        });
     }
 }
