@@ -11,7 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 
-public class MyLocation {
+public class GeofancyLocationManager {
     Timer timer1;
     LocationManager lm;
     LocationResult locationResult;

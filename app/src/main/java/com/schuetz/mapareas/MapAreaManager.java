@@ -56,13 +56,7 @@ public class MapAreaManager implements OnMarkerDragListener {
 		 * @param draggableCircle created circle
 		 */
 		void onCreateCircle(MapAreaWrapper draggableCircle);
-		
-		/**
-		 * Called when resizing gesture finishes (user lifts the finger)
-		 * @param draggableCircle resized circle
-		 */
-		void onResizeCircleEnd(MapAreaWrapper draggableCircle);
-		
+
 		/**
 		 * Called when move gesture finishes (user lifts the finger)
 		 * @param draggableCircle move circle
@@ -74,30 +68,6 @@ public class MapAreaManager implements OnMarkerDragListener {
 		 * @param draggableCircle circle about to be moved
 		 */
 		void onMoveCircleStart(MapAreaWrapper draggableCircle);
-		
-		/**
-		 * Called when resize gesture starts (user long presses the resizing marker)
-		 * @param draggableCircle circle about to be resized
-		 */
-		void onResizeCircleStart(MapAreaWrapper draggableCircle);
-		
-		/**
-		 * Called when the circle reaches the min possible radius (meters), if it was initialized with a min radius value
-		 * This happens during resizing gesture
-		 * Reducing size is automatically blocked when reached this value - no extra action required for this
-		 * 
-		 * @param draggableCircle circle 
-		 */		
-		void onMinRadius(MapAreaWrapper draggableCircle);
-		
-		/**
-		 * Called when the circle reaches the max possible radius (meters), if it was initialized with a max radius value
-		 * This happens during resizing gesture
-		 * Increasing size is automatically blocked when reached this value - no extra action required for this
-		 * 
-		 * @param draggableCircle circle 
-		 */	
-		void onMaxRadius(MapAreaWrapper draggableCircle);
 	}
 	
 	/**
@@ -184,65 +154,17 @@ public class MapAreaManager implements OnMarkerDragListener {
 	@Override
     public void onMarkerDragStart(Marker marker) {
     	MarkerMoveResultWithCircle result = onMarkerMoved(marker);
-        switch (result.markerMoveResult) {
-	        case minRadius: {
-	        	circleManagerListener.onMinRadius(result.draggableCircle);
-	        	break;
-	        }
-	        case maxRadius: {
-	        	circleManagerListener.onMaxRadius(result.draggableCircle);
-	        	break;
-	        }
-	        case radiusChange: {
-	        	circleManagerListener.onResizeCircleStart(result.draggableCircle);
-	        	break;
-	        }
-	        case moved: {
-    			circleManagerListener.onMoveCircleStart(result.draggableCircle);
-	        	break;
-	        }
-	        default: break;
-        }
+        circleManagerListener.onMoveCircleStart(result.draggableCircle);
     }
 
     @Override
     public void onMarkerDragEnd(Marker marker) {
     	MarkerMoveResultWithCircle result = onMarkerMoved(marker);
-        switch (result.markerMoveResult) {
-	        case minRadius: {
-	        	circleManagerListener.onMinRadius(result.draggableCircle);
-	        	break;
-	        }
-	        case maxRadius: {
-	        	circleManagerListener.onMaxRadius(result.draggableCircle);
-	        	break;
-	        }
-	        case radiusChange: {
-	        	circleManagerListener.onResizeCircleStart(result.draggableCircle);
-	        	break;
-	        }
-	        case moved: {
-    			circleManagerListener.onMoveCircleStart(result.draggableCircle);
-	        	break;
-	        }
-	        default: break;
-        }
+        circleManagerListener.onMoveCircleEnd(result.draggableCircle);
     }
 
     @Override
     public void onMarkerDrag(Marker marker) {
-    	MarkerMoveResultWithCircle result = onMarkerMoved(marker);
-        switch (result.markerMoveResult) {
-	        case minRadius: {
-	        	circleManagerListener.onMinRadius(result.draggableCircle);
-	        	break;
-	        }
-	        case maxRadius: {
-	        	circleManagerListener.onMaxRadius(result.draggableCircle);
-	        	break;
-	        }
-	        default: break;
-        }
     }
 
     public void add(MapAreaWrapper draggableCircle) {

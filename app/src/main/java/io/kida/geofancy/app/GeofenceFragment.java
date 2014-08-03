@@ -123,7 +123,7 @@ public class GeofenceFragment extends ListFragment {
                                 ContentValues values = new ContentValues();
                                 Geofences.Geofence item = Geofences.ITEMS.get(pos);
 
-                                Log.i("io.kida.geofancy.app", "Deleting Item with pos: " + Long.toString(pos) + " _id: " + item.id);
+                                Log.i(Constants.LOG, "Deleting Item with pos: " + Long.toString(pos) + " _id: " + item.id);
                                 ContentResolver resolver = aView.getContext().getContentResolver();
 
                                 resolver.delete(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), "_id = ?", new String[] { item.id });

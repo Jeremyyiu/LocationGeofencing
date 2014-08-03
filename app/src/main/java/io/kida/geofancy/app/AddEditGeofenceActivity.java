@@ -1,22 +1,17 @@
 package io.kida.geofancy.app;
 
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
-import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
@@ -24,18 +19,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.Circle;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.schuetz.mapareas.MapAreaManager;
 import com.schuetz.mapareas.MapAreaManager.CircleManagerListener;
 import com.schuetz.mapareas.MapAreaMeasure;
@@ -46,23 +35,26 @@ import java.util.List;
 import java.util.Locale;
 
 public class AddEditGeofenceActivity extends FragmentActivity {
-    private static final int UPDATE_ADDRESS = 1;
 
     private MapFragment mMapFragment = null;
     private GoogleMap mMap = null;
-    private MyLocation mMyLocation = null;
+    private GeofancyLocationManager mGeofancyLocationManager = null;
     private SeekBar mRadiusSlider = null;
 
     private MapAreaManager mCircleManager = null;
     private MapAreaWrapper mCircle = null;
+    public ProgressDialog mProgressDialog = null;
 
-    private Handler mGeocoderHandler = null;
+    private GeocodeHandler mGeocoderHandler = null;
+    private boolean mAddressIsDirty = true;
+    private boolean mGeocoderIsActive = false;
+    private boolean mGeocodeAndSave = false;
 
     // UI
     private Button mLocationButton = null;
     private EditText mCustomId = null;
 
-    MyLocation.LocationResult locationResult = new MyLocation.LocationResult(){
+    GeofancyLocationManager.LocationResult locationResult = new GeofancyLocationManager.LocationResult(){
         @Override
         public void gotLocation(Location location){
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -116,23 +108,13 @@ public class AddEditGeofenceActivity extends FragmentActivity {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
         }
 
-        mMyLocation = new MyLocation();
-        mMyLocation.getLocation(this, locationResult);
+        mGeofancyLocationManager = new GeofancyLocationManager();
+        mGeofancyLocationManager.getLocation(this, locationResult);
 
         setupCircleManager();
 
-        // Reverse Geocoder Handler
-        mGeocoderHandler = new Handler() {
-            public void handleMessage(Message msg) {
-                switch (msg.what) {
-                    case UPDATE_ADDRESS: {
-                        Button button = (Button) findViewById(R.id.address_button);
-                        button.setText((String) msg.obj);
-                        break;
-                    }
-                }
-            }
-        };
+        mGeocoderHandler = new GeocodeHandler(this);
+
     }
 
 
@@ -151,16 +133,38 @@ public class AddEditGeofenceActivity extends FragmentActivity {
         int id = item.getItemId();
         if (id == R.id.action_save) {
             // Save Geofence / Add new one
-            ContentResolver resolver = this.getContentResolver();
-            ContentValues values = new ContentValues();
-            values.put("name", mLocationButton.getText().toString());
-            resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);
+            if (mAddressIsDirty == false) {
+                this.save(true);
+                return true;
+            }
 
-            this.finish();
+            if (mCircle == null) {
+                return false;
+            }
+
+            mProgressDialog = new ProgressDialog(this);
+            mProgressDialog.setTitle(R.string.loading);
+            mProgressDialog.setMessage(getResources().getString(R.string.geocoding_progress_message));
+            mProgressDialog.setIndeterminate(true);
+            mProgressDialog.show();
+
+            mGeocodeAndSave = true;
+            doReverseGeocodingOfCircleLocation();
 
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void save(boolean finish) {
+        ContentResolver resolver = this.getContentResolver();
+        ContentValues values = new ContentValues();
+        values.put("name", mLocationButton.getText().toString());
+        resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);
+
+        if (finish) {
+            this.finish();
+        }
     }
 
     // Zoom to Location
@@ -195,47 +199,40 @@ public class AddEditGeofenceActivity extends FragmentActivity {
             new CircleManagerListener() { //listener for all circle events
 
                 @Override
-                public void onResizeCircleEnd(MapAreaWrapper draggableCircle) {
-
-                }
-
-                @Override
                 public void onCreateCircle(MapAreaWrapper draggableCircle) {
 
                 }
 
                 @Override
                 public void onMoveCircleEnd(MapAreaWrapper draggableCircle) {
-
+                    Log.d(Constants.LOG, "onMoveCircleEnd");
+                    doReverseGeocodingOfCircleLocation();
                 }
 
                 @Override
                 public void onMoveCircleStart(MapAreaWrapper draggableCircle) {
-
+                    mAddressIsDirty = true;
                 }
 
-                @Override
-                public void onResizeCircleStart(MapAreaWrapper draggableCircle) {
-
-                }
-
-                @Override
-                public void onMinRadius(MapAreaWrapper draggableCircle) {
-
-                }
-
-                @Override
-                public void onMaxRadius(MapAreaWrapper draggableCircle) {
-
-            }
         });
     }
 
     // Reverse Geocoder
+    private void doReverseGeocodingOfCircleLocation() {
+        if (mCircle != null) {
+            Location location = new Location("Geofence");
+            location.setLongitude(mCircle.getCenter().longitude);
+            location.setLatitude(mCircle.getCenter().latitude);
+            doReverseGeocoding(location);
+        }
+    }
+
     private void doReverseGeocoding(Location location) {
         // Since the geocoding API is synchronous and may take a while.  You don't want to lock
         // up the UI thread.  Invoking reverse geocoding in an AsyncTask.
-        (new ReverseGeocodingTask(this)).execute(new Location[] {location});
+        mGeocoderIsActive = true;
+        Log.d(Constants.LOG, "doReverseGeocoding for location: " + location);
+        (new ReverseGeocodingTask(this)).execute(location);
     }
 
     private class ReverseGeocodingTask extends AsyncTask<Location, Void, Void> {
@@ -257,7 +254,8 @@ public class AddEditGeofenceActivity extends FragmentActivity {
             } catch (IOException e) {
                 e.printStackTrace();
                 // Update address field with the exception.
-                Message.obtain(mGeocoderHandler, UPDATE_ADDRESS, e.toString()).sendToTarget();
+//                Message.obtain(mGeocoderHandler, UPDATE_ADDRESS, e.toString()).sendToTarget();
+                Log.e(Constants.LOG, "Error when Reverse-Geocoding: " + e.toString());
             }
             if (addresses != null && addresses.size() > 0) {
                 Address address = addresses.get(0);
@@ -267,8 +265,15 @@ public class AddEditGeofenceActivity extends FragmentActivity {
                         address.getLocality(),
                         address.getCountryName());
                 // Update address field on UI.
-                Message.obtain(mGeocoderHandler, UPDATE_ADDRESS, addressText).sendToTarget();
+                Message.obtain(mGeocoderHandler, GeocodeHandler.UPDATE_ADDRESS, addressText).sendToTarget();
             }
+            mAddressIsDirty = false;
+            mGeocoderIsActive = false;
+
+            if (mGeocodeAndSave == true) {
+                Message.obtain(mGeocoderHandler, GeocodeHandler.SAVE_AND_FINISH, null).sendToTarget();
+            }
+
             return null;
         }
     }
