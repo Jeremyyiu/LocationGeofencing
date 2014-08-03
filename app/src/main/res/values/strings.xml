@@ -10,7 +10,9 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_add_edit_geofence">AddEditGeofenceActivity</string>
+    <string name="title_activity_add_edit_geofence">Add Geofence</string>
+    <string name="title_activity_add_edit_geofence_existing">Edit Geofence</string>
     <string name="hello_world">Hello world!</string>
+    <string name="action_save">Save</string>
 
 </resources>
