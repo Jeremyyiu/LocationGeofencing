@@ -1,4 +1,4 @@
-package io.kida.geofancy.app.dummy;
+package io.kida.geofancy.app;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,10 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Helper class for providing sample content for user interfaces created by
- * Android template wizards.
- * <p>
- * TODO: Replace all uses of this class before publishing your app.
+ * Created by mkida on 3/08/2014.
  */
 public class Geofences {
 
@@ -22,6 +19,10 @@ public class Geofences {
      * A map of sample (dummy) items, by ID.
      */
     public static Map<String, Geofence> ITEM_MAP = new HashMap<String, Geofence>();
+
+    public void clear() {
+        ITEMS.clear();
+    }
 
     public void addItem(Geofence item) {
         ITEMS.add(item);

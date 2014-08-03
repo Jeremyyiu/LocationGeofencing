@@ -1,16 +1,22 @@
 package io.kida.geofancy.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
+import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.ListFragment;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 
 import java.util.ArrayList;
 
-import io.kida.geofancy.app.dummy.Geofences;
 
 /**
  * A fragment representing a list of Items.
@@ -97,6 +103,42 @@ public class GeofenceFragment extends ListFragment {
             // fragment is attached to one) that an item has been selected.
             mListener.onFragmentInteraction(Geofences.ITEMS.get(position).id);
         }
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedState) {
+        super.onActivityCreated(savedState);
+
+        getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
+                //Get your item here with the position
+                final int pos = position;
+                final View aView = v;
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle("Delete entry")
+                        .setMessage("Are you sure you want to delete this entry?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // continue with delete
+                                ContentValues values = new ContentValues();
+                                Geofences.Geofence item = Geofences.ITEMS.get(pos);
+
+                                Log.i("io.kida.geofancy.app", "Deleting Item with pos: " + Long.toString(pos) + " _id: " + item.id);
+                                ContentResolver resolver = aView.getContext().getContentResolver();
+
+                                resolver.delete(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), "_id = ?", new String[] { item.id });
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                // do nothing
+                            }
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+                return true;
+            }
+        });
     }
 
     /**

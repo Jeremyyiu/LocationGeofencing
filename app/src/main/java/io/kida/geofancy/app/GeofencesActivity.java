@@ -26,7 +26,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import de.triplet.simpleprovider.*;
-import io.kida.geofancy.app.dummy.Geofences;
 
 import android.util.Log;
 
@@ -50,14 +49,11 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geofences);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
 
         /*ContentResolver resolver = this.getContentResolver();
 
@@ -159,8 +155,10 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         //DatabaseUtils.dumpCursor(data);
 
+        mGeofenceFragment.geofences.clear();
+
         while(data.moveToNext()) {
-            Geofences.Geofence item = new Geofences.Geofence(data.getString(0), data.getString(data.getColumnIndex("custom_id")));
+            Geofences.Geofence item = new Geofences.Geofence(data.getString(data.getColumnIndex("_id")), data.getString(data.getColumnIndex("name")));
             mGeofenceFragment.geofences.addItem(item);
         }
         mGeofenceFragment.refresh();

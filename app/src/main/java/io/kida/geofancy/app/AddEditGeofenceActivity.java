@@ -1,6 +1,8 @@
 package io.kida.geofancy.app;
 
 import android.app.FragmentManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -11,6 +13,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,6 +59,7 @@ public class AddEditGeofenceActivity extends FragmentActivity {
     private Handler mGeocoderHandler = null;
 
     // UI
+    private Button mLocationButton = null;
     private EditText mCustomId = null;
 
     MyLocation.LocationResult locationResult = new MyLocation.LocationResult(){
@@ -75,6 +79,7 @@ public class AddEditGeofenceActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_geofence);
 
+        mLocationButton = (Button)findViewById(R.id.address_button);
         mCustomId = (EditText)findViewById(R.id.customLocationId);
 
         mRadiusSlider = (SeekBar)findViewById(R.id.radius_slider);
@@ -144,9 +149,17 @@ public class AddEditGeofenceActivity extends FragmentActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
+        if (id == R.id.action_save) {
+            // Save Geofence / Add new one
+            ContentResolver resolver = this.getContentResolver();
+            ContentValues values = new ContentValues();
+            values.put("name", mLocationButton.getText().toString());
+            resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);
+
+            this.finish();
+
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -163,6 +176,7 @@ public class AddEditGeofenceActivity extends FragmentActivity {
             LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
             mCircle = new MapAreaWrapper(mMap, position, 100, 5.0f, 0xffff0000, 0x33ff0000, 1, 1000);
             mCircleManager.add(mCircle);
+            mRadiusSlider.setProgress(10);
         }
     }
 
