@@ -33,6 +33,8 @@ import com.schuetz.mapareas.MapAreaWrapper;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
+import java.util.UUID;
 
 public class AddEditGeofenceActivity extends FragmentActivity {
 
@@ -49,6 +51,7 @@ public class AddEditGeofenceActivity extends FragmentActivity {
     private boolean mAddressIsDirty = true;
     private boolean mGeocoderIsActive = false;
     private boolean mGeocodeAndSave = false;
+    private boolean mSaved = false;
 
     // UI
     private Button mLocationButton = null;
@@ -157,14 +160,32 @@ public class AddEditGeofenceActivity extends FragmentActivity {
     }
 
     public void save(boolean finish) {
+
+        Log.i(Constants.LOG, "Saved #1: " + (mSaved ? "true" : "false"));
+
+        if (mSaved == true) {
+            return;
+        }
+
+        mSaved = true;
         ContentResolver resolver = this.getContentResolver();
         ContentValues values = new ContentValues();
         values.put("name", mLocationButton.getText().toString());
+        String custom_id = mCustomId.getText().toString();
+        if (custom_id.length() == 0) {
+            custom_id = new UUID(new Random().nextLong(), new Random().nextLong()).toString();
+        }
+        values.put("custom_id", custom_id);
         resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);
 
         if (finish) {
             this.finish();
+            Log.i(Constants.LOG, "Finished!");
         }
+
+        mSaved = false;
+        Log.i(Constants.LOG, "Saved #2: " + (mSaved ? "true" : "false"));
+
     }
 
     // Zoom to Location
@@ -271,6 +292,7 @@ public class AddEditGeofenceActivity extends FragmentActivity {
             mGeocoderIsActive = false;
 
             if (mGeocodeAndSave == true) {
+                mGeocodeAndSave = false;
                 Message.obtain(mGeocoderHandler, GeocodeHandler.SAVE_AND_FINISH, null).sendToTarget();
             }
 

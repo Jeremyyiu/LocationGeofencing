@@ -1,7 +1,9 @@
 package io.kida.geofancy.app;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.widget.Button;
 
 import java.lang.ref.WeakReference;
@@ -21,6 +23,7 @@ public class GeocodeHandler extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
+        Log.d(Constants.LOG, "handleMessage: " + msg);
         AddEditGeofenceActivity target = mTarget.get();
         switch (msg.what) {
             case UPDATE_ADDRESS: {
@@ -33,6 +36,7 @@ public class GeocodeHandler extends Handler {
                     target.mProgressDialog.hide();
                 }
                 target.save(true);
+                break;
             }
         }
 

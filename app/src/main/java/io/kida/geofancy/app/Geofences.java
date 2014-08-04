@@ -34,16 +34,18 @@ public class Geofences {
      */
     public static class Geofence {
         public String id;
-        public String content;
+        public String title;
+        public String subtitle;
 
-        public Geofence(String id, String content) {
+        public Geofence(String id, String title, String subtitle) {
             this.id = id;
-            this.content = content;
+            this.title = title;
+            this.subtitle = subtitle;
         }
 
         @Override
         public String toString() {
-            return content;
+            return title;
         }
     }
 }

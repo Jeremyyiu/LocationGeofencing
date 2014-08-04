@@ -5,17 +5,23 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 
 /**
@@ -58,11 +64,35 @@ public class GeofenceFragment extends ListFragment {
     }
 
     public void refresh() {
-        // TODO: Change Adapter to display your content
-        setListAdapter(new ArrayAdapter<Geofences.Geofence>(getActivity(),
-                android.R.layout.simple_list_item_1,
-                android.R.id.text1,
-                Geofences.ITEMS));
+
+        // Each row in the list stores country name, currency and flag
+        List<HashMap<String,String>> aList = new ArrayList<HashMap<String,String>>();
+
+        for(int i=0; i < Geofences.ITEMS.size(); i++){
+            HashMap<String, String> hm = new HashMap<String,String>();
+            Geofences.Geofence geofence = Geofences.ITEMS.get(i);
+            hm.put("image", "0");
+            hm.put("title", geofence.title);
+            hm.put("subtitle", geofence.subtitle);
+            aList.add(hm);
+        }
+
+        // Keys used in Hashmap
+        String[] from = {
+                "image",
+                "title",
+                "subtitle"
+        };
+
+        // Ids of views in listview_layout
+        int[] to = {
+                R.id.image,
+                R.id.title,
+                R.id.subtitle
+        };
+
+        GeofencesAdapter adapter = new GeofencesAdapter(getActivity().getBaseContext(), aList, R.layout.geofence_row, from, to);
+        setListAdapter(adapter);
     }
 
     @Override

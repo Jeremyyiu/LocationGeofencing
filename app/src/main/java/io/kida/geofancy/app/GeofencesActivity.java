@@ -158,7 +158,10 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
         mGeofenceFragment.geofences.clear();
 
         while(data.moveToNext()) {
-            Geofences.Geofence item = new Geofences.Geofence(data.getString(data.getColumnIndex("_id")), data.getString(data.getColumnIndex("name")));
+            Geofences.Geofence item = new Geofences.Geofence(
+                    data.getString(data.getColumnIndex("_id")),
+                    data.getString(data.getColumnIndex("name")),
+                    data.getString(data.getColumnIndex("custom_id")));
             mGeofenceFragment.geofences.addItem(item);
         }
         mGeofenceFragment.refresh();
