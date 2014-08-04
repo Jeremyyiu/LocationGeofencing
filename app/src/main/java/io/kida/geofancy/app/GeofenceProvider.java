@@ -13,6 +13,9 @@ public class GeofenceProvider extends AbstractProvider {
 
     private static int SCHEMA_VERSION = 1;
 
+    public static final int TRIGGER_ON_ENTER = 0x01;
+    public static final int TRIGGER_ON_EXIT = 0x02;
+
     protected String getAuthority() {
         return getContext().getString(R.string.authority);
     }

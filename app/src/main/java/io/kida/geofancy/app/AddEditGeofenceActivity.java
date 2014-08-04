@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
+import android.widget.Switch;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,11 +39,7 @@ import java.util.UUID;
 
 public class AddEditGeofenceActivity extends FragmentActivity {
 
-    private MapFragment mMapFragment = null;
-    private GoogleMap mMap = null;
     private GeofancyLocationManager mGeofancyLocationManager = null;
-    private SeekBar mRadiusSlider = null;
-
     private MapAreaManager mCircleManager = null;
     private MapAreaWrapper mCircle = null;
     public ProgressDialog mProgressDialog = null;
@@ -54,8 +51,13 @@ public class AddEditGeofenceActivity extends FragmentActivity {
     private boolean mSaved = false;
 
     // UI
+    private MapFragment mMapFragment = null;
+    private GoogleMap mMap = null;
     private Button mLocationButton = null;
     private EditText mCustomId = null;
+    private SeekBar mRadiusSlider = null;
+    private Switch mTriggerEnter = null;
+    private Switch mTriggerExit = null;
 
     GeofancyLocationManager.LocationResult locationResult = new GeofancyLocationManager.LocationResult(){
         @Override
@@ -74,8 +76,11 @@ public class AddEditGeofenceActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_edit_geofence);
 
+        // Get UI
         mLocationButton = (Button)findViewById(R.id.address_button);
         mCustomId = (EditText)findViewById(R.id.customLocationId);
+        mTriggerEnter = (Switch)findViewById(R.id.trigger_enter);
+        mTriggerExit = (Switch)findViewById(R.id.trigger_exit);
 
         mRadiusSlider = (SeekBar)findViewById(R.id.radius_slider);
         mRadiusSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -170,12 +175,28 @@ public class AddEditGeofenceActivity extends FragmentActivity {
         mSaved = true;
         ContentResolver resolver = this.getContentResolver();
         ContentValues values = new ContentValues();
-        values.put("name", mLocationButton.getText().toString());
+
         String custom_id = mCustomId.getText().toString();
         if (custom_id.length() == 0) {
             custom_id = new UUID(new Random().nextLong(), new Random().nextLong()).toString();
         }
-        values.put("custom_id", custom_id);
+
+        int triggers = 0;
+        if (mTriggerEnter.isChecked()) {
+            triggers |= GeofenceProvider.TRIGGER_ON_ENTER;
+        }
+        if (mTriggerExit.isChecked()) {
+            triggers |= GeofenceProvider.TRIGGER_ON_EXIT;
+        }
+
+        Log.d(Constants.LOG, "Triggers: " + triggers);
+
+        values.put(GeofenceProvider.Geofence.KEY_NAME, mLocationButton.getText().toString());
+        values.put(GeofenceProvider.Geofence.KEY_RADIUS, mRadiusSlider.getProgress());
+        values.put(GeofenceProvider.Geofence.KEY_CUSTOMID, custom_id);
+        values.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, 0);
+        values.put(GeofenceProvider.Geofence.KEY_TRIGGER, triggers);
+
         resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);
 
         if (finish) {
