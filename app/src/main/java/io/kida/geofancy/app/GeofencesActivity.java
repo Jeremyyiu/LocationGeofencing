@@ -96,6 +96,7 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
                     .replace(R.id.container, fragment)
                     .commit();
         }
+
     }
 
     public void onSectionAttached(int number) {

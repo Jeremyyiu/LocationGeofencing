@@ -1,6 +1,7 @@
 package io.kida.geofancy.app;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,10 +19,13 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
+import org.json.JSONObject;
 
 import java.util.prefs.PreferenceChangeEvent;
 
 import io.kida.geofancy.app.R;
+import retrofit.Callback;
+import retrofit.http.Query;
 
 @EActivity(R.layout.activity_settings)
 
@@ -39,6 +43,7 @@ public class SettingsActivity extends Activity {
     private static String NOTIFICATION_SOUND = "notificationSound";
 
     private int mHttpMethod = 0;
+    private ProgressDialog mProgressDialog = null;
 
     @ViewById(R.id.global_http_url)
     EditText mUrlText;
@@ -113,6 +118,25 @@ public class SettingsActivity extends Activity {
         mGlobalHttpAuthUsername.setEnabled(mGlobalHttpAuthSwitch.isChecked());
         mGlobalHttpAuthPassword.setEnabled(mGlobalHttpAuthSwitch.isChecked());
     }
+
+    @Click(R.id.login_button)
+    void login(){
+
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle(R.string.loading);
+        mProgressDialog.setMessage("Please wait…");
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.show();
+
+        GeofancyNetworking networking = new GeofancyNetworking();
+        networking.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), new GeofancyNetworkingCallback() {
+            @Override
+            public void onLoginFinished(boolean success) {
+                mProgressDialog.dismiss();
+            }
+        });
+    }
+
 
     private void save(boolean finish){
         SharedPreferences.Editor editor = this.getPreferences(MODE_PRIVATE).edit();

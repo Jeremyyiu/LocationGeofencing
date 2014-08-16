@@ -36,6 +36,7 @@ dependencies {
     compile 'com.google.android.gms:play-services:4.3.23'
     apt "org.androidannotations:androidannotations:3.0+"
     compile "org.androidannotations:androidannotations-api:3.0+"
+    compile 'com.squareup.retrofit:retrofit:1.6.1'
 }
 
 apt {
