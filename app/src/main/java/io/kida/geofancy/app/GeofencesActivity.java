@@ -75,17 +75,27 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
         Fragment fragment = null;
 
         switch (position) {
-            case 0:
+            case 0: {
                 if (mGeofenceFragment == null) {
                     mGeofenceFragment = new GeofenceFragment().newInstance("str1", "str2");
                 }
                 fragment = mGeofenceFragment;
                 break;
+            }
+            case 1: {
+                Intent settingsActivityIntent = new Intent(this, SettingsActivity.class);
+                this.startActivity(settingsActivityIntent);
+                break;
+            }
         }
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
+
+
+        if (fragment != null) {
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .commit();
+        }
     }
 
     public void onSectionAttached(int number) {

@@ -7,6 +7,7 @@ import java.util.Currency;
  */
 public class Constants {
     public static String LOG = "io.kida.geofancy.app";
+    public static String PREFS_NAME = "GeofancyPreferences";
 
     public enum TriggerType {
         ARRIVAL,
