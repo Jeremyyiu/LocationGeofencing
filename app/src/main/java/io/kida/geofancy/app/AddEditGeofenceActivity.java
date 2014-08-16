@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -41,6 +42,9 @@ import java.util.Random;
 import java.util.UUID;
 
 public class AddEditGeofenceActivity extends FragmentActivity {
+
+    public int mEditGeofenceId = 0;
+    private boolean mIsEditingGeofence = false;
 
     private GeofancyLocationManager mGeofancyLocationManager = null;
     private MapAreaManager mCircleManager = null;
@@ -86,6 +90,14 @@ public class AddEditGeofenceActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Already existing (editing) Geofence?
+        mEditGeofenceId = getIntent().getIntExtra("geofenceId", 0);
+        Log.d(Constants.LOG, "mEditGeofenceId: " + mEditGeofenceId);
+        if (mEditGeofenceId > 0) {
+            mIsEditingGeofence = true;
+        }
+
         setContentView(R.layout.activity_add_edit_geofence);
 
         // Get UI
@@ -142,15 +154,61 @@ public class AddEditGeofenceActivity extends FragmentActivity {
         mMap.getUiSettings().setZoomControlsEnabled(false);
 //        mMap.getMap().setMapType(0);
 
-        if(mMap.getMyLocation() != null) {
-            Location location = mMap.getMyLocation();
+        Cursor cursor = null;
+        if (mIsEditingGeofence) {
+            ContentResolver resolver = this.getContentResolver();
+            cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{ String.valueOf(mEditGeofenceId) }, null);
+            if (cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                mLocationButton.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_NAME)));
+                mRadiusSlider.setProgress(cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_RADIUS)));
+                mCustomId.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID)));
+
+                // Triggers
+                int triggers = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_TRIGGER));
+                mTriggerEnter.setChecked(((triggers & GeofenceProvider.TRIGGER_ON_ENTER) == GeofenceProvider.TRIGGER_ON_ENTER));
+                mTriggerExit.setChecked(((triggers & GeofenceProvider.TRIGGER_ON_EXIT) == GeofenceProvider.TRIGGER_ON_EXIT));
+
+                int enterMethod = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_ENTER_METHOD));
+                mEnterMethodButton.setText(enterMethod == 0 ? "POST" : "GET");
+                mEnterUrl.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_ENTER_URL)));
+
+                int exitMethod = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_EXIT_METHOD));
+                mExitMethodButton.setText(exitMethod == 0 ? "POST" : "GET");
+                mExitUrl.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_EXIT_URL)));
+
+                mBasicAuthSwitch.setChecked(cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_HTTP_AUTH)) != 0);
+                mBasicAuthUsername.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_HTTP_USERNAME)));
+                mBasicAuthPassword.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD)));
+            }
+        }
+
+        Location location = null;
+        mGeofancyLocationManager = new GeofancyLocationManager();
+        if (!mIsEditingGeofence) {
+            mGeofancyLocationManager.getLocation(this, locationResult);
+        }
+
+        if(mMap.getMyLocation() != null && !mIsEditingGeofence) {
+            location = mMap.getMyLocation();
+            mMap.getMyLocation();
+        } else if(cursor != null) {
+            location = new Location("location");
+            location.setLatitude(cursor.getDouble(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LATITUDE)));
+            location.setLongitude(cursor.getDouble(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LONGITUDE)));
+        }
+
+        if (location != null) {
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
         }
 
-        mGeofancyLocationManager = new GeofancyLocationManager();
-        mGeofancyLocationManager.getLocation(this, locationResult);
-
         setupCircleManager();
+        if (mIsEditingGeofence) {
+            setCircleToLocation(location);
+            int radius = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_RADIUS));
+            mCircle.setRadius(radius * 10);
+            mRadiusSlider.setProgress(radius);
+        }
 
         mGeocoderHandler = new GeocodeHandler(this);
 
@@ -208,7 +266,18 @@ public class AddEditGeofenceActivity extends FragmentActivity {
         ContentValues values = new ContentValues();
 
         String custom_id = mCustomId.getText().toString();
-        if (custom_id.length() == 0) {
+        if (mIsEditingGeofence) {
+            ContentResolver existingResolver = this.getContentResolver();
+            Cursor existingCursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{ String.valueOf(mEditGeofenceId) }, null);
+            if (existingCursor.getCount() > 0) {
+                existingCursor.moveToFirst();
+                if (custom_id.length() == 0) {
+                    custom_id = existingCursor.getString(existingCursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID));
+                }
+            }
+        }
+
+        if (custom_id.length() == 0 && !mIsEditingGeofence) {
             custom_id = new UUID(new Random().nextLong(), new Random().nextLong()).toString();
         }
 
@@ -233,8 +302,14 @@ public class AddEditGeofenceActivity extends FragmentActivity {
         values.put(GeofenceProvider.Geofence.KEY_HTTP_AUTH, mBasicAuthSwitch.isChecked() ? 1 : 0);
         values.put(GeofenceProvider.Geofence.KEY_HTTP_USERNAME, mBasicAuthUsername.getText().toString());
         values.put(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD, mBasicAuthPassword.getText().toString());
-        
-        resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);
+        values.put(GeofenceProvider.Geofence.KEY_LATITUDE, mCircle.getCenter().latitude);
+        values.put(GeofenceProvider.Geofence.KEY_LONGITUDE, mCircle.getCenter().longitude);
+
+        if (mIsEditingGeofence) {
+            resolver.update(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values, "_id = ?", new String[]{String.valueOf(mEditGeofenceId)});
+        } else {
+            resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);
+        }
 
         if (finish) {
             this.finish();

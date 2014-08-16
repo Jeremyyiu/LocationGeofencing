@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
@@ -167,6 +168,16 @@ public class GeofenceFragment extends ListFragment {
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
                 return true;
+            }
+        });
+
+        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Geofences.Geofence item = Geofences.ITEMS.get(position);
+                Intent addEditGeofencesIntent = new Intent(getActivity(), AddEditGeofenceActivity.class);
+                addEditGeofencesIntent.putExtra("geofenceId", Integer.parseInt(item.id));
+                getActivity().startActivity(addEditGeofencesIntent);
             }
         });
     }
