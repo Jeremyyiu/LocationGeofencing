@@ -26,6 +26,7 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -138,6 +139,25 @@ public class AddEditGeofenceActivity extends FragmentActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
 
+            }
+        });
+
+        final Context ctx = this;
+        mLocationButton.setOnClickListener(new View.OnClickListener() {
+            final EditText addressTextField = new EditText(ctx);
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(v.getContext())
+                        .setMessage("Enter Address manually:")
+                        .setView(addressTextField)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                doGeocodingAndPositionCircle(addressTextField.getText().toString());
+                            }
+                        })
+                        .setNegativeButton("Cancel", null)
+                        .show();
             }
         });
 
@@ -378,6 +398,15 @@ public class AddEditGeofenceActivity extends FragmentActivity {
             location.setLongitude(mCircle.getCenter().longitude);
             location.setLatitude(mCircle.getCenter().latitude);
             doReverseGeocoding(location);
+        }
+    }
+
+    private void doGeocodingAndPositionCircle(String addr) {
+        if (mCircle != null) {
+            Address address = new GeofancyGeocoder().getLatLongFromAddress(addr, this);
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            mCircle.setCenter(latLng);
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
         }
     }
 
