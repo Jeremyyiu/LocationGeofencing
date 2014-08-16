@@ -83,7 +83,7 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
                 break;
             }
             case 1: {
-                Intent settingsActivityIntent = new Intent(this, SettingsActivity.class);
+                Intent settingsActivityIntent = new Intent(this, SettingsActivity_.class);
                 this.startActivity(settingsActivityIntent);
                 break;
             }
