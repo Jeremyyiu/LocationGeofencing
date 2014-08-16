@@ -1,10 +1,12 @@
 package io.kida.geofancy.app;
 
+import android.app.AlertDialog;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
@@ -17,6 +19,7 @@ import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -49,6 +52,8 @@ public class AddEditGeofenceActivity extends FragmentActivity {
     private boolean mGeocoderIsActive = false;
     private boolean mGeocodeAndSave = false;
     private boolean mSaved = false;
+    private Constants.HttpMethod mEnterMethod = Constants.HttpMethod.POST;
+    private Constants.HttpMethod mExitMethod = Constants.HttpMethod.POST;
 
     // UI
     private MapFragment mMapFragment = null;
@@ -58,6 +63,13 @@ public class AddEditGeofenceActivity extends FragmentActivity {
     private SeekBar mRadiusSlider = null;
     private Switch mTriggerEnter = null;
     private Switch mTriggerExit = null;
+    private Button mEnterMethodButton = null;
+    private EditText mEnterUrl = null;
+    private Button mExitMethodButton = null;
+    private EditText mExitUrl = null;
+    private Switch mBasicAuthSwitch = null;
+    private EditText mBasicAuthUsername = null;
+    private EditText mBasicAuthPassword = null;
 
     GeofancyLocationManager.LocationResult locationResult = new GeofancyLocationManager.LocationResult(){
         @Override
@@ -81,7 +93,22 @@ public class AddEditGeofenceActivity extends FragmentActivity {
         mCustomId = (EditText)findViewById(R.id.customLocationId);
         mTriggerEnter = (Switch)findViewById(R.id.trigger_enter);
         mTriggerExit = (Switch)findViewById(R.id.trigger_exit);
-
+        mEnterMethodButton = (Button)findViewById(R.id.enter_method_button);
+        mEnterUrl = (EditText)findViewById(R.id.enter_url_text);
+        mEnterMethodButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectMethodForTriggerType(Constants.TriggerType.ARRIVAL);
+            }
+        });
+        mExitMethodButton = (Button)findViewById(R.id.exit_method_button);
+        mExitUrl = (EditText)findViewById(R.id.exit_url_text);
+        mExitMethodButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectMethodForTriggerType(Constants.TriggerType.DEPARTURE);
+            }
+        });
         mRadiusSlider = (SeekBar)findViewById(R.id.radius_slider);
         mRadiusSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -101,6 +128,10 @@ public class AddEditGeofenceActivity extends FragmentActivity {
 
             }
         });
+
+        mBasicAuthSwitch = (Switch)findViewById(R.id.basic_auth_switch);
+        mBasicAuthUsername = (EditText)findViewById(R.id.basic_auth_username);
+        mBasicAuthPassword = (EditText)findViewById(R.id.basic_auth_password);
 
         FragmentManager fm = getFragmentManager();
         mMapFragment = (MapFragment)fm.findFragmentById(R.id.map);
@@ -194,9 +225,15 @@ public class AddEditGeofenceActivity extends FragmentActivity {
         values.put(GeofenceProvider.Geofence.KEY_NAME, mLocationButton.getText().toString());
         values.put(GeofenceProvider.Geofence.KEY_RADIUS, mRadiusSlider.getProgress());
         values.put(GeofenceProvider.Geofence.KEY_CUSTOMID, custom_id);
-        values.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, 0);
+        values.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, this.methodForTriggerType(Constants.TriggerType.ARRIVAL).ordinal());
+        values.put(GeofenceProvider.Geofence.KEY_ENTER_URL, mEnterUrl.getText().toString());
         values.put(GeofenceProvider.Geofence.KEY_TRIGGER, triggers);
-
+        values.put(GeofenceProvider.Geofence.KEY_EXIT_METHOD, this.methodForTriggerType(Constants.TriggerType.DEPARTURE).ordinal());
+        values.put(GeofenceProvider.Geofence.KEY_EXIT_URL, mExitUrl.getText().toString());
+        values.put(GeofenceProvider.Geofence.KEY_HTTP_AUTH, mBasicAuthSwitch.isChecked() ? 1 : 0);
+        values.put(GeofenceProvider.Geofence.KEY_HTTP_USERNAME, mBasicAuthUsername.getText().toString());
+        values.put(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD, mBasicAuthPassword.getText().toString());
+        
         resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);
 
         if (finish) {
@@ -320,4 +357,42 @@ public class AddEditGeofenceActivity extends FragmentActivity {
             return null;
         }
     }
+
+    private void selectMethodForTriggerType(final Constants.TriggerType t) {
+
+        new AlertDialog.Builder(this)
+            .setMessage("Choose HTTP Method")
+            .setPositiveButton("POST", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (t == Constants.TriggerType.ARRIVAL) {
+                        mEnterMethodButton.setText("POST");
+                        mEnterMethod = Constants.HttpMethod.POST;
+                    } else {
+                        mExitMethodButton.setText("POST");
+                        mExitMethod = Constants.HttpMethod.POST;
+                    }
+                }
+            })
+            .setNeutralButton("GET", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (t == Constants.TriggerType.ARRIVAL) {
+                        mEnterMethodButton.setText("GET");
+                        mEnterMethod = Constants.HttpMethod.GET;
+                    } else {
+                        mExitMethodButton.setText("GET");
+                        mExitMethod = Constants.HttpMethod.GET;
+                    }
+                }
+            })
+            .show();
+    }
+
+    private Constants.HttpMethod methodForTriggerType(Constants.TriggerType t) {
+        if (t == Constants.TriggerType.ARRIVAL) {
+            return mEnterMethod;
+        }
+        return mExitMethod;
+    };
 }

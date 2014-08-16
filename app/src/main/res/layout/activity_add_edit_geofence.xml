@@ -62,14 +62,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="POST"
-                android:id="@+id/button2"
+                android:id="@+id/enter_method_button"
                 android:layout_weight=".5"
                 android:hint="http://myserver.com/push.php" />
 
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/editText"
+                android:id="@+id/enter_url_text"
                 android:layout_weight="1"
                 android:hint="http://myserver.com/push.php"
                 android:maxLines="1"
@@ -96,14 +96,14 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="POST"
-                android:id="@+id/button3"
+                android:id="@+id/exit_method_button"
                 android:layout_weight=".5"
                 android:hint="http://myserver.com/push.php" />
 
             <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/editText1"
+                android:id="@+id/exit_url_text"
                 android:layout_weight="1"
                 android:hint="http://myserver.com/push.php"
                 android:maxLines="1"
@@ -115,7 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="HTTP Basic Authentication"
-            android:id="@+id/switch3"
+            android:id="@+id/basic_auth_switch"
             android:layout_gravity="right"
             android:checked="false"
             android:layout_marginLeft="5dp"
@@ -124,7 +124,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editText3"
+            android:id="@+id/basic_auth_username"
             android:layout_weight="1"
             android:hint="Username"
             android:maxLines="1"
@@ -135,7 +135,7 @@
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/editText4"
+            android:id="@+id/basic_auth_password"
             android:layout_weight="1"
             android:hint="Password"
             android:maxLines="1"
