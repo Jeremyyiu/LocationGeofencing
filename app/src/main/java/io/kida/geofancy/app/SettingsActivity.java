@@ -1,6 +1,7 @@
 package io.kida.geofancy.app;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -10,7 +11,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.DialerFilter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Switch;
 
 import org.androidannotations.annotations.AfterViews;
@@ -44,6 +47,8 @@ public class SettingsActivity extends Activity {
 
     private int mHttpMethod = 0;
     private ProgressDialog mProgressDialog = null;
+    private GeofancyNetworking mNetworking;
+    private GeofancyNetworkingCallback mNetworkingCallback;
 
     @ViewById(R.id.global_http_url)
     EditText mUrlText;
@@ -94,7 +99,8 @@ public class SettingsActivity extends Activity {
 
     @AfterViews
     void setup(){
-        SharedPreferences prefs = this.getPreferences(MODE_PRIVATE);
+        adjustUiToLoginState();
+        SharedPreferences prefs = getPrefs();
 
         mUrlText.setText(prefs.getString(HTTP_URL, null));
         mGlobalHttpMethodButton.setText(
@@ -111,6 +117,27 @@ public class SettingsActivity extends Activity {
         mNotificationFailSwitch.setChecked(prefs.getBoolean(NOTIFICATION_FAIL, false));
         mNotificationSoundSwitch.setChecked(prefs.getBoolean(NOTIFICATION_SOUND, false));
 
+        mNetworking = new GeofancyNetworking();
+        final Context ctx = this;
+        mNetworkingCallback = new GeofancyNetworkingCallback() {
+            @Override
+            public void onLoginFinished(boolean success, String sessionId) {
+                mProgressDialog.dismiss();
+                if (!success) {
+                    simpleAlert("Username or Password incorrect. Please try again.");
+                    return;
+                }
+                simpleAlert("Login successful! Your Fencelogs will now be visible when you log in at https://my.geofancy.com.");
+                Log.d(Constants.LOG, "Login success with SessionID: " + sessionId);
+                getPrefs().edit().putString(Constants.SESSION_ID, sessionId).commit();
+                adjustUiToLoginState();
+            }
+
+            @Override
+            public void onSignupFinished(boolean success, String sessionId) {
+
+            }
+        };
     }
 
     @Click(R.id.global_auth_switch)
@@ -120,7 +147,7 @@ public class SettingsActivity extends Activity {
     }
 
     @Click(R.id.login_button)
-    void login(){
+    void loginOrLogout(){
 
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle(R.string.loading);
@@ -128,18 +155,50 @@ public class SettingsActivity extends Activity {
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.show();
 
-        GeofancyNetworking networking = new GeofancyNetworking();
-        networking.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), new GeofancyNetworkingCallback() {
-            @Override
-            public void onLoginFinished(boolean success) {
-                mProgressDialog.dismiss();
-            }
-        });
+        if (!isLoggedIn()) {
+            mNetworking.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
+        } else {
+            // TODO: Implement Logout via API (needs to be implemented on Server-Side)
+            getPrefs().edit().putString(Constants.SESSION_ID, null).commit();
+            adjustUiToLoginState();
+            mProgressDialog.dismiss();
+        }
     }
 
+    private SharedPreferences getPrefs(){
+        return this.getPreferences(MODE_PRIVATE);
+    }
+
+    private boolean isLoggedIn(){
+        String sessionId = getPrefs().getString(Constants.SESSION_ID, null);
+        if (sessionId != null) {
+            return sessionId.length() > 0;
+        }
+        return false;
+    }
+
+    private void adjustUiToLoginState(){
+        int visibility = LinearLayout.VISIBLE;
+
+        if (isLoggedIn()) {
+            // User is logged in
+            visibility = LinearLayout.GONE;
+        }
+
+        mAccountUsernameText.setVisibility(visibility);
+        mAccountPasswordText.setVisibility(visibility);
+        mLoginButton.setText((visibility == LinearLayout.VISIBLE) ? "Login" : "Logout");
+    }
+
+    private void simpleAlert(String msg){
+        new AlertDialog.Builder(this)
+                .setMessage(msg)
+                .setNeutralButton("OK", null)
+                .show();
+    }
 
     private void save(boolean finish){
-        SharedPreferences.Editor editor = this.getPreferences(MODE_PRIVATE).edit();
+        SharedPreferences.Editor editor = getPrefs().edit();
         editor.putString(HTTP_URL, mUrlText.getText().toString());
         editor.putInt(HTTP_METHOD, mHttpMethod);
         editor.putBoolean(HTTP_AUTH, mGlobalHttpAuthSwitch.isChecked());
