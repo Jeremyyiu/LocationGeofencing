@@ -44,7 +44,7 @@ import retrofit.mime.TypedOutput;
 interface  GeofancyNetworkingInterface {
 
     @GET("/api/session")
-    public void login(@Query("username") String username, @Query("password") String password, @Query("origin") String origin, Callback<JSONObject> callback);
+    public void login(@Query("username") String username, @Query("password") String password, @Query("origin") String origin, Callback<String> callback);
 
 }
 
@@ -56,18 +56,18 @@ interface  GeofancyNetworkingCallback {
 
 public class GeofancyNetworking {
 
-    private static final int BUFFER_SIZE = 0x1000;
-
     public void doLogin(String username, String password, final GeofancyNetworkingCallback callback){
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint(Constants.API_ENDPOINT)
+                .setConverter(new StringConverter())
                 .build();
 
         GeofancyNetworkingInterface network = restAdapter.create(GeofancyNetworkingInterface.class);
-        network.login(username, password, Constants.API_ORIGIN, new Callback<JSONObject>() {
+        network.login(username, password, Constants.API_ORIGIN, new Callback<String>() {
 
             @Override
-            public void success(JSONObject jsonObject, Response response) {
+            public void success(String string, Response response) {
+                Log.d(Constants.LOG, "Login Success: " + string);
                 callback.onLoginFinished(false);
             }
 
