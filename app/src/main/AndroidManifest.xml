@@ -58,6 +58,10 @@
             android:name=".SettingsActivity_"
             android:label="@string/title_activity_settings" >
         </activity>
+        <activity
+            android:name=".SignupActivity_"
+            android:label="@string/title_activity_signup" >
+        </activity>
     </application>
 
 </manifest>

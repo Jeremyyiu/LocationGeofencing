@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -134,7 +135,7 @@ public class SettingsActivity extends Activity {
             }
 
             @Override
-            public void onSignupFinished(boolean success, String sessionId) {
+            public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
 
             }
         };
@@ -144,6 +145,12 @@ public class SettingsActivity extends Activity {
     void switchHttpAuth(){
         mGlobalHttpAuthUsername.setEnabled(mGlobalHttpAuthSwitch.isChecked());
         mGlobalHttpAuthPassword.setEnabled(mGlobalHttpAuthSwitch.isChecked());
+    }
+
+    @Click(R.id.signup_button)
+    void signup(){
+        Intent intent = new Intent(this, SignupActivity_.class);
+        this.startActivity(intent);
     }
 
     @Click(R.id.login_button)

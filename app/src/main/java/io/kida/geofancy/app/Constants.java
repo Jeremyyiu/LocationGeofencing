@@ -11,6 +11,7 @@ public class Constants {
     public static String API_ENDPOINT = "https://my.geofancy.com";
     public static String API_ORIGIN =  android.os.Build.MODEL;//"Android App";
     public static String SESSION_ID = "sessionId";
+    public static String TOS_URI = "https://my.geofancy.com/tos";
 
     public enum TriggerType {
         ARRIVAL,

@@ -35,6 +35,7 @@ import retrofit.converter.ConversionException;
 import retrofit.converter.Converter;
 import retrofit.converter.GsonConverter;
 import retrofit.http.Field;
+import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Query;
@@ -52,6 +53,7 @@ interface  GeofancyNetworkingInterface {
     @GET("/api/session")
     public void login(@Query("username") String username, @Query("password") String password, @Query("origin") String origin, Callback<String> callback);
 
+    @FormUrlEncoded
     @POST("/api/signup")
     public void signup(@Field("username") String username, @Field("password") String password, @Field("email") String email, @Field("token") String token, Callback<String> callback);
 }
@@ -60,7 +62,7 @@ interface  GeofancyNetworkingCallback {
 
     public void onLoginFinished(boolean success, String sessionId);
 
-    public void onSignupFinished(boolean success, String sessionId);
+    public void onSignupFinished(boolean success, boolean userAlreadyExisting);
 
 }
 
@@ -103,7 +105,8 @@ public class GeofancyNetworking {
     public void doSignup(String username, String password, String email, final GeofancyNetworkingCallback callback) {
         String token = null;
         try {
-            token = AeSimpleSHA1.SHA1(username + ":" + password + email);
+            token = AeSimpleSHA1.SHA1(username + ":" + password + "%" + email);
+            Log.d(Constants.LOG, "Token: " + token);
         } catch (Exception e) {
             Log.e(Constants.LOG, "Caught Exception: " + e);
         }
@@ -112,21 +115,13 @@ public class GeofancyNetworking {
             @Override
             public void success(String s, Response response) {
                 Log.d(Constants.LOG, "Signup Success: " + s);
-                String sessionId = null;
-                try {
-                    JSONObject json = new JSONObject(s);
-                    sessionId = json.getString("sessionId");
-                } catch (Exception e) {
-                    Log.e(Constants.LOG, "Caught Exception: " + e);
-                } finally {
-                    callback.onSignupFinished(true, sessionId);
-                }
+                callback.onSignupFinished(true, false);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 Log.d(Constants.LOG, "Signup Error: " + error);
-                callback.onSignupFinished(false, null);
+                callback.onSignupFinished(false, error.getResponse().getStatus() == 409);
             }
         });
     }
