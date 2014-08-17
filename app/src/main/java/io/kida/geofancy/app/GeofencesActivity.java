@@ -78,6 +78,11 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
                     getPrefs().edit().putString(Constants.SESSION_ID, null).commit();
                 }
             }
+
+            @Override
+            public void onDispatchFencelogFinished(boolean success) {
+
+            }
         };
 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);

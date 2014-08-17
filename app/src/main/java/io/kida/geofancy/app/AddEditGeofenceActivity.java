@@ -191,10 +191,12 @@ public class AddEditGeofenceActivity extends FragmentActivity {
 
                 int enterMethod = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_ENTER_METHOD));
                 mEnterMethodButton.setText(enterMethod == 0 ? "POST" : "GET");
+                mEnterMethod = (Constants.HttpMethod.POST.ordinal() == enterMethod) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
                 mEnterUrl.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_ENTER_URL)));
 
                 int exitMethod = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_EXIT_METHOD));
                 mExitMethodButton.setText(exitMethod == 0 ? "POST" : "GET");
+                mExitMethod = (Constants.HttpMethod.POST.ordinal() == enterMethod) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
                 mExitUrl.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_EXIT_URL)));
 
                 mBasicAuthSwitch.setChecked(cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_HTTP_AUTH)) != 0);

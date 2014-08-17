@@ -79,6 +79,11 @@ public class SignupActivity extends Activity {
             public void onCheckSessionFinished(boolean sessionValid) {
 
             }
+
+            @Override
+            public void onDispatchFencelogFinished(boolean success) {
+
+            }
         };
 
         mNetworking = new GeofancyNetworking();

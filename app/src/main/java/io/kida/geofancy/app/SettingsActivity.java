@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -46,7 +47,8 @@ public class SettingsActivity extends Activity {
     private static String NOTIFICATION_FAIL = "notificationFailure";
     private static String NOTIFICATION_SOUND = "notificationSound";
 
-    private int mHttpMethod = 0;
+    private Constants.HttpMethod mHttpMethod = Constants.HttpMethod.POST;
+
     private ProgressDialog mProgressDialog = null;
     private GeofancyNetworking mNetworking;
     private GeofancyNetworkingCallback mNetworkingCallback;
@@ -124,6 +126,7 @@ public class SettingsActivity extends Activity {
         mNotificationSoundSwitch.setChecked(prefs.getBoolean(NOTIFICATION_SUCCESS, false));
         mNotificationFailSwitch.setChecked(prefs.getBoolean(NOTIFICATION_FAIL, false));
         mNotificationSoundSwitch.setChecked(prefs.getBoolean(NOTIFICATION_SOUND, false));
+        mHttpMethod = (Constants.HttpMethod.POST.ordinal() == getPrefs().getInt(HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
 
         mNetworking = new GeofancyNetworking();
         final Context ctx = this;
@@ -153,6 +156,12 @@ public class SettingsActivity extends Activity {
                     adjustUiToLoginState();
                 }
             }
+
+            @Override
+            public void onDispatchFencelogFinished(boolean success) {
+                mProgressDialog.dismiss();
+                simpleAlert(success ? "Your Fencelog was submitted successfully!" : "There was an error submitting your Fencelog.");
+            }
         };
     }
 
@@ -170,13 +179,7 @@ public class SettingsActivity extends Activity {
 
     @Click(R.id.login_button)
     void loginOrLogout(){
-
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle(R.string.loading);
-        mProgressDialog.setMessage("Please wait…");
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.show();
-
+        showProgressDialog("Please wait…");
         if (!isLoggedIn()) {
             mNetworking.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
         } else {
@@ -185,6 +188,44 @@ public class SettingsActivity extends Activity {
             adjustUiToLoginState();
             mProgressDialog.dismiss();
         }
+    }
+
+    @Click(R.id.send_test_button)
+    void sendTestFencelog(){
+        Fencelog fencelog = new Fencelog();
+        fencelog.eventType = "Test Event";
+        showProgressDialog("Please wait…");
+        mNetworking.doDispatchFencelog(getPrefs().getString(Constants.SESSION_ID, null),fencelog , mNetworkingCallback);
+    }
+
+    @Click(R.id.global_http_method_button)
+    void selectMethodForTriggerType() {
+
+        new AlertDialog.Builder(this)
+                .setMessage("Choose HTTP Method")
+                .setPositiveButton("POST", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mGlobalHttpMethodButton.setText("POST");
+                        mHttpMethod = Constants.HttpMethod.POST;
+                    }
+                })
+                .setNeutralButton("GET", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        mGlobalHttpMethodButton.setText("GET");
+                        mHttpMethod = Constants.HttpMethod.GET;
+                    }
+                })
+                .show();
+    }
+
+    private void showProgressDialog(String message){
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setTitle(R.string.loading);
+        mProgressDialog.setMessage(message);
+        mProgressDialog.setIndeterminate(true);
+        mProgressDialog.show();
     }
 
     private SharedPreferences getPrefs(){
@@ -224,7 +265,7 @@ public class SettingsActivity extends Activity {
     private void save(boolean finish){
         SharedPreferences.Editor editor = getPrefs().edit();
         editor.putString(HTTP_URL, mUrlText.getText().toString());
-        editor.putInt(HTTP_METHOD, mHttpMethod);
+        editor.putInt(HTTP_METHOD, mHttpMethod.ordinal());
         editor.putBoolean(HTTP_AUTH, mGlobalHttpAuthSwitch.isChecked());
         editor.putString(HTTP_USERNAME, mGlobalHttpAuthUsername.getText().toString());
         editor.putString(HTTP_PASSWORD, mGlobalHttpAuthPassword.getText().toString());

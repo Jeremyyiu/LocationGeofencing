@@ -60,6 +60,10 @@ interface  GeofancyNetworkingInterface {
 
     @GET("/api/session/{session}")
     public void checkSession(@Path("session") String sessionId, Callback<String>callback);
+
+    @FormUrlEncoded
+    @POST("/api/fencelogs/{session}")
+    public  void dispatchFencelog(@Path("session") String sessionId, @Field("longitude") float longitude, @Field("latitude") float latitude, @Field("locationId") String locationId, @Field("httpUrl") String httpUrl, @Field("httpMethod") String httpMethod, @Field("httpResponseCode") String httpResponseCode, @Field("httpResponse") String httpResponse, @Field("eventType") String eventType, @Field("fenceType") String fenceType, @Field("origin") String origin, Callback<String> callback);
 }
 
 interface  GeofancyNetworkingCallback {
@@ -69,6 +73,8 @@ interface  GeofancyNetworkingCallback {
     public void onSignupFinished(boolean success, boolean userAlreadyExisting);
 
     public void onCheckSessionFinished(boolean sessionValid);
+
+    public void onDispatchFencelogFinished(boolean success);
 
 }
 
@@ -142,6 +148,20 @@ public class GeofancyNetworking {
             @Override
             public void failure(RetrofitError error) {
                 callback.onCheckSessionFinished(false);
+            }
+        });
+    }
+
+    public void doDispatchFencelog(String sessionId, Fencelog fencelog, final GeofancyNetworkingCallback callback) {
+        getInterface().dispatchFencelog(sessionId, fencelog.longitude, fencelog.latitude, fencelog.locationId, fencelog.httpUrl, fencelog.httpMethod, fencelog.httpResponseCode, fencelog.httpResponse, fencelog.eventType, fencelog.fenceType, fencelog.origin, new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                callback.onDispatchFencelogFinished(true);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.onDispatchFencelogFinished(false);
             }
         });
     }
