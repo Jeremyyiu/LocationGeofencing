@@ -23,7 +23,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="https://myserver.com/geo.php"
-            android:id="@+id/global_http_url"/>
+            android:id="@+id/global_http_url"
+            android:maxLines="1"
+            android:singleLine="true"/>
 
         <Button
             android:layout_width="match_parent"
@@ -43,14 +45,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Username"
-            android:id="@+id/global_auth_username"/>
+            android:id="@+id/global_auth_username"
+            android:maxLines="1"
+            android:singleLine="true"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:password="true"
             android:hint="Password"
-            android:id="@+id/global_auth_password"/>
+            android:id="@+id/global_auth_password"
+            android:maxLines="1"
+            android:singleLine="true"/>
 
         <Button
             android:layout_width="match_parent"
@@ -102,14 +108,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Username"
-            android:id="@+id/account_username_text"/>
+            android:id="@+id/account_username_text"
+            android:maxLines="1"
+            android:singleLine="true"/>
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Password"
             android:password="true"
-            android:id="@+id/account_password_text"/>
+            android:id="@+id/account_password_text"
+            android:maxLines="1"
+            android:singleLine="true"/>
 
         <Button
             android:layout_width="match_parent"
