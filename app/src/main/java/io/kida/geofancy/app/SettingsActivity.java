@@ -98,6 +98,13 @@ public class SettingsActivity extends Activity {
         save(true);
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        mNetworking.doCheckSession(getPrefs().getString(Constants.SESSION_ID, null), mNetworkingCallback);
+    }
+
     @AfterViews
     void setup(){
         adjustUiToLoginState();
@@ -137,6 +144,14 @@ public class SettingsActivity extends Activity {
             @Override
             public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
 
+            }
+
+            @Override
+            public void onCheckSessionFinished(boolean sessionValid) {
+                if (!sessionValid) {
+                    getPrefs().edit().putString(Constants.SESSION_ID, null).commit();
+                    adjustUiToLoginState();
+                }
             }
         };
     }

@@ -10,6 +10,7 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -38,6 +39,16 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private GeofenceFragment mGeofenceFragment = null;
+    private GeofancyNetworking mNetworking = null;
+    private  GeofancyNetworkingCallback mNetworkingCallback = null;
+
+    private enum DrawerItem {
+        GEOFENCES,
+        SETTINGS,
+        FEEDBACK,
+        TWITTER,
+        FACEBOOK
+    }
 
     /**
      * Used to store the last screen title. For use in {@link #restoreActionBar()}.
@@ -48,6 +59,26 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geofences);
+
+        mNetworking = new GeofancyNetworking();
+        mNetworkingCallback = new GeofancyNetworkingCallback() {
+            @Override
+            public void onLoginFinished(boolean success, String sessionId) {
+
+            }
+
+            @Override
+            public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
+
+            }
+
+            @Override
+            public void onCheckSessionFinished(boolean sessionValid) {
+                if (!sessionValid) {
+                    getPrefs().edit().putString(Constants.SESSION_ID, null).commit();
+                }
+            }
+        };
 
         mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -70,21 +101,42 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+
+
+    }
+
+    @Override
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         Fragment fragment = null;
 
-        switch (position) {
-            case 0: {
+        DrawerItem item = DrawerItem.values()[position];
+        switch (item) {
+            case GEOFENCES: {
                 if (mGeofenceFragment == null) {
                     mGeofenceFragment = new GeofenceFragment().newInstance("str1", "str2");
                 }
                 fragment = mGeofenceFragment;
                 break;
             }
-            case 1: {
+            case SETTINGS: {
                 Intent settingsActivityIntent = new Intent(this, SettingsActivity_.class);
                 this.startActivity(settingsActivityIntent);
+                break;
+            }
+            case FEEDBACK: {
+                break;
+            }
+            case TWITTER: {
+                Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.TWITTER_URI));
+                startActivity(intent);
+                break;
+            }
+            case FACEBOOK: {
+                Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.FACEBOOK_URI));
+                startActivity(intent);
                 break;
             }
         }
@@ -182,5 +234,9 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
 
+    }
+
+    public SharedPreferences getPrefs(){
+        return this.getPreferences(MODE_PRIVATE);
     }
 }

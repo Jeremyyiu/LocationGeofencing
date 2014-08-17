@@ -38,6 +38,7 @@ import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.POST;
+import retrofit.http.Path;
 import retrofit.http.Query;
 import retrofit.mime.MimeUtil;
 import retrofit.mime.TypedByteArray;
@@ -56,6 +57,9 @@ interface  GeofancyNetworkingInterface {
     @FormUrlEncoded
     @POST("/api/signup")
     public void signup(@Field("username") String username, @Field("password") String password, @Field("email") String email, @Field("token") String token, Callback<String> callback);
+
+    @GET("/api/session/{session}")
+    public void checkSession(@Path("session") String sessionId, Callback<String>callback);
 }
 
 interface  GeofancyNetworkingCallback {
@@ -63,6 +67,8 @@ interface  GeofancyNetworkingCallback {
     public void onLoginFinished(boolean success, String sessionId);
 
     public void onSignupFinished(boolean success, boolean userAlreadyExisting);
+
+    public void onCheckSessionFinished(boolean sessionValid);
 
 }
 
@@ -122,6 +128,20 @@ public class GeofancyNetworking {
             public void failure(RetrofitError error) {
                 Log.d(Constants.LOG, "Signup Error: " + error);
                 callback.onSignupFinished(false, error.getResponse().getStatus() == 409);
+            }
+        });
+    }
+
+    public void doCheckSession(String sessionId, final GeofancyNetworkingCallback callback) {
+        getInterface().checkSession(sessionId, new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                callback.onCheckSessionFinished(true);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.onCheckSessionFinished(false);
             }
         });
     }

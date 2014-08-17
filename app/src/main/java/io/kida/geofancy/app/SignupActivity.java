@@ -74,6 +74,11 @@ public class SignupActivity extends Activity {
                         })
                         .show();
             }
+
+            @Override
+            public void onCheckSessionFinished(boolean sessionValid) {
+
+            }
         };
 
         mNetworking = new GeofancyNetworking();
