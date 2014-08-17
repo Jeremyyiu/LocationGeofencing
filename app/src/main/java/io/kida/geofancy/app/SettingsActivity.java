@@ -188,6 +188,8 @@ public class SettingsActivity extends Activity {
         mAccountUsernameText.setVisibility(visibility);
         mAccountPasswordText.setVisibility(visibility);
         mLoginButton.setText((visibility == LinearLayout.VISIBLE) ? "Login" : "Logout");
+        mSignupButton.setVisibility(visibility);
+        mLostpassButton.setVisibility(visibility);
     }
 
     private void simpleAlert(String msg){
