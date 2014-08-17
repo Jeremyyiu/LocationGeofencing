@@ -127,6 +127,7 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
                 break;
             }
             case FEEDBACK: {
+                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.SUPPORT_MAIL_URI)));
                 break;
             }
             case TWITTER: {

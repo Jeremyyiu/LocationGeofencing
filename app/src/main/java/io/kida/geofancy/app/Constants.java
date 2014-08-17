@@ -14,6 +14,7 @@ public class Constants {
     public static String TOS_URI = "https://my.geofancy.com/tos";
     public static String TWITTER_URI = "https://twitter.com/geofancy";
     public static String FACEBOOK_URI = "https://facebook.com/geofancy";
+    public static String SUPPORT_MAIL_URI = "mailto:support@geofancy.com";
 
     public enum TriggerType {
         ARRIVAL,
