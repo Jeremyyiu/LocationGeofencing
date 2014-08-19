@@ -13,6 +13,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -29,6 +31,8 @@ import android.database.DatabaseUtils;
 import de.triplet.simpleprovider.*;
 
 import android.util.Log;
+
+import java.util.ArrayList;
 
 public class GeofencesActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         GeofenceFragment.OnFragmentInteractionListener,
@@ -226,15 +230,31 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
 
         mGeofenceFragment.geofences.clear();
 
+        ArrayList<Geofences.Geofence> items = new ArrayList<Geofences.Geofence>();
+
         while(data.moveToNext()) {
             Geofences.Geofence item = new Geofences.Geofence(
                     data.getString(data.getColumnIndex("_id")),
                     data.getString(data.getColumnIndex("name")),
-                    data.getString(data.getColumnIndex("custom_id")));
+                    data.getString(data.getColumnIndex("custom_id")),
+                    data.getInt(data.getColumnIndex("triggers")),
+                    data.getFloat(data.getColumnIndex("latitude")),
+                    data.getFloat(data.getColumnIndex("longitude")),
+                    data.getInt(data.getColumnIndex("radius")));
+
             mGeofenceFragment.geofences.addItem(item);
+            items.add(item);
         }
         mGeofenceFragment.refresh();
 
+        updateGeofencingService(items);
+    }
+
+    private void updateGeofencingService(ArrayList<Geofences.Geofence> items){
+        Intent geofencingService = new Intent(this, GeofencingService.class);
+        geofencingService.putExtra(GeofencingService.EXTRA_ACTION, GeofencingService.Action.ADD);
+        geofencingService.putExtra(GeofencingService.EXTRA_GEOFENCE, items);
+        this.startService(geofencingService);
     }
 
     @Override
