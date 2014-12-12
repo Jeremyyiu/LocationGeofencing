@@ -3,8 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/Geofancy.iml" filepath="$PROJECT_DIR$/Geofancy.iml" />
-      <module fileurl="file://$PROJECT_DIR$/GooglePlayServices/GooglePlayServices.iml" filepath="$PROJECT_DIR$/GooglePlayServices/GooglePlayServices.iml" />
-      <module fileurl="file://$PROJECT_DIR$/MyMaps/MyMaps.iml" filepath="$PROJECT_DIR$/MyMaps/MyMaps.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/geofancy-android.iml" filepath="$PROJECT_DIR$/geofancy-android.iml" />
     </modules>

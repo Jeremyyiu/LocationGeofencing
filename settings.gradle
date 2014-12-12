@@ -1,1 +1,1 @@
-include ':app', ':MyMaps', ':GooglePlayServices'
+include ':app'
