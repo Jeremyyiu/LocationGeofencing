@@ -4,6 +4,6 @@
     tools:context="io.kida.geofancy.app.AddEditGeofenceActivity" >
    <item android:id="@+id/action_save"
         android:title="@string/action_save"
-        android:showAsAction="withText|ifRoom"
+        app:showAsAction="withText|ifRoom"
        tools:ignore="AppCompatResource"/>
 </menu>

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -36,7 +37,7 @@ import retrofit.http.Query;
 
 @OptionsMenu(R.menu.settings)
 
-public class SettingsActivity extends Activity {
+public class SettingsActivity extends ActionBarActivity {
 
     private static String HTTP_URL = "httpUrl";
     private static String HTTP_METHOD = "httpMethod";

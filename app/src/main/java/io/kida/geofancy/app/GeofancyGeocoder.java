@@ -17,6 +17,9 @@ public class GeofancyGeocoder {
         Geocoder geocoder = new Geocoder(ctx, Locale.getDefault());
         try {
             List<Address> list = geocoder.getFromLocationName(addr, 1);
+            if (list.size() == 0) {
+                return null;
+            }
             return list.get(0);
         } catch (IOException e) {
             e.printStackTrace();

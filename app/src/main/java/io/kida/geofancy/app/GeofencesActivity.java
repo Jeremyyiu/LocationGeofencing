@@ -1,40 +1,23 @@
 package io.kida.geofancy.app;
 
-import android.app.Activity;
-
-import android.app.ActionBar;
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.LoaderManager;
-import android.content.ContentResolver;
-import android.content.ContentValues;
-import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
 import android.content.SharedPreferences;
-import android.os.Build;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.TextView;
-import android.net.Uri;
-import android.content.CursorLoader;
-import android.content.Loader;
-import android.database.Cursor;
-import android.database.DatabaseUtils;
-import de.triplet.simpleprovider.*;
-
-import android.util.Log;
 
 import java.util.ArrayList;
 
-public class GeofencesActivity extends Activity implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+public class GeofencesActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -44,7 +27,7 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private GeofenceFragment mGeofenceFragment = null;
     private GeofancyNetworking mNetworking = null;
-    private  GeofancyNetworkingCallback mNetworkingCallback = null;
+    private GeofancyNetworkingCallback mNetworkingCallback = null;
 
     private enum DrawerItem {
         GEOFENCES,
@@ -89,11 +72,14 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
             }
         };
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment) getFragmentManager().findFragmentById(R.id.navigation_drawer);
+        mNavigationDrawerFragment = (NavigationDrawerFragment)
+                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
 
         // Set up the drawer.
-        mNavigationDrawerFragment.setUp(R.id.navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout));
+        mNavigationDrawerFragment.setUp(
+                R.id.navigation_drawer,
+                (DrawerLayout) findViewById(R.id.drawer_layout));
 
         /*ContentResolver resolver = this.getContentResolver();
 
@@ -185,7 +171,7 @@ public class GeofencesActivity extends Activity implements NavigationDrawerFragm
     }
 
     public void restoreActionBar() {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
         actionBar.setDisplayShowTitleEnabled(true);
         actionBar.setTitle(mTitle);

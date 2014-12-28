@@ -39,6 +39,10 @@ public class GeofencingService extends Service implements
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
+        if (intent == null) {
+            return super.onStartCommand(intent, flags, startId);
+        }
+
         Log.d("GEO", "Location service started");
 
         mAction = (Action) intent.getSerializableExtra(EXTRA_ACTION);

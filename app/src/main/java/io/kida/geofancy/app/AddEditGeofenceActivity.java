@@ -17,6 +17,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +43,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
-public class AddEditGeofenceActivity extends FragmentActivity {
+public class AddEditGeofenceActivity extends ActionBarActivity {
 
     public int mEditGeofenceId = 0;
     private boolean mIsEditingGeofence = false;
@@ -406,6 +407,19 @@ public class AddEditGeofenceActivity extends FragmentActivity {
     private void doGeocodingAndPositionCircle(String addr) {
         if (mCircle != null) {
             Address address = new GeofancyGeocoder().getLatLongFromAddress(addr, this);
+            if (address == null) {
+                new AlertDialog.Builder(this)
+                .setMessage("No location found. Please refine your query.")
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
+                return;
+            }
+
             LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
             mCircle.setCenter(latLng);
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
@@ -455,7 +469,7 @@ public class AddEditGeofenceActivity extends FragmentActivity {
             mAddressIsDirty = false;
             mGeocoderIsActive = false;
 
-            if (mGeocodeAndSave == true) {
+            if (mGeocodeAndSave) {
                 mGeocodeAndSave = false;
                 Message.obtain(mGeocoderHandler, GeocodeHandler.SAVE_AND_FINISH, null).sendToTarget();
             }
@@ -478,6 +492,7 @@ public class AddEditGeofenceActivity extends FragmentActivity {
                         mExitMethodButton.setText("POST");
                         mExitMethod = Constants.HttpMethod.POST;
                     }
+                    dialog.dismiss();
                 }
             })
             .setNeutralButton("GET", new DialogInterface.OnClickListener() {
@@ -490,6 +505,7 @@ public class AddEditGeofenceActivity extends FragmentActivity {
                         mExitMethodButton.setText("GET");
                         mExitMethod = Constants.HttpMethod.GET;
                     }
+                    dialog.dismiss();
                 }
             })
             .show();
