@@ -1,5 +1,7 @@
 ## Geofancy for Android
 
+![Screenshot](io-screenshot.png)
+
 [http://geofancy.com](http://geofancy.com)
 
 This is the Geofancy for Android app. I've started Geofancy as a side project at the begining of 2013, the iOS has well evolved since then, sadly I've never really had time to work on the Android app.
