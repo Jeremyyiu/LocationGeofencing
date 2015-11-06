@@ -290,7 +290,6 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
 
         String custom_id = mCustomId.getText().toString();
         if (mIsEditingGeofence) {
-            ContentResolver existingResolver = this.getContentResolver();
             Cursor existingCursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{ String.valueOf(mEditGeofenceId) }, null);
             if (existingCursor.getCount() > 0) {
                 existingCursor.moveToFirst();
