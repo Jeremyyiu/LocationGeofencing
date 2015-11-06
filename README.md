@@ -1,7 +1,5 @@
 ## Geofancy for Android
 
-![Screenshot](io-screenshot.png)
-
 [http://geofancy.com](http://geofancy.com)
 
 This is the Geofancy for Android app. I've started Geofancy as a side project at the begining of 2013, the iOS has well evolved since then, sadly I've never really had time to work on the Android app.
@@ -9,6 +7,12 @@ This is the Geofancy for Android app. I've started Geofancy as a side project at
 I'm releasing this project as open source now, maybe someone can benefit from it, it's building fine using a current version of Android Studio (at the time being) but there's some NPEs when trying to add Geofences, probably because of some old Gmaps APIs? ¯\_(ツ)_/¯
 
 However, just fork this repo, fix it and create a PR (troll). Or take it yourself and build something (awesome) with it. I don't mind, it's up to you.
+
+Here's a screenshot from the iOS version (at the time of writing this): 
+
+![Screenshot](ios-screenshot.png)
+
+The Android app is pretty much feature complete, but definitelty needs to be modernized before it can be used standalone or even with the [https://my.geofancy.com](https://my.geofancy.com) backend.
 
 ## License
 
