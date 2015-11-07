@@ -11,9 +11,8 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.location.GeofencingEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import io.kida.geofancy.app.R;
@@ -22,27 +21,32 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     public static final String TRANSITION_INTENT_SERVICE = "ReceiveTransitionsIntentService";
 
+    private final String TAG = "TRANSITION";
+
     public ReceiveTransitionsIntentService() {
         super(TRANSITION_INTENT_SERVICE);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
-
-        if (LocationClient.hasError(intent)) {
-            Log.e(TRANSITION_INTENT_SERVICE, "Location Services error: " + LocationClient.getErrorCode(intent));
+        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
+        if (geofencingEvent.hasError()) {
+//            String errorMessage = GeofenceErrorMessages.getErrorString(this,
+//                    geofencingEvent.getErrorCode());
+//            Log.e(TAG, errorMessage);
+            Log.e(TAG, "Location Services error: " + geofencingEvent.getErrorCode());
             return;
         }
+        Log.i(TAG, "Location Services geofencingEvent: " + geofencingEvent);
 
-        int transitionType = LocationClient.getGeofenceTransition(intent);
-
-        List<Geofence> triggeredGeofences = LocationClient.getTriggeringGeofences(intent);
-        List<String> triggeredIds = new ArrayList<String>();
+        int transitionType = geofencingEvent.getGeofenceTransition();
+        List<Geofence> triggeredGeofences = geofencingEvent.getTriggeringGeofences();
+        //List<String> triggeredIds = new ArrayList<String>();
 
         for (Geofence geofence : triggeredGeofences) {
-            Log.d("GEO", "onHandle:" + geofence.getRequestId());
+            Log.d(TAG, "onHandle:" + geofence.getRequestId());
             processGeofence(geofence, transitionType);
-            triggeredIds.add(geofence.getRequestId());
+            //triggeredIds.add(geofence.getRequestId());
         }
 
 //        if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
@@ -63,7 +67,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
         if (locationName.length() == 0) {
             locationName = "Unknown Location";
         }
-        String transition = transitionType == Geofence.GEOFENCE_TRANSITION_ENTER ? "Enter " : "Exit ";
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
 
@@ -82,7 +85,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         nm.notify(transitionType * 100 + id, notificationBuilder.build());
 
-        Log.d("GEO", "notification built:" + id);
+        Log.d(TAG, "notification built:" + id);
+
+        // TODO send this notification to the api
     }
 
     private String getTransitionTypeString(int transitionType) {

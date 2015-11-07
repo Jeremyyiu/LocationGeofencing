@@ -16,6 +16,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -237,6 +238,14 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
 
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case GeofancyLocationManager.MY_PERMISSIONS_REQUEST:
+                mGeofancyLocationManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+                break;
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -278,7 +287,7 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
 
     public void save(boolean finish) {
 
-        Log.i(Constants.LOG, "Saved #1: " + (mSaved ? "true" : "false"));
+        Log.i(Constants.LOG, "Saved #1: " + mSaved);
 
         if (mSaved == true) {
             return;

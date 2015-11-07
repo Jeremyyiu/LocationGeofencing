@@ -1,20 +1,14 @@
 package io.kida.geofancy.app;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.DialerFilter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
@@ -25,13 +19,6 @@ import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
-import org.json.JSONObject;
-
-import java.util.prefs.PreferenceChangeEvent;
-
-import io.kida.geofancy.app.R;
-import retrofit.Callback;
-import retrofit.http.Query;
 
 @EActivity(R.layout.activity_settings)
 
@@ -233,12 +220,9 @@ public class SettingsActivity extends ActionBarActivity {
         return this.getPreferences(MODE_PRIVATE);
     }
 
-    private boolean isLoggedIn(){
+    private boolean isLoggedIn() {
         String sessionId = getPrefs().getString(Constants.SESSION_ID, null);
-        if (sessionId != null) {
-            return sessionId.length() > 0;
-        }
-        return false;
+        return sessionId != null && sessionId.length() > 0;
     }
 
     private void adjustUiToLoginState(){
@@ -274,7 +258,7 @@ public class SettingsActivity extends ActionBarActivity {
         editor.putBoolean(NOTIFICATION_FAIL, mNotificationFailSwitch.isChecked());
         editor.putBoolean(NOTIFICATION_SOUND, mNotificationSoundSwitch.isChecked());
 
-        editor.commit();
+        editor.apply();
 
         if (finish) {
             finish();

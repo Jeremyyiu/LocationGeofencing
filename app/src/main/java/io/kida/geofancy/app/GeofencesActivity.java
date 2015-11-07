@@ -111,7 +111,7 @@ public class GeofencesActivity extends ActionBarActivity implements NavigationDr
         switch (item) {
             case GEOFENCES: {
                 if (mGeofenceFragment == null) {
-                    mGeofenceFragment = new GeofenceFragment().newInstance("str1", "str2");
+                    mGeofenceFragment = GeofenceFragment.newInstance("str1", "str2");
                 }
                 fragment = mGeofenceFragment;
                 break;

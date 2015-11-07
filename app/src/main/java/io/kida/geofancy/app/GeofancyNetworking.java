@@ -1,49 +1,20 @@
 package io.kida.geofancy.app;
 
-import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 
-import com.google.android.gms.cast.Cast;
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.DateTypeAdapter;
-
 import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.lang.reflect.Type;
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
 
 import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
-import retrofit.converter.ConversionException;
-import retrofit.converter.Converter;
-import retrofit.converter.GsonConverter;
+
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
 import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
-import retrofit.mime.MimeUtil;
-import retrofit.mime.TypedByteArray;
-import retrofit.mime.TypedInput;
-import retrofit.mime.TypedOutput;
 
 /**
  * Created by mkida on 16/08/2014.
@@ -52,29 +23,52 @@ import retrofit.mime.TypedOutput;
 interface  GeofancyNetworkingInterface {
 
     @GET("/api/session")
-    public void login(@Query("username") String username, @Query("password") String password, @Query("origin") String origin, Callback<String> callback);
+    void login(
+            @Query("username") String username,
+            @Query("password") String password,
+            @Query("origin") String origin,
+            Callback<String> callback);
 
     @FormUrlEncoded
     @POST("/api/signup")
-    public void signup(@Field("username") String username, @Field("password") String password, @Field("email") String email, @Field("token") String token, Callback<String> callback);
+    void signup(
+            @Field("username") String username,
+            @Field("password") String password,
+            @Field("email") String email,
+            @Field("token") String token,
+            Callback<String> callback);
 
     @GET("/api/session/{session}")
-    public void checkSession(@Path("session") String sessionId, Callback<String>callback);
+    void checkSession(
+            @Path("session") String sessionId,
+            Callback<String>callback);
 
     @FormUrlEncoded
     @POST("/api/fencelogs/{session}")
-    public  void dispatchFencelog(@Path("session") String sessionId, @Field("longitude") float longitude, @Field("latitude") float latitude, @Field("locationId") String locationId, @Field("httpUrl") String httpUrl, @Field("httpMethod") String httpMethod, @Field("httpResponseCode") String httpResponseCode, @Field("httpResponse") String httpResponse, @Field("eventType") String eventType, @Field("fenceType") String fenceType, @Field("origin") String origin, Callback<String> callback);
+    void dispatchFencelog(
+            @Path("session") String sessionId,
+            @Field("longitude") float longitude,
+            @Field("latitude") float latitude,
+            @Field("locationId") String locationId,
+            @Field("httpUrl") String httpUrl,
+            @Field("httpMethod") String httpMethod,
+            @Field("httpResponseCode") String httpResponseCode,
+            @Field("httpResponse") String httpResponse,
+            @Field("eventType") String eventType,
+            @Field("fenceType") String fenceType,
+            @Field("origin") String origin,
+            Callback<String> callback);
 }
 
-interface  GeofancyNetworkingCallback {
+interface GeofancyNetworkingCallback {
 
-    public void onLoginFinished(boolean success, String sessionId);
+    void onLoginFinished(boolean success, String sessionId);
 
-    public void onSignupFinished(boolean success, boolean userAlreadyExisting);
+    void onSignupFinished(boolean success, boolean userAlreadyExisting);
 
-    public void onCheckSessionFinished(boolean sessionValid);
+    void onCheckSessionFinished(boolean sessionValid);
 
-    public void onDispatchFencelogFinished(boolean success);
+    void onDispatchFencelogFinished(boolean success);
 
 }
 
@@ -100,9 +94,9 @@ public class GeofancyNetworking {
                     JSONObject json = new JSONObject(string);
                     sessionId = json.getString("success");
                 } catch (Exception e) {
-                    Log.e(Constants.LOG, "Caught Exception: " + e);
+                    Log.e(Constants.LOG, e.getMessage(), e);
                 } finally {
-                    callback.onLoginFinished((sessionId.length() > 0), sessionId);
+                    callback.onLoginFinished(sessionId != null && sessionId.length() > 0, sessionId);
                 }
             }
 
