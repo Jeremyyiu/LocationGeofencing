@@ -9,32 +9,45 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
-import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.location.LocationStatusCodes;
+import com.google.android.gms.location.GeofencingRequest;
+import com.google.android.gms.location.LocationServices;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.kida.geofancy.app.geo.GeofenceErrorMessages;
+
 public class GeofencingService extends Service implements
-        GooglePlayServicesClient.ConnectionCallbacks,
-        GooglePlayServicesClient.OnConnectionFailedListener,
-        LocationClient.OnAddGeofencesResultListener,
-        LocationClient.OnRemoveGeofencesResultListener {
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
     public static final String EXTRA_REQUEST_IDS = "requestId";
     public static final String EXTRA_GEOFENCE = "geofence";
     public static final String EXTRA_ACTION = "action";
 
-    private List<Geofence> mGeofenceListsToAdd = new ArrayList<Geofence>();
-    private List<String> mGeofenceListsToRemove = new ArrayList<String>();
-    private LocationClient mLocationClient;
-    private Action mAction;
+    private static final String TAG = "GEO";
 
-    public static enum Action implements Serializable {ADD, REMOVE};
+    private final List<Geofence> mGeofenceListsToAdd = new ArrayList<Geofence>();
+    private List<String> mGeofenceListsToRemove = new ArrayList<String>();
+
+    /**
+     * Provides the entry point to Google Play services.
+     */
+    protected GoogleApiClient mGoogleApiClient;
+
+    private Action mAction;
+    private PendingIntent mGeofencePendingIntent;
+
+    public static enum Action implements Serializable {
+        ADD,
+        REMOVE
+    };
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -43,12 +56,12 @@ public class GeofencingService extends Service implements
             return super.onStartCommand(intent, flags, startId);
         }
 
-        Log.d("GEO", "Location service started");
+        Log.d(TAG, "Geofencing service started");
 
         mAction = (Action) intent.getSerializableExtra(EXTRA_ACTION);
 
         switch (mAction) {
-            case ADD: {
+            case ADD:
                 ArrayList<Geofences.Geofence> geofences = (ArrayList<Geofences.Geofence>) intent.getSerializableExtra(EXTRA_GEOFENCE);
                 for (Geofences.Geofence newGeofence: geofences) {
                     Geofence googleGeofence = newGeofence.toGeofence();
@@ -57,83 +70,90 @@ public class GeofencingService extends Service implements
                         mGeofenceListsToAdd.add(googleGeofence);
                     }
                 }
-            }
                 break;
             case REMOVE:
                 mGeofenceListsToRemove = Arrays.asList(intent.getStringArrayExtra(EXTRA_REQUEST_IDS));
                 break;
         }
 
-        mLocationClient = new LocationClient(this, this, this);
-        mLocationClient.connect();
+        // Kick off the request to build GoogleApiClient.
+        buildGoogleApiClient();
+        mGoogleApiClient.connect();
 
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
-    public void onConnected(Bundle bundle) {
-        Log.d("GEO", "Location client connected");
+    public void onDestroy() {
+        Log.d(TAG, "Geofencing service destroyed");
+        mGoogleApiClient.disconnect();
+        super.onDestroy();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.d(TAG, "Location client connected");
 
         switch (mAction) {
             case ADD:
-                Log.d("GEO", "Location client adds geofence");
+                Log.d(TAG, "Location client adds geofence");
                 if (mGeofenceListsToAdd.size() > 0) {
-                    mLocationClient.addGeofences(mGeofenceListsToAdd, getPendingIntent(), this);
+                    GeofencingRequest request = getGeofencingRequest(mGeofenceListsToAdd);
+                    PendingResult<Status> result = LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, request, getGeofencePendingIntent());
+                    result.setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status status) {
+                            if(status.isSuccess()){
+                                Log.d(TAG, "Geofences added " + mGeofenceListsToAdd);
+                                for (Geofence geofenceId : mGeofenceListsToAdd) {
+                                    Toast.makeText(GeofencingService.this, "Geofences added: " + geofenceId, Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                // Get the status code for the error and log it using a user-friendly message.
+                                String errorMessage = GeofenceErrorMessages.getErrorString(GeofencingService.this, status.getStatusCode());
+                                Log.e(TAG, errorMessage);
+                            }
+                        }
+                    });
                 }
                 break;
             case REMOVE:
-                Log.d("GEO", "Location client removes geofence");
+                Log.d(TAG, "Location client removes geofence");
                 if (mGeofenceListsToRemove.size() > 0) {
-                    mLocationClient.removeGeofences(mGeofenceListsToRemove, this);
+                    PendingResult<Status> result = LocationServices.GeofencingApi.removeGeofences(mGoogleApiClient, mGeofenceListsToRemove);
+                    result.setResultCallback(new ResultCallback<Status>() {
+                        @Override
+                        public void onResult(Status status) {
+                            if(status.isSuccess()){
+                                Log.d(TAG, "Geofences removed " + mGeofenceListsToRemove);
+                                for (String geofenceId : mGeofenceListsToRemove) {
+                                    Toast.makeText(GeofencingService.this, "Geofences removed: " + geofenceId, Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                // Get the status code for the error and log it using a user-friendly message.
+                                String errorMessage = GeofenceErrorMessages.getErrorString(GeofencingService.this, status.getStatusCode());
+                                Log.e(TAG, errorMessage);
+                            }
+                        }
+                    });
                 }
                 break;
         }
     }
 
-    private PendingIntent getPendingIntent() {
-        Intent transitionService = new Intent(this, ReceiveTransitionsIntentService.class);
-        return PendingIntent.getService(this, 0, transitionService, PendingIntent.FLAG_UPDATE_CURRENT);
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
 
     @Override
-    public void onDisconnected() {
-        Log.d("GEO", "Location client disconnected");
-    }
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason.
+        Log.i(TAG, "Connection suspended");
 
-    @Override
-    public void onAddGeofencesResult(int i, String[] strings) {
-        if (LocationStatusCodes.SUCCESS == i) {
-
-            Log.d("GEO", "Geofences added " + strings);
-
-            for (String geofenceId : strings)
-                Toast.makeText(this, "Geofences added: " + geofenceId, Toast.LENGTH_SHORT).show();
-
-            mLocationClient.disconnect();
-            stopSelf();
-        } else {
-            Log.e("GEO", "Error while adding geofence: " + strings);
-        }
-    }
-
-    @Override
-    public void onRemoveGeofencesByRequestIdsResult(int i, String[] strings) {
-        if (LocationStatusCodes.SUCCESS == i) {
-            Log.d("GEO", "Geofences removed" + strings);
-            mLocationClient.disconnect();
-            stopSelf();
-        } else {
-            Log.e("GEO", "Error while removing geofence: " + strings);
-        }
-    }
-
-    @Override
-    public void onRemoveGeofencesByPendingIntentResult(int i, PendingIntent pendingIntent) {
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.e("GEO", "Location client connection failed: " + connectionResult.getErrorCode());
+        // onConnected() will be called again automatically when the service reconnects
     }
 
     @Override
@@ -141,9 +161,36 @@ public class GeofencingService extends Service implements
         return null;
     }
 
-    @Override
-    public void onDestroy() {
-        Log.d("GEO", "Location service destroyed");
-        super.onDestroy();
+
+    /**
+     * Builds a GoogleApiClient. Uses the {@code #addApi} method to request the LocationServices API.
+     */
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    private PendingIntent getGeofencePendingIntent() {
+        // Reuse the PendingIntent if we already have it.
+        if (mGeofencePendingIntent == null) {
+            Intent intent = new Intent(this, ReceiveTransitionsIntentService.class);
+            // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when
+            // calling addGeofences() and removeGeofences().
+            mGeofencePendingIntent = PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+        return mGeofencePendingIntent;
+    }
+
+    private static GeofencingRequest getGeofencingRequest(List<Geofence> geofenceList) {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
+        // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
+        // is already inside that geofence.
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(geofenceList);
+        return builder.build();
     }
 }

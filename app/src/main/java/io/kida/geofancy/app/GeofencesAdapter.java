@@ -15,7 +15,6 @@ import java.util.Map;
  * Created by mkida on 4/08/2014.
  */
 public class GeofencesAdapter extends SimpleAdapter {
-    HashMap<String, String> map = new HashMap<String, String>();
     public GeofencesAdapter(Context context, List<? extends Map<String, String>> data,
                    int resource, String[] from, int[] to) {
         super(context, data, resource, from, to);

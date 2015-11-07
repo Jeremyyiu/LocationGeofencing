@@ -1,7 +1,5 @@
 package io.kida.geofancy.app;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.util.Log;
 
 import java.io.Serializable;
@@ -38,13 +36,13 @@ public class Geofences {
      * A dummy item representing a piece of content.
      */
     public static class Geofence implements Serializable {
-        public String id;
-        public String title;
-        public String subtitle;
-        public int triggers;
-        public float latitude;
-        public float longitude;
-        public int radius;
+        public final String id;
+        public final String title;
+        public final String subtitle;
+        public final int triggers;
+        public final float latitude;
+        public final float longitude;
+        public final int radius;
 
 
         public Geofence(String id, String title, String subtitle, int triggers, float latitude, float longitude, int radius) {
