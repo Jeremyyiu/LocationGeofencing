@@ -4,8 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-import org.apache.http.message.BasicNameValuePair;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
