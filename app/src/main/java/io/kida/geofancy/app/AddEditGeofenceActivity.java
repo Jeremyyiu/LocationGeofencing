@@ -174,7 +174,7 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
 
         mMap.setMyLocationEnabled(true);
         mMap.getUiSettings().setZoomControlsEnabled(false);
-//        mMap.getMap().setMapType(0);
+        mMap.setMapType(1);
 
         Cursor cursor = null;
         if (mIsEditingGeofence) {
