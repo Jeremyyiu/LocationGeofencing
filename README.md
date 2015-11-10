@@ -10,7 +10,7 @@ However, just fork this repo, fix it and create a PR (troll). Or take it yoursel
 
 Here's a screenshot from the iOS version (at the time of writing this): 
 
-![Screenshot](ios-screenshot.png)
+![Screenshot](android-screenshot.png)
 
 The Android app is pretty much feature complete, but definitelty needs to be modernized before it can be used standalone or even with the [https://my.geofancy.com](https://my.geofancy.com) backend.
 
