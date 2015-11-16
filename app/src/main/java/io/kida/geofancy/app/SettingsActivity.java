@@ -2,11 +2,10 @@ package io.kida.geofancy.app;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,11 +19,13 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 
+import io.kida.geofancy.app.model.EventType;
+
 @EActivity(R.layout.activity_settings)
 
 @OptionsMenu(R.menu.settings)
 
-public class SettingsActivity extends ActionBarActivity {
+public class SettingsActivity extends AppCompatActivity {
 
     private static String HTTP_URL = "httpUrl";
     private static String HTTP_METHOD = "httpMethod";
@@ -38,7 +39,6 @@ public class SettingsActivity extends ActionBarActivity {
     private Constants.HttpMethod mHttpMethod = Constants.HttpMethod.POST;
 
     private ProgressDialog mProgressDialog = null;
-    private GeofancyNetworking mNetworking;
     private GeofancyNetworkingCallback mNetworkingCallback;
 
     @ViewById(R.id.global_http_url)
@@ -91,8 +91,7 @@ public class SettingsActivity extends ActionBarActivity {
     @Override
     public void onResume(){
         super.onResume();
-
-        mNetworking.doCheckSession(getPrefs().getString(Constants.SESSION_ID, null), mNetworkingCallback);
+        getApp().getNetworking().doCheckSession(getApp().getSessionId(), mNetworkingCallback);
     }
 
     @AfterViews
@@ -116,8 +115,6 @@ public class SettingsActivity extends ActionBarActivity {
         mNotificationSoundSwitch.setChecked(prefs.getBoolean(NOTIFICATION_SOUND, false));
         mHttpMethod = (Constants.HttpMethod.POST.ordinal() == getPrefs().getInt(HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
 
-        mNetworking = new GeofancyNetworking();
-        final Context ctx = this;
         mNetworkingCallback = new GeofancyNetworkingCallback() {
             @Override
             public void onLoginFinished(boolean success, String sessionId) {
@@ -128,7 +125,7 @@ public class SettingsActivity extends ActionBarActivity {
                 }
                 simpleAlert("Login successful! Your Fencelogs will now be visible when you log in at https://my.geofancy.com.");
                 Log.d(Constants.LOG, "Login success with SessionID: " + sessionId);
-                getPrefs().edit().putString(Constants.SESSION_ID, sessionId).commit();
+                getApp().setSessionId(sessionId);
                 adjustUiToLoginState();
             }
 
@@ -140,7 +137,7 @@ public class SettingsActivity extends ActionBarActivity {
             @Override
             public void onCheckSessionFinished(boolean sessionValid) {
                 if (!sessionValid) {
-                    getPrefs().edit().putString(Constants.SESSION_ID, null).commit();
+                    getApp().clearSession();
                     adjustUiToLoginState();
                 }
             }
@@ -168,11 +165,12 @@ public class SettingsActivity extends ActionBarActivity {
     @Click(R.id.login_button)
     void loginOrLogout(){
         showProgressDialog("Please wait…");
-        if (!isLoggedIn()) {
-            mNetworking.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
+        if (!getApp().hasSession()) {
+            getApp().getNetworking().doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
         } else {
             // TODO: Implement Logout via API (needs to be implemented on Server-Side)
-            getPrefs().edit().putString(Constants.SESSION_ID, null).commit();
+            //mNetworking.doLogout()
+            getApp().clearSession();
             adjustUiToLoginState();
             mProgressDialog.dismiss();
         }
@@ -181,9 +179,13 @@ public class SettingsActivity extends ActionBarActivity {
     @Click(R.id.send_test_button)
     void sendTestFencelog(){
         Fencelog fencelog = new Fencelog();
-        fencelog.eventType = "Test Event";
+        fencelog.locationId = "test";
+        fencelog.eventType = EventType.ENTER;
         showProgressDialog("Please wait…");
-        mNetworking.doDispatchFencelog(getPrefs().getString(Constants.SESSION_ID, null),fencelog , mNetworkingCallback);
+        String sessionId = getApp().getSessionId();
+        if(sessionId != null) {
+            getApp().getNetworking().doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
+        }
     }
 
     @Click(R.id.global_http_method_button)
@@ -208,6 +210,10 @@ public class SettingsActivity extends ActionBarActivity {
                 .show();
     }
 
+    private GeofancyApplication getApp(){
+        return (GeofancyApplication) getApplication();
+    }
+
     private void showProgressDialog(String message){
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle(R.string.loading);
@@ -220,15 +226,10 @@ public class SettingsActivity extends ActionBarActivity {
         return this.getPreferences(MODE_PRIVATE);
     }
 
-    private boolean isLoggedIn() {
-        String sessionId = getPrefs().getString(Constants.SESSION_ID, null);
-        return sessionId != null && sessionId.length() > 0;
-    }
-
     private void adjustUiToLoginState(){
         int visibility = LinearLayout.VISIBLE;
 
-        if (isLoggedIn()) {
+        if (getApp().hasSession()) {
             // User is logged in
             visibility = LinearLayout.GONE;
         }

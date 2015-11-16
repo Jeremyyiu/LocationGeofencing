@@ -12,12 +12,13 @@ import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import java.util.ArrayList;
 
-public class GeofencesActivity extends ActionBarActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks,
+public class GeofencesActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks,
         GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -26,8 +27,6 @@ public class GeofencesActivity extends ActionBarActivity implements NavigationDr
      */
     private NavigationDrawerFragment mNavigationDrawerFragment;
     private GeofenceFragment mGeofenceFragment = null;
-    private GeofancyNetworking mNetworking = null;
-    private GeofancyNetworkingCallback mNetworkingCallback = null;
 
     private enum DrawerItem {
         GEOFENCES,
@@ -46,31 +45,6 @@ public class GeofencesActivity extends ActionBarActivity implements NavigationDr
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geofences);
-
-        mNetworking = new GeofancyNetworking();
-        mNetworkingCallback = new GeofancyNetworkingCallback() {
-            @Override
-            public void onLoginFinished(boolean success, String sessionId) {
-
-            }
-
-            @Override
-            public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
-
-            }
-
-            @Override
-            public void onCheckSessionFinished(boolean sessionValid) {
-                if (!sessionValid) {
-                    getPrefs().edit().putString(Constants.SESSION_ID, null).commit();
-                }
-            }
-
-            @Override
-            public void onDispatchFencelogFinished(boolean success) {
-
-            }
-        };
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
@@ -250,5 +224,9 @@ public class GeofencesActivity extends ActionBarActivity implements NavigationDr
 
     public SharedPreferences getPrefs(){
         return this.getPreferences(MODE_PRIVATE);
+    }
+
+    private GeofancyApplication getApp(){
+        return (GeofancyApplication) getApplication();
     }
 }

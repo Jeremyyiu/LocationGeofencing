@@ -13,15 +13,15 @@
         android:focusableInTouchMode="true">
 
         <fragment
-            class="com.google.android.gms.maps.MapFragment"
+            class="com.google.android.gms.maps.SupportMapFragment"
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="150dp" />
+            android:layout_height="250dp" />
 
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Unknown Location"
+            android:text="@string/unknown_location"
             android:id="@+id/address_button" />
 
         <SeekBar
@@ -36,8 +36,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/customLocationId"
             android:enabled="true"
-            android:editable="true"
-            android:hint="Custom Location ID"
+            android:hint="@string/custom_location_id"
             android:maxLines="1"
             android:layout_marginLeft="5dp"
             android:layout_marginRight="5dp"
@@ -46,7 +45,7 @@
         <Switch
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Trigger on Arrival"
+            android:text="@string/trigger_on_arrival"
             android:id="@+id/trigger_enter"
             android:layout_gravity="right"
             android:checked="true"

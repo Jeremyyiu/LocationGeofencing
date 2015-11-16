@@ -147,7 +147,19 @@ public class GeofancyNetworking {
     }
 
     public void doDispatchFencelog(String sessionId, Fencelog fencelog, final GeofancyNetworkingCallback callback) {
-        getInterface().dispatchFencelog(sessionId, fencelog.longitude, fencelog.latitude, fencelog.locationId, fencelog.httpUrl, fencelog.httpMethod, fencelog.httpResponseCode, fencelog.httpResponse, fencelog.eventType, fencelog.fenceType, fencelog.origin, new Callback<String>() {
+        getInterface().dispatchFencelog(
+                sessionId,
+                fencelog.longitude,
+                fencelog.latitude,
+                fencelog.locationId,
+                fencelog.httpUrl,
+                fencelog.httpMethod,
+                fencelog.httpResponseCode,
+                fencelog.httpResponse,
+                fencelog.eventType.apiName,
+                fencelog.fenceType,
+                fencelog.origin,
+                new Callback<String>() {
             @Override
             public void success(String s, Response response) {
                 callback.onDispatchFencelogFinished(true);

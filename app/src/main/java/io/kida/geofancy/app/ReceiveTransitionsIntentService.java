@@ -5,8 +5,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -16,6 +18,7 @@ import com.google.android.gms.location.GeofencingEvent;
 import java.util.List;
 
 import io.kida.geofancy.app.R;
+import io.kida.geofancy.app.model.EventType;
 
 public class ReceiveTransitionsIntentService extends IntentService {
 
@@ -57,16 +60,20 @@ public class ReceiveTransitionsIntentService extends IntentService {
     private void processGeofence(Geofence geofence, int transitionType) {
 
         ContentResolver resolver = this.getContentResolver();
-        Cursor cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{ geofence.getRequestId() }, null);
-        if (cursor.getCount() == 0) {
+        Cursor cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{geofence.getRequestId()}, null);
+        if (cursor == null || cursor.getCount() == 0) {
             return;
         }
         cursor.moveToFirst();
 
-        String locationName = cursor.getString(cursor.getColumnIndex("name"));
+        String customId = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID));
+        float latitude = cursor.getFloat(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LATITUDE));
+        float longitude = cursor.getFloat(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LONGITUDE));
+        String locationName = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_NAME));
         if (locationName.length() == 0) {
             locationName = "Unknown Location";
         }
+        cursor.close();
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
 
@@ -86,9 +93,47 @@ public class ReceiveTransitionsIntentService extends IntentService {
         nm.notify(transitionType * 100 + id, notificationBuilder.build());
 
         Log.d(TAG, "notification built:" + id);
+        reportFenceLogToApi(customId, latitude, longitude, getEventType(transitionType));
+        Log.d(TAG, "fence logged:" + customId);
 
-        // TODO send this notification to the api
     }
+
+    private void reportFenceLogToApi(String customId, float latitude, float longitude, @Nullable EventType eventType) {
+        String sessionId = getApp().getSessionId();
+        if(sessionId != null && eventType != null) {
+            Fencelog fencelog = new Fencelog();
+            fencelog.locationId = customId;
+            fencelog.latitude = latitude;
+            fencelog.longitude = longitude;
+            fencelog.eventType = eventType;
+            getApp().getNetworking().doDispatchFencelog(sessionId, fencelog, new GeofancyNetworkingCallback() {
+                @Override
+                public void onLoginFinished(boolean success, String sessionId) {
+                    // WTF could not care less
+                }
+
+                @Override
+                public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
+                    // WTF could not care less
+                }
+
+                @Override
+                public void onCheckSessionFinished(boolean sessionValid) {
+                    // WTF could not care less
+                }
+
+                @Override
+                public void onDispatchFencelogFinished(boolean success) {
+                    // WTF could not care less
+                }
+            });
+        }
+    }
+
+    private GeofancyApplication getApp(){
+        return (GeofancyApplication) getApplication();
+    }
+
 
     private String getTransitionTypeString(int transitionType) {
         switch (transitionType) {
@@ -101,6 +146,21 @@ public class ReceiveTransitionsIntentService extends IntentService {
             default:
                 return "happened an unknown event.";
         }
+    }
+
+    @Nullable
+    private EventType getEventType(int transitionType){
+        switch (transitionType) {
+            case Geofence.GEOFENCE_TRANSITION_ENTER:
+                return EventType.ENTER;
+            case Geofence.GEOFENCE_TRANSITION_EXIT:
+                return EventType.EXIT;
+            case Geofence.GEOFENCE_TRANSITION_DWELL:
+                return null;
+            default:
+                return null;
+        }
+
     }
 
     private void removeGeofences(List<String> requestIds) {
