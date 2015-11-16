@@ -1,5 +1,7 @@
 ## Geofancy for Android
 
+![Travis CI](https://travis-ci.org/Geofancy/android-app.svg)
+
 [http://geofancy.com](http://geofancy.com)
 
 This is the Geofancy for Android app. I've started Geofancy as a side project at the begining of 2013, the iOS has well evolved since then, sadly I've never really had time to work on the Android app.
@@ -8,7 +10,7 @@ I'm releasing this project as open source now, maybe someone can benefit from it
 
 However, just fork this repo, fix it and create a PR (troll). Or take it yourself and build something (awesome) with it. I don't mind, it's up to you.
 
-Here's a screenshot from the iOS version (at the time of writing this): 
+Here's a screenshot from the iOS version (at the time of writing this):
 
 ![Screenshot](android-screenshot.png)
 
