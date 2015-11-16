@@ -1,5 +1,7 @@
 package io.kida.geofancy.app;
 
+import io.kida.geofancy.app.model.EventType;
+
 /**
  * Created by mkida on 17/08/2014.
  */
@@ -25,7 +27,7 @@ public class Fencelog {
     public String httpMethod;
     public String httpResponseCode;
     public String httpResponse;
-    public String eventType;
+    public EventType eventType;
     public String fenceType;
     public String origin;
 }

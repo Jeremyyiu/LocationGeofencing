@@ -29,4 +29,7 @@
     <string name="unknown_geofence_error">
         Unknown error: the Geofence service is not available now
     </string>
+    <string name="unknown_location">Unknown Location</string>
+    <string name="custom_location_id">Custom Location ID</string>
+    <string name="trigger_on_arrival">Trigger on Arrival</string>
 </resources>

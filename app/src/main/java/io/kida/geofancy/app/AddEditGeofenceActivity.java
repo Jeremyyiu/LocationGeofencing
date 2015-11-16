@@ -1,12 +1,13 @@
 package io.kida.geofancy.app;
 
+import android.Manifest;
 import android.app.AlertDialog;
-import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.location.Address;
@@ -14,11 +15,11 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,15 +29,18 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.schuetz.mapareas.MapAreaManager;
 import com.schuetz.mapareas.MapAreaManager.CircleManagerListener;
 import com.schuetz.mapareas.MapAreaMeasure;
 import com.schuetz.mapareas.MapAreaWrapper;
+
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
 
 import java.io.IOException;
 import java.util.List;
@@ -44,7 +48,11 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
-public class AddEditGeofenceActivity extends ActionBarActivity {
+// TODO somehow just adding this already breaks the activity with java.lang.IllegalArgumentException duplicate id
+// so no androidannotations in this activity :-(
+// @EActivity(R.layout.activity_add_edit_geofence)
+
+public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public int mEditGeofenceId = 0;
     private boolean mIsEditingGeofence = false;
@@ -56,14 +64,13 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
 
     private GeocodeHandler mGeocoderHandler = null;
     private boolean mAddressIsDirty = true;
-    private boolean mGeocoderIsActive = false;
+    //private boolean mGeocoderIsActive = false;
     private boolean mGeocodeAndSave = false;
     private boolean mSaved = false;
     private Constants.HttpMethod mEnterMethod = Constants.HttpMethod.POST;
     private Constants.HttpMethod mExitMethod = Constants.HttpMethod.POST;
 
     // UI
-    private MapFragment mMapFragment = null;
     private GoogleMap mMap = null;
     private Button mLocationButton = null;
     private EditText mCustomId = null;
@@ -81,7 +88,7 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
     GeofancyLocationManager.LocationResult locationResult = new GeofancyLocationManager.LocationResult(){
         @Override
         public void gotLocation(Location location){
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            //LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             if (mMap != null) {
                 zoomToLocation(location);
             }
@@ -144,11 +151,10 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
             }
         });
 
-        final Context ctx = this;
         mLocationButton.setOnClickListener(new View.OnClickListener() {
-            final EditText addressTextField = new EditText(ctx);
             @Override
             public void onClick(View v) {
+                final EditText addressTextField = new EditText(v.getContext());
                 new AlertDialog.Builder(v.getContext())
                         .setMessage("Enter Address manually:")
                         .setView(addressTextField)
@@ -156,9 +162,15 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 doGeocodingAndPositionCircle(addressTextField.getText().toString());
+                                dialog.dismiss();
                             }
                         })
-                        .setNegativeButton("Cancel", null)
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
                         .show();
             }
         });
@@ -167,20 +179,60 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
         mBasicAuthUsername = (EditText)findViewById(R.id.basic_auth_username);
         mBasicAuthPassword = (EditText)findViewById(R.id.basic_auth_password);
 
-        FragmentManager fm = getFragmentManager();
-        mMapFragment = (MapFragment)fm.findFragmentById(R.id.map);
-        mMapFragment.onResume();
-        mMap = mMapFragment.getMap();
+//        FragmentManager fm = getFragmentManager();
+//        mMapFragment = (MapFragment)fm.findFragmentById(R.id.map);
+//        mMapFragment.onResume();
+//        mMap = mMapFragment.getMap();
+//        mMap.setMyLocationEnabled(true);
+//        mMap.getUiSettings().setZoomControlsEnabled(false);
+////        mMap.getMap().setMapType(0);
 
-        mMap.setMyLocationEnabled(true);
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+
+
+        mGeocoderHandler = new GeocodeHandler(this);
+
+    }
+
+    /**
+     * Manipulates the map once available.
+     * This callback is triggered when the map is ready to be used.
+     * This is where we can add markers or lines, add listeners or move the camera. In this case,
+     * we just add a marker near Sydney, Australia.
+     * If Google Play services is not installed on the device, the user will be prompted to install
+     * it inside the SupportMapFragment. This method will only be triggered once the user has
+     * installed Google Play services and returned to the app.
+     */
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(false);
-        mMap.setMapType(1);
+        mMap.getUiSettings().setAllGesturesEnabled(false);
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        
+        // TODO request permission if not given
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+                    checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+            }
+        }else{
+            // we have permission since requested on app install
+            mMap.setMyLocationEnabled(true);
+        }
+        mMap.getUiSettings().setZoomControlsEnabled(false);
 
         Cursor cursor = null;
         if (mIsEditingGeofence) {
             ContentResolver resolver = this.getContentResolver();
             cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{ String.valueOf(mEditGeofenceId) }, null);
-            if (cursor.getCount() > 0) {
+            if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 mLocationButton.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_NAME)));
                 mRadiusSlider.setProgress(cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_RADIUS)));
@@ -207,24 +259,27 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
             }
         }
 
-        Location location = null;
+
         mGeofancyLocationManager = new GeofancyLocationManager();
         if (!mIsEditingGeofence) {
             mGeofancyLocationManager.getLocation(this, locationResult);
         }
-
-        if(mMap.getMyLocation() != null && !mIsEditingGeofence) {
+        Location location;
+        if(mMap.isMyLocationEnabled() && mMap.getMyLocation() != null && !mIsEditingGeofence) {
             location = mMap.getMyLocation();
             mMap.getMyLocation();
         } else if(cursor != null) {
             location = new Location("location");
             location.setLatitude(cursor.getDouble(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LATITUDE)));
             location.setLongitude(cursor.getDouble(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LONGITUDE)));
+        }else{
+            // New York
+            location = new Location("custom");
+            location.setLatitude(40.7127);
+            location.setLongitude(74.0059);
         }
 
-        if (location != null) {
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
-        }
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 16));
 
         setupCircleManager();
         if (mIsEditingGeofence) {
@@ -234,8 +289,10 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
             mRadiusSlider.setProgress(radius);
         }
 
-        mGeocoderHandler = new GeocodeHandler(this);
-
+//        // Add a marker in Sydney and move the camera
+//        LatLng sydney = new LatLng(-34, 151);
+//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
@@ -300,7 +357,7 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
         String custom_id = mCustomId.getText().toString();
         if (mIsEditingGeofence) {
             Cursor existingCursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{ String.valueOf(mEditGeofenceId) }, null);
-            if (existingCursor.getCount() > 0) {
+            if (existingCursor != null && existingCursor.getCount() > 0) {
                 existingCursor.moveToFirst();
                 if (custom_id.length() == 0) {
                     custom_id = existingCursor.getString(existingCursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID));
@@ -415,29 +472,40 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
     private void doGeocodingAndPositionCircle(String addr) {
         if (mCircle != null) {
             Address address = new GeofancyGeocoder().getLatLongFromAddress(addr, this);
-            if (address == null) {
-                new AlertDialog.Builder(this)
-                .setMessage("No location found. Please refine your query.")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.dismiss();
-                    }
-                })
-                .show();
-                return;
-            }
+            if (address != null) {
+                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                updateAddressField(address);
 
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            mCircle.setCenter(latLng);
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+                mCircle.setCenter(latLng);
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
+            }else{
+                new AlertDialog.Builder(this)
+                        .setMessage("No location found. Please refine your query.")
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        })
+                        .show();
+            }
         }
+    }
+
+    private void updateAddressField(Address address) {
+        // Format the first line of address (if available), city, and country name.
+        String addressText = String.format("%s, %s, %s",
+                address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
+                address.getLocality(),
+                address.getCountryName());
+        // Update address field on UI.
+        Message.obtain(mGeocoderHandler, GeocodeHandler.UPDATE_ADDRESS, addressText).sendToTarget();
     }
 
     private void doReverseGeocoding(Location location) {
         // Since the geocoding API is synchronous and may take a while.  You don't want to lock
         // up the UI thread.  Invoking reverse geocoding in an AsyncTask.
-        mGeocoderIsActive = true;
+        //mGeocoderIsActive = true;
         Log.d(Constants.LOG, "doReverseGeocoding for location: " + location);
         (new ReverseGeocodingTask(this)).execute(location);
     }
@@ -465,17 +533,10 @@ public class AddEditGeofenceActivity extends ActionBarActivity {
                 Log.e(Constants.LOG, "Error when Reverse-Geocoding: " + e.toString());
             }
             if (addresses != null && addresses.size() > 0) {
-                Address address = addresses.get(0);
-                // Format the first line of address (if available), city, and country name.
-                String addressText = String.format("%s, %s, %s",
-                        address.getMaxAddressLineIndex() > 0 ? address.getAddressLine(0) : "",
-                        address.getLocality(),
-                        address.getCountryName());
-                // Update address field on UI.
-                Message.obtain(mGeocoderHandler, GeocodeHandler.UPDATE_ADDRESS, addressText).sendToTarget();
+                updateAddressField(addresses.get(0));
             }
             mAddressIsDirty = false;
-            mGeocoderIsActive = false;
+            //mGeocoderIsActive = false;
 
             if (mGeocodeAndSave) {
                 mGeocodeAndSave = false;
