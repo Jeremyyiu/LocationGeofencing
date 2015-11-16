@@ -6,3 +6,4 @@ android:
     - extra-android-m2repository
     - sys-img-armeabi-v7a-android-23
     - build-tools-23.0.1
+    - extra-google-google_play_services
