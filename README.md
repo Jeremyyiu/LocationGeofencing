@@ -1,6 +1,6 @@
 ## Geofancy for Android
 
-![Travis CI](https://travis-ci.org/Geofancy/android-app.svg)
+[![Build Status](https://travis-ci.org/Geofancy/android-app.svg?branch=master)](https://travis-ci.org/Geofancy/android-app)
 
 [http://geofancy.com](http://geofancy.com)
 
