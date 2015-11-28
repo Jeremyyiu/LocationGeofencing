@@ -1,6 +1,8 @@
 package io.kida.geofancy.app;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Intent;
@@ -9,51 +11,87 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 
-public class GeofencesActivity extends AppCompatActivity implements NavigationDrawerFragment.NavigationDrawerCallbacks,
-        GeofenceFragment.OnFragmentInteractionListener,
-        LoaderManager.LoaderCallbacks<Cursor> {
+import butterknife.Bind;
+import butterknife.OnClick;
+import io.kida.geofancy.app.activity.BaseActivity;
 
-    /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
-     */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
+        LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener {
+
+    @Bind(R.id.drawer)
+    DrawerLayout mDrawerLayout;
+
+    @Bind(R.id.nav_view)
+    NavigationView mNavigationView;
+
+    @Bind(R.id.container)
+    FrameLayout mContentFrame;
+
+    @Bind(R.id.add_geofence)
+    FloatingActionButton mFabButton;
+
+    private ActionBarDrawerToggle mDrawerToogle;
+
+
     private GeofenceFragment mGeofenceFragment = null;
+    private boolean firstResume = false;
 
-    private enum DrawerItem {
-        GEOFENCES,
-        SETTINGS,
-        FEEDBACK,
-        TWITTER,
-        FACEBOOK
-    }
-
-    /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
-     */
-    private CharSequence mTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_geofences);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+        if (savedInstanceState == null) {
+            firstResume = true;
+        }
 
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        if (mToolbar != null) {
+            mToolbar.setNavigationIcon(R.drawable.ic_menu_white_24px);
+            mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mDrawerLayout.openDrawer(GravityCompat.START);
+                }
+            });
+        }
+
+        // drawer toogle with listner
+        mDrawerToogle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name) {
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                syncState();
+                mFabButton.show();
+            }
+
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                syncState();
+            }
+
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+                super.onDrawerSlide(drawerView, slideOffset);
+                mFabButton.hide();
+            }
+        };
+        mDrawerToogle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(mDrawerToogle);
+        mNavigationView.setNavigationItemSelectedListener(this);
+
+
+        mGeofenceFragment = GeofenceFragment.newInstance("str1", "str2");
+        getFragmentManager().beginTransaction().replace(R.id.container, mGeofenceFragment, "").commit();
 
         /*ContentResolver resolver = this.getContentResolver();
 
@@ -70,112 +108,84 @@ public class GeofencesActivity extends AppCompatActivity implements NavigationDr
     }
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
+        // first start of this activity , open drawer and hide FAB 
+        if (firstResume) {
+            mDrawerLayout.openDrawer(Gravity.LEFT);
+            mDrawerToogle.syncState();
+            mFabButton.hide();
+        }
 
+        firstResume = false;
 
     }
 
     @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
+    protected int getLayoutResourceId() {
+        return R.layout.activity_geofences;
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        return null;
+    }
+
+    @Override
+    protected int getMenuResourceId() {
+        return 0;
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToogle.syncState();
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+
         Fragment fragment = null;
 
-        DrawerItem item = DrawerItem.values()[position];
-        switch (item) {
-            case GEOFENCES: {
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        switch (item.getItemId()) {
+            case R.id.geofence:
                 if (mGeofenceFragment == null) {
                     mGeofenceFragment = GeofenceFragment.newInstance("str1", "str2");
                 }
                 fragment = mGeofenceFragment;
                 break;
-            }
-            case SETTINGS: {
-                Intent settingsActivityIntent = new Intent(this, SettingsActivity_.class);
-                this.startActivity(settingsActivityIntent);
+            case R.id.settings:
+                startActivity(new Intent(this, SettingsActivity_.class));
                 break;
-            }
-            case FEEDBACK: {
+            case R.id.feedback:
                 startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.SUPPORT_MAIL_URI)));
                 break;
-            }
-            case TWITTER: {
-                Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.TWITTER_URI));
-                startActivity(intent);
+            case R.id.twitter:
+                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.TWITTER_URI)));
                 break;
-            }
-            case FACEBOOK: {
-                Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.FACEBOOK_URI));
-                startActivity(intent);
+            case R.id.facebook:
+                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.FACEBOOK_URI)));
                 break;
-            }
+            default:
+                break;
         }
-
-
         if (fragment != null) {
-            getFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.container, fragment)
-                    .commit();
+            transaction.replace(R.id.container, fragment, "").commit();
         }
-
+        setTitle(item.getTitle());
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        return true;
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_geofences);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_settings);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_facebook);
-                break;
-            case 4:
-                mTitle = getString(R.string.title_support);
-                break;
-            case 5:
-                mTitle = getString(R.string.title_twitter);
-                break;
-            case 6:
-                mTitle = getString(R.string.title_facebook);
-                break;
-        }
-    }
 
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.geofences, menu);
-            restoreActionBar();
-            return true;
-        }
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_add_geofence) {
-            Intent addEditGeofencesIntent = new Intent(this, AddEditGeofenceActivity.class);
-            this.startActivity(addEditGeofencesIntent);
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+    @SuppressWarnings("unused")
+    @OnClick(R.id.add_geofence)
+    public void addGeofenceClick() {
+        Intent addEditGeofencesIntent = new Intent(this, AddEditGeofenceActivity.class);
+        startActivity(addEditGeofencesIntent);
     }
 
     @Override
@@ -192,7 +202,7 @@ public class GeofencesActivity extends AppCompatActivity implements NavigationDr
 
         ArrayList<Geofences.Geofence> items = new ArrayList<Geofences.Geofence>();
 
-        while(data.moveToNext()) {
+        while (data.moveToNext()) {
             Geofences.Geofence item = new Geofences.Geofence(
                     data.getString(data.getColumnIndex("_id")),
                     data.getString(data.getColumnIndex("name")),
@@ -210,7 +220,7 @@ public class GeofencesActivity extends AppCompatActivity implements NavigationDr
         updateGeofencingService(items);
     }
 
-    private void updateGeofencingService(ArrayList<Geofences.Geofence> items){
+    private void updateGeofencingService(ArrayList<Geofences.Geofence> items) {
         Intent geofencingService = new Intent(this, GeofencingService.class);
         geofencingService.putExtra(GeofencingService.EXTRA_ACTION, GeofencingService.Action.ADD);
         geofencingService.putExtra(GeofencingService.EXTRA_GEOFENCE, items);
@@ -222,11 +232,11 @@ public class GeofencesActivity extends AppCompatActivity implements NavigationDr
 
     }
 
-    public SharedPreferences getPrefs(){
+    public SharedPreferences getPrefs() {
         return this.getPreferences(MODE_PRIVATE);
     }
 
-    private GeofancyApplication getApp(){
+    private GeofancyApplication getApp() {
         return (GeofancyApplication) getApplication();
     }
 }
