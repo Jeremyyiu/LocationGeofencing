@@ -1,12 +1,12 @@
-## Geofancy for Android
+## Locative for Android
 
 [![Join the chat at https://gitter.im/Geofancy/android-app](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Geofancy/android-app?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.org/Geofancy/android-app.svg?branch=master)](https://travis-ci.org/Geofancy/android-app)
+[![Build Status](https://travis-ci.org/LocativeHQ/android-app.svg?branch=master)](https://travis-ci.org/LocativeHQ/android-app)
 
-[http://geofancy.com](http://geofancy.com)
+[http://locative.com](http://locative.com)
 
-This is the Geofancy for Android app. I've started Geofancy as a side project at the begining of 2013, the iOS has well evolved since then, sadly I've never really had time to work on the Android app.
+This is the Locative app for Android. I've started Locative as a side project at the begining of 2013, the iOS has well evolved since then, sadly I've never really had time to work on the Android app.
 
 I'm releasing this project as open source now, maybe someone can benefit from it, it's building fine using a current version of Android Studio (at the time being) but there's some NPEs when trying to add Geofences, probably because of some old Gmaps APIs? ¯\_(ツ)_/¯
 
@@ -16,7 +16,7 @@ Here's a screenshot from the iOS version (at the time of writing this):
 
 ![Screenshot](android-screenshot.png)
 
-The Android app is pretty much feature complete, but definitelty needs to be modernized before it can be used standalone or even with the [https://my.geofancy.com](https://my.geofancy.com) backend.
+The Android app is pretty much feature complete, but definitelty needs to be modernized before it can be used standalone or even with the [https://my.locative.com](https://my.locative.com) backend.
 
 ## License
 
