@@ -19,9 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -45,11 +43,47 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
-// TODO somehow just adding this already breaks the activity with java.lang.IllegalArgumentException duplicate id
-// so no androidannotations in this activity :-(
-// @EActivity(R.layout.activity_add_edit_geofence)
+import butterknife.Bind;
+import butterknife.OnClick;
+import io.locative.app.activity.BaseActivity;
 
-public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyCallback {
+
+    @Bind(R.id.address_button)
+    Button mLocationButton;
+
+    @Bind(R.id.customLocationId)
+    EditText mCustomId;
+
+    @Bind(R.id.trigger_enter)
+    Switch mTriggerEnter;
+
+    @Bind(R.id.trigger_exit)
+    Switch mTriggerExit;
+
+    @Bind(R.id.enter_method_button)
+    Button mEnterMethodButton;
+
+    @Bind(R.id.enter_url_text)
+    EditText mEnterUrl;
+
+    @Bind(R.id.exit_method_button)
+    Button mExitMethodButton;
+
+    @Bind(R.id.exit_url_text)
+    EditText mExitUrl;
+
+    @Bind(R.id.radius_slider)
+    SeekBar mRadiusSlider;
+
+    @Bind(R.id.basic_auth_switch)
+    Switch mBasicAuthSwitch;
+
+    @Bind(R.id.basic_auth_username)
+    EditText mBasicAuthUsername;
+
+    @Bind(R.id.basic_auth_password)
+    EditText mBasicAuthPassword;
 
     public int mEditGeofenceId = 0;
     private boolean mIsEditingGeofence = false;
@@ -67,24 +101,11 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
     private Constants.HttpMethod mEnterMethod = Constants.HttpMethod.POST;
     private Constants.HttpMethod mExitMethod = Constants.HttpMethod.POST;
 
-    // UI
     private GoogleMap mMap = null;
-    private Button mLocationButton = null;
-    private EditText mCustomId = null;
-    private SeekBar mRadiusSlider = null;
-    private Switch mTriggerEnter = null;
-    private Switch mTriggerExit = null;
-    private Button mEnterMethodButton = null;
-    private EditText mEnterUrl = null;
-    private Button mExitMethodButton = null;
-    private EditText mExitUrl = null;
-    private Switch mBasicAuthSwitch = null;
-    private EditText mBasicAuthUsername = null;
-    private EditText mBasicAuthPassword = null;
 
-    GeofancyLocationManager.LocationResult locationResult = new GeofancyLocationManager.LocationResult(){
+    GeofancyLocationManager.LocationResult locationResult = new GeofancyLocationManager.LocationResult() {
         @Override
-        public void gotLocation(Location location){
+        public void gotLocation(Location location) {
             //LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
             if (mMap != null) {
                 zoomToLocation(location);
@@ -105,30 +126,6 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
             mIsEditingGeofence = true;
         }
 
-        setContentView(R.layout.activity_add_edit_geofence);
-
-        // Get UI
-        mLocationButton = (Button)findViewById(R.id.address_button);
-        mCustomId = (EditText)findViewById(R.id.customLocationId);
-        mTriggerEnter = (Switch)findViewById(R.id.trigger_enter);
-        mTriggerExit = (Switch)findViewById(R.id.trigger_exit);
-        mEnterMethodButton = (Button)findViewById(R.id.enter_method_button);
-        mEnterUrl = (EditText)findViewById(R.id.enter_url_text);
-        mEnterMethodButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectMethodForTriggerType(Constants.TriggerType.ARRIVAL);
-            }
-        });
-        mExitMethodButton = (Button)findViewById(R.id.exit_method_button);
-        mExitUrl = (EditText)findViewById(R.id.exit_url_text);
-        mExitMethodButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectMethodForTriggerType(Constants.TriggerType.DEPARTURE);
-            }
-        });
-        mRadiusSlider = (SeekBar)findViewById(R.id.radius_slider);
         mRadiusSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -148,11 +145,33 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
             }
         });
 
-        mLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final EditText addressTextField = new EditText(v.getContext());
-                new AlertDialog.Builder(v.getContext())
+//        FragmentManager fm = getFragmentManager();
+//        mMapFragment = (MapFragment)fm.findFragmentById(R.id.map);
+//        mMapFragment.onResume();
+//        mMap = mMapFragment.getMap();
+//        mMap.setMyLocationEnabled(true);
+//        mMap.getUiSettings().setZoomControlsEnabled(false);
+////        mMap.getMap().setMapType(0);
+
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+
+        mGeocoderHandler = new GeocodeHandler(this);
+
+    }
+
+    @SuppressWarnings("unsed")
+    @OnClick({R.id.address_button, R.id.enter_method_button, R.id.exit_method_button})
+    public void onButtonClick(View view) {
+        int id = view.getId();
+        switch (id) {
+            case R.id.address_button:
+                final EditText addressTextField = new EditText(view.getContext());
+                new AlertDialog.Builder(view.getContext())
                         .setMessage("Enter Address manually:")
                         .setView(addressTextField)
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -169,30 +188,15 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
                             }
                         })
                         .show();
-            }
-        });
+                break;
+            case R.id.enter_method_button:
+                selectMethodForTriggerType(Constants.TriggerType.ARRIVAL);
+                break;
+            case R.id.exit_method_button:
+                selectMethodForTriggerType(Constants.TriggerType.DEPARTURE);
+                break;
+        }
 
-        mBasicAuthSwitch = (Switch)findViewById(R.id.basic_auth_switch);
-        mBasicAuthUsername = (EditText)findViewById(R.id.basic_auth_username);
-        mBasicAuthPassword = (EditText)findViewById(R.id.basic_auth_password);
-
-//        FragmentManager fm = getFragmentManager();
-//        mMapFragment = (MapFragment)fm.findFragmentById(R.id.map);
-//        mMapFragment.onResume();
-//        mMap = mMapFragment.getMap();
-//        mMap.setMyLocationEnabled(true);
-//        mMap.getUiSettings().setZoomControlsEnabled(false);
-////        mMap.getMap().setMapType(0);
-
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-
-
-
-        mGeocoderHandler = new GeocodeHandler(this);
 
     }
 
@@ -212,14 +216,14 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
         mMap.getUiSettings().setZoomControlsEnabled(false);
         mMap.getUiSettings().setAllGesturesEnabled(false);
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        
+
         // TODO request permission if not given
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
                     checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 mMap.setMyLocationEnabled(true);
             }
-        }else{
+        } else {
             // we have permission since requested on app install
             mMap.setMyLocationEnabled(true);
         }
@@ -228,7 +232,7 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
         Cursor cursor = null;
         if (mIsEditingGeofence) {
             ContentResolver resolver = this.getContentResolver();
-            cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{ String.valueOf(mEditGeofenceId) }, null);
+            cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{String.valueOf(mEditGeofenceId)}, null);
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 mLocationButton.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_NAME)));
@@ -262,14 +266,14 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
             mGeofancyLocationManager.getLocation(this, locationResult);
         }
         Location location;
-        if(mMap.isMyLocationEnabled() && mMap.getMyLocation() != null && !mIsEditingGeofence) {
+        if (mMap.isMyLocationEnabled() && mMap.getMyLocation() != null && !mIsEditingGeofence) {
             location = mMap.getMyLocation();
             mMap.getMyLocation();
-        } else if(cursor != null) {
+        } else if (cursor != null) {
             location = new Location("location");
             location.setLatitude(cursor.getDouble(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LATITUDE)));
             location.setLongitude(cursor.getDouble(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LONGITUDE)));
-        }else{
+        } else {
             // New York
             location = new Location("custom");
             location.setLatitude(40.7127);
@@ -302,10 +306,19 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.add_edit_geofence, menu);
-        return true;
+    protected int getLayoutResourceId() {
+        return R.layout.activity_add_edit_geofence;
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        // need to replace by add or edit
+        return "Add Geofence";
+    }
+
+    @Override
+    protected int getMenuResourceId() {
+        return R.menu.add_edit_geofence;
     }
 
     @Override
@@ -353,7 +366,7 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
 
         String custom_id = mCustomId.getText().toString();
         if (mIsEditingGeofence) {
-            Cursor existingCursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{ String.valueOf(mEditGeofenceId) }, null);
+            Cursor existingCursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{String.valueOf(mEditGeofenceId)}, null);
             if (existingCursor != null && existingCursor.getCount() > 0) {
                 existingCursor.moveToFirst();
                 if (custom_id.length() == 0) {
@@ -407,7 +420,7 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
     }
 
     // Zoom to Location
-    private void zoomToLocation(Location location){
+    private void zoomToLocation(Location location) {
         LatLng currentPosition = new LatLng(location.getLatitude(), location.getLongitude());
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentPosition, 16));
     }
@@ -427,33 +440,33 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
     private void setupCircleManager() {
         mCircleManager = new MapAreaManager(mMap,
 
-            4, Color.RED, Color.HSVToColor(70, new float[] {1, 1, 200}), //styling
+                4, Color.RED, Color.HSVToColor(70, new float[]{1, 1, 200}), //styling
 
-            -1,//custom drawables for move and resize icons
+                -1,//custom drawables for move and resize icons
 
-            0.5f, 0.5f, //sets anchor point of move / resize drawable in the middle
+                0.5f, 0.5f, //sets anchor point of move / resize drawable in the middle
 
-            new MapAreaMeasure(100, MapAreaMeasure.Unit.pixels), //circles will start with 100 pixels (independent of zoom level)
+                new MapAreaMeasure(100, MapAreaMeasure.Unit.pixels), //circles will start with 100 pixels (independent of zoom level)
 
-            new CircleManagerListener() { //listener for all circle events
+                new CircleManagerListener() { //listener for all circle events
 
-                @Override
-                public void onCreateCircle(MapAreaWrapper draggableCircle) {
+                    @Override
+                    public void onCreateCircle(MapAreaWrapper draggableCircle) {
 
-                }
+                    }
 
-                @Override
-                public void onMoveCircleEnd(MapAreaWrapper draggableCircle) {
-                    Log.d(Constants.LOG, "onMoveCircleEnd");
-                    doReverseGeocodingOfCircleLocation();
-                }
+                    @Override
+                    public void onMoveCircleEnd(MapAreaWrapper draggableCircle) {
+                        Log.d(Constants.LOG, "onMoveCircleEnd");
+                        doReverseGeocodingOfCircleLocation();
+                    }
 
-                @Override
-                public void onMoveCircleStart(MapAreaWrapper draggableCircle) {
-                    mAddressIsDirty = true;
-                }
+                    @Override
+                    public void onMoveCircleStart(MapAreaWrapper draggableCircle) {
+                        mAddressIsDirty = true;
+                    }
 
-        });
+                });
     }
 
     // Reverse Geocoder
@@ -475,7 +488,7 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
 
                 mCircle.setCenter(latLng);
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16));
-            }else{
+            } else {
                 new AlertDialog.Builder(this)
                         .setMessage("No location found. Please refine your query.")
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -547,34 +560,34 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
     private void selectMethodForTriggerType(final Constants.TriggerType t) {
 
         new AlertDialog.Builder(this)
-            .setMessage("Choose HTTP Method")
-            .setPositiveButton("POST", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (t == Constants.TriggerType.ARRIVAL) {
-                        mEnterMethodButton.setText("POST");
-                        mEnterMethod = Constants.HttpMethod.POST;
-                    } else {
-                        mExitMethodButton.setText("POST");
-                        mExitMethod = Constants.HttpMethod.POST;
+                .setMessage("Choose HTTP Method")
+                .setPositiveButton("POST", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (t == Constants.TriggerType.ARRIVAL) {
+                            mEnterMethodButton.setText("POST");
+                            mEnterMethod = Constants.HttpMethod.POST;
+                        } else {
+                            mExitMethodButton.setText("POST");
+                            mExitMethod = Constants.HttpMethod.POST;
+                        }
+                        dialog.dismiss();
                     }
-                    dialog.dismiss();
-                }
-            })
-            .setNeutralButton("GET", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    if (t == Constants.TriggerType.ARRIVAL) {
-                        mEnterMethodButton.setText("GET");
-                        mEnterMethod = Constants.HttpMethod.GET;
-                    } else {
-                        mExitMethodButton.setText("GET");
-                        mExitMethod = Constants.HttpMethod.GET;
+                })
+                .setNeutralButton("GET", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if (t == Constants.TriggerType.ARRIVAL) {
+                            mEnterMethodButton.setText("GET");
+                            mEnterMethod = Constants.HttpMethod.GET;
+                        } else {
+                            mExitMethodButton.setText("GET");
+                            mExitMethod = Constants.HttpMethod.GET;
+                        }
+                        dialog.dismiss();
                     }
-                    dialog.dismiss();
-                }
-            })
-            .show();
+                })
+                .show();
     }
 
     private Constants.HttpMethod methodForTriggerType(Constants.TriggerType t) {
@@ -582,5 +595,7 @@ public class AddEditGeofenceActivity extends AppCompatActivity implements OnMapR
             return mEnterMethod;
         }
         return mExitMethod;
-    };
+    }
+
+    ;
 }

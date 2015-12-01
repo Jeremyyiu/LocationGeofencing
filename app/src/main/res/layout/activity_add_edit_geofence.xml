@@ -1,147 +1,174 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_content"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/scrollView">
-    <LinearLayout
+    android:layout_height="match_parent">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context="io.locative.geofancy.app.AddEditGeofenceActivity"
-        android:id="@+id/linearLayout"
-        android:orientation="vertical"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <fragment
-            class="com.google.android.gms.maps.SupportMapFragment"
-            android:id="@+id/map"
+        <include
+            android:id="@+id/toolbar_actionbar"
+            layout="@layout/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="250dp" />
+            android:layout_height="wrap_content" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/unknown_location"
-            android:id="@+id/address_button" />
+    </android.support.design.widget.AppBarLayout>
 
-        <SeekBar
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/radius_slider"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/customLocationId"
-            android:enabled="true"
-            android:hint="@string/custom_location_id"
-            android:maxLines="1"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:singleLine="true" />
-
-        <Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/trigger_on_arrival"
-            android:id="@+id/trigger_enter"
-            android:layout_gravity="right"
-            android:checked="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp" />
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
-            android:orientation="horizontal"
+            android:id="@+id/linearLayout"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical"
+            tools:context="io.locative.app.AddEditGeofenceActivity">
+
+            <fragment
+                android:id="@+id/map"
+                class="com.google.android.gms.maps.SupportMapFragment"
+                android:layout_width="match_parent"
+                android:layout_height="250dp" />
 
             <Button
-                android:layout_width="0dp"
+                android:id="@+id/address_button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="POST"
-                android:id="@+id/enter_method_button"
-                android:layout_weight=".5"
-                android:hint="http://myserver.com/push.php" />
+                android:text="@string/unknown_location" />
+
+            <SeekBar
+                android:id="@+id/radius_slider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp" />
 
             <EditText
-                android:layout_width="0dp"
+                android:id="@+id/customLocationId"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/enter_url_text"
-                android:layout_weight="1"
-                android:hint="http://myserver.com/push.php"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:enabled="true"
+                android:hint="@string/custom_location_id"
                 android:maxLines="1"
+                android:singleLine="true" />
+
+            <Switch
+                android:id="@+id/trigger_enter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:checked="true"
+                android:text="@string/trigger_on_arrival" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/enter_method_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:hint="http://myserver.com/push.php"
+                    android:text="POST" />
+
+                <EditText
+                    android:id="@+id/enter_url_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="http://myserver.com/push.php"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/trigger_exit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:checked="true"
+                android:text="Trigger on Departure" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/exit_method_button"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:hint="http://myserver.com/push.php"
+                    android:text="POST" />
+
+                <EditText
+                    android:id="@+id/exit_url_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="http://myserver.com/push.php"
+                    android:maxLines="1"
+                    android:singleLine="true" />
+
+            </LinearLayout>
+
+            <Switch
+                android:id="@+id/basic_auth_switch"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:checked="false"
+                android:text="HTTP Basic Authentication" />
+
+            <EditText
+                android:id="@+id/basic_auth_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:hint="Username"
+                android:maxLines="1"
+                android:singleLine="true" />
+
+            <EditText
+                android:id="@+id/basic_auth_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:hint="Password"
+                android:maxLines="1"
+                android:password="true"
                 android:singleLine="true" />
 
         </LinearLayout>
 
-        <Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Trigger on Departure"
-            android:id="@+id/trigger_exit"
-            android:layout_gravity="right"
-            android:checked="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp" />
+    </android.support.v4.widget.NestedScrollView>
 
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="50dp">
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="POST"
-                android:id="@+id/exit_method_button"
-                android:layout_weight=".5"
-                android:hint="http://myserver.com/push.php" />
+</android.support.design.widget.CoordinatorLayout>
 
-            <EditText
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:id="@+id/exit_url_text"
-                android:layout_weight="1"
-                android:hint="http://myserver.com/push.php"
-                android:maxLines="1"
-                android:singleLine="true" />
-
-        </LinearLayout>
-
-        <Switch
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="HTTP Basic Authentication"
-            android:id="@+id/basic_auth_switch"
-            android:layout_gravity="right"
-            android:checked="false"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/basic_auth_username"
-            android:layout_weight="1"
-            android:hint="Username"
-            android:maxLines="1"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:singleLine="true" />
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/basic_auth_password"
-            android:layout_weight="1"
-            android:hint="Password"
-            android:maxLines="1"
-            android:password="true"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:singleLine="true" />
-
-    </LinearLayout>
-</ScrollView>
