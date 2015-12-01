@@ -6,7 +6,7 @@
 
 [http://locative.io](http://locative.io)
 
-This is the Locative app for Android. I've started Locative as a side project at the begining of 2013, the iOS has well evolved since then, sadly I've never really had time to work on the Android app.
+This is the Locative app for Android. I've started Locative as a side project at the beginning of 2013, the iOS has well evolved since then, sadly I've never really had time to work on the Android app.
 
 I'm releasing this project as open source now, maybe someone can benefit from it, it's building fine using a current version of Android Studio (at the time being) but there's some NPEs when trying to add Geofences, probably because of some old Gmaps APIs? ¯\_(ツ)_/¯
 
@@ -16,7 +16,7 @@ Here's a screenshot from the iOS version (at the time of writing this):
 
 ![Screenshot](android-screenshot.png)
 
-The Android app is pretty much feature complete, but definitelty needs to be modernized before it can be used standalone or even with the [https://my.locative.io](https://my.locative.io) backend.
+The Android app is pretty much feature complete, but definitely needs to be modernized before it can be used standalone or even with the [https://my.locative.io](https://my.locative.io) backend.
 
 ## License
 
