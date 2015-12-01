@@ -1,6 +1,4 @@
-package io.kida.geofancy.app;
-
-import java.util.Currency;
+package io.locative.app;
 
 /**
  * Created by mkida on 3/08/2014.

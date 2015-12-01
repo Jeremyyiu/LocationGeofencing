@@ -1,6 +1,6 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
-import io.kida.geofancy.app.model.EventType;
+import io.locative.app.model.EventType;
 
 /**
  * Created by mkida on 17/08/2014.

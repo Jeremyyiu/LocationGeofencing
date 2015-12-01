@@ -6,7 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context="io.kida.geofancy.app.AddEditGeofenceActivity"
+        tools:context="io.locative.geofancy.app.AddEditGeofenceActivity"
         android:id="@+id/linearLayout"
         android:orientation="vertical"
         android:focusable="true"

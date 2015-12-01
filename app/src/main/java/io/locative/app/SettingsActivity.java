@@ -1,4 +1,4 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -19,7 +19,7 @@ import org.androidannotations.annotations.OptionsItem;
 import org.androidannotations.annotations.OptionsMenu;
 import org.androidannotations.annotations.ViewById;
 
-import io.kida.geofancy.app.model.EventType;
+import io.locative.app.model.EventType;
 
 @EActivity(R.layout.activity_settings)
 

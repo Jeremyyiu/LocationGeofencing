@@ -1,11 +1,11 @@
-package io.kida.geofancy.app.geo;
+package io.locative.app.geo;
 
 import android.content.Context;
 import android.content.res.Resources;
 
 import com.google.android.gms.location.GeofenceStatusCodes;
 
-import io.kida.geofancy.app.R;
+import io.locative.app.R;
 
 /**
  * Geofence error codes mapped to error messages.
