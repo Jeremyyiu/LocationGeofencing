@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.org/LocativeHQ/android-app.svg?branch=master)](https://travis-ci.org/LocativeHQ/android-app)
 
-[http://locative.com](http://locative.com)
+[http://locative.io](http://locative.io)
 
 This is the Locative app for Android. I've started Locative as a side project at the begining of 2013, the iOS has well evolved since then, sadly I've never really had time to work on the Android app.
 
@@ -16,7 +16,7 @@ Here's a screenshot from the iOS version (at the time of writing this):
 
 ![Screenshot](android-screenshot.png)
 
-The Android app is pretty much feature complete, but definitelty needs to be modernized before it can be used standalone or even with the [https://my.locative.com](https://my.locative.com) backend.
+The Android app is pretty much feature complete, but definitelty needs to be modernized before it can be used standalone or even with the [https://my.locative.io](https://my.locative.io) backend.
 
 ## License
 
