@@ -1,4 +1,4 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 import de.triplet.simpleprovider.AbstractProvider;
 import de.triplet.simpleprovider.Column;

@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="authority">io.kida.geofancy</string>
+    <string name="authority">io.locative.app</string>
 </resources>

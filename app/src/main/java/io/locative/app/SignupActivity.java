@@ -1,4 +1,4 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -13,8 +13,6 @@ import org.androidannotations.annotations.AfterViews;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.ViewById;
-
-import io.kida.geofancy.app.R;
 
 @EActivity(R.layout.activity_signup)
 

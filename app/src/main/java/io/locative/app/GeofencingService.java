@@ -1,4 +1,4 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.kida.geofancy.app.geo.GeofenceErrorMessages;
+import io.locative.app.geo.GeofenceErrorMessages;
 
 public class GeofencingService extends Service implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {

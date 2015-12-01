@@ -1,4 +1,4 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -6,18 +6,13 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 
 
 import java.util.ArrayList;

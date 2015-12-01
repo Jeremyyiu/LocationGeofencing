@@ -1,4 +1,4 @@
-package io.kida.geofancy.app.activity;
+package io.locative.app.activity;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -11,7 +11,7 @@ import android.view.WindowManager;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.kida.geofancy.app.R;
+import io.locative.app.R;
 
 /**
  * Created by chris on 28.11.15.

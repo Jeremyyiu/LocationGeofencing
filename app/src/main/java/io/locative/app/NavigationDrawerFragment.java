@@ -1,6 +1,5 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
-import android.support.v7.app.ActionBarActivity;
 import android.app.Activity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;

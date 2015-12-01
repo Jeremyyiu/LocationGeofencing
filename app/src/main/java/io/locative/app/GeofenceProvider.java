@@ -1,10 +1,8 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 import de.triplet.simpleprovider.AbstractProvider;
 import de.triplet.simpleprovider.Column;
 import de.triplet.simpleprovider.Table;
-
-import android.content.res.Resources;
 
 /**
  * Created by kimar on 16.05.14.

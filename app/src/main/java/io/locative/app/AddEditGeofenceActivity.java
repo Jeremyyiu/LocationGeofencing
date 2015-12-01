@@ -1,4 +1,4 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -38,9 +38,6 @@ import com.schuetz.mapareas.MapAreaManager;
 import com.schuetz.mapareas.MapAreaManager.CircleManagerListener;
 import com.schuetz.mapareas.MapAreaMeasure;
 import com.schuetz.mapareas.MapAreaWrapper;
-
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
 
 import java.io.IOException;
 import java.util.List;

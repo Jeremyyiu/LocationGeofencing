@@ -1,4 +1,4 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 import android.content.Context;
 import android.view.View;
@@ -7,7 +7,6 @@ import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

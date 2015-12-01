@@ -1,4 +1,4 @@
-package io.kida.geofancy.app.model;
+package io.locative.app.model;
 
 
 public enum EventType {

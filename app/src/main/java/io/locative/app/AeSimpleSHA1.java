@@ -1,4 +1,4 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 /**
  * Created by mkida on 17/08/2014.

@@ -1,4 +1,4 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 /**
  * Created by mkida on 3/08/2014.
@@ -7,7 +7,6 @@ package io.kida.geofancy.app;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.*;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;

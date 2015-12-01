@@ -1,7 +1,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="io.kida.geofancy.app.GeofencesActivity">
+    tools:context="io.locative.geofancy.app.GeofencesActivity">
     <item android:id="@+id/action_add_geofence"
         android:title="Add Geofence"
         android:icon="@android:drawable/ic_menu_add"

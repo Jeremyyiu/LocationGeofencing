@@ -1,4 +1,4 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import io.kida.geofancy.app.activity.BaseActivity;
+import io.locative.app.activity.BaseActivity;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener {

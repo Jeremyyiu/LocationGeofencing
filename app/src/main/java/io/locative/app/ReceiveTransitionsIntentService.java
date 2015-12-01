@@ -1,11 +1,10 @@
-package io.kida.geofancy.app;
+package io.locative.app;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -17,8 +16,7 @@ import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.List;
 
-import io.kida.geofancy.app.R;
-import io.kida.geofancy.app.model.EventType;
+import io.locative.app.model.EventType;
 
 public class ReceiveTransitionsIntentService extends IntentService {
 
