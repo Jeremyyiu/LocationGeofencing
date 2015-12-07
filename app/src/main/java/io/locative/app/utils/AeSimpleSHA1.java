@@ -1,8 +1,9 @@
-package io.locative.app;
+package io.locative.app.utils;
 
 /**
  * Created by mkida on 17/08/2014.
  */
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

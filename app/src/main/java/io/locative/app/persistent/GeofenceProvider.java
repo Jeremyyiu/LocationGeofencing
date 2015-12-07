@@ -1,8 +1,9 @@
-package io.locative.app;
+package io.locative.app.persistent;
 
 import de.triplet.simpleprovider.AbstractProvider;
 import de.triplet.simpleprovider.Column;
 import de.triplet.simpleprovider.Table;
+import io.locative.app.R;
 
 /**
  * Created by kimar on 16.05.14.

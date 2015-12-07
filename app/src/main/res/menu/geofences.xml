@@ -1,10 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="io.locative.geofancy.app.GeofencesActivity">
-    <item android:id="@+id/action_add_geofence"
-        android:title="Add Geofence"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_add_geofence"
         android:icon="@android:drawable/ic_menu_add"
-        app:showAsAction="withText|ifRoom"
-        tools:ignore="AppCompatResource" />
+        android:title="Add Geofence"
+        app:showAsAction="withText|ifRoom" />
 </menu>

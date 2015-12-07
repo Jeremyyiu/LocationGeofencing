@@ -1,4 +1,4 @@
-package io.locative.app;
+package io.locative.app.view;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -25,7 +25,11 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import io.locative.app.activity.BaseActivity;
+import io.locative.app.GeofancyApplication;
+import io.locative.app.R;
+import io.locative.app.model.Geofences;
+import io.locative.app.network.GeofencingService;
+import io.locative.app.utils.Constants;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener {
@@ -158,7 +162,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 fragment = mGeofenceFragment;
                 break;
             case R.id.settings:
-                startActivity(new Intent(this, SettingsActivity_.class));
+                startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.feedback:
                 startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.SUPPORT_MAIL_URI)));

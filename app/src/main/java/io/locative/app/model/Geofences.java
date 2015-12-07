@@ -1,4 +1,4 @@
-package io.locative.app;
+package io.locative.app.model;
 
 import android.util.Log;
 
@@ -7,6 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.locative.app.persistent.GeofenceProvider;
+import io.locative.app.utils.Constants;
 
 /**
  * Created by mkida on 3/08/2014.
@@ -66,9 +69,9 @@ public class Geofences {
             int transition = 0;
             boolean both = (
                     ((triggers & GeofenceProvider.TRIGGER_ON_ENTER) == GeofenceProvider.TRIGGER_ON_ENTER) &&
-                    ((triggers & GeofenceProvider.TRIGGER_ON_EXIT) == GeofenceProvider.TRIGGER_ON_EXIT)
+                            ((triggers & GeofenceProvider.TRIGGER_ON_EXIT) == GeofenceProvider.TRIGGER_ON_EXIT)
             );
-            if(both) {
+            if (both) {
                 Log.d(Constants.LOG, "ID: " + this.id + " trigger on BOTH");
                 transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_ENTER;
                 transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_EXIT;

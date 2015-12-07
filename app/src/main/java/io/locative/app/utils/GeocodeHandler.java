@@ -1,4 +1,4 @@
-package io.locative.app;
+package io.locative.app.utils;
 
 import android.os.Handler;
 import android.os.Message;
@@ -6,6 +6,9 @@ import android.util.Log;
 import android.widget.Button;
 
 import java.lang.ref.WeakReference;
+
+import io.locative.app.R;
+import io.locative.app.view.AddEditGeofenceActivity;
 
 /**
  * Created by mkida on 3/08/2014.
@@ -26,7 +29,7 @@ public class GeocodeHandler extends Handler {
         AddEditGeofenceActivity target = mTarget.get();
         switch (msg.what) {
             case UPDATE_ADDRESS: {
-                Button button = (Button)target.findViewById(R.id.address_button);
+                Button button = (Button) target.findViewById(R.id.address_button);
                 button.setText((String) msg.obj);
                 break;
             }

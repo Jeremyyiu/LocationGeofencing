@@ -1,8 +1,9 @@
-package io.locative.app;
+package io.locative.app.persistent;
 
 import de.triplet.simpleprovider.AbstractProvider;
 import de.triplet.simpleprovider.Column;
 import de.triplet.simpleprovider.Table;
+import io.locative.app.R;
 
 /**
  * Created by mkida on 29/12/14.
@@ -28,33 +29,33 @@ public class FencelogProvider extends AbstractProvider {
         public static final String KEY_ID = "_id";
 
         @Column(Column.FieldType.FLOAT)
-        public  static final String KEY_LONGITUDE = "longitude";
+        public static final String KEY_LONGITUDE = "longitude";
 
         @Column(Column.FieldType.FLOAT)
-        public  static final String KEY_LATITUDE = "latitude";
+        public static final String KEY_LATITUDE = "latitude";
 
         @Column(Column.FieldType.TEXT)
-        public  static final String KEY_LOCATION_ID = "locationId";
+        public static final String KEY_LOCATION_ID = "locationId";
 
         @Column(Column.FieldType.TEXT)
-        public  static final String KEY_HTTP_URL = "httpUrl";
+        public static final String KEY_HTTP_URL = "httpUrl";
 
         @Column(Column.FieldType.TEXT)
-        public  static final String KEY_HTTP_METHOD = "httpMethod";
+        public static final String KEY_HTTP_METHOD = "httpMethod";
 
         @Column(Column.FieldType.TEXT)
-        public  static final String KEY_HTTP_RESPONSE_CODE = "httpResponseCode";
+        public static final String KEY_HTTP_RESPONSE_CODE = "httpResponseCode";
 
         @Column(Column.FieldType.TEXT)
-        public  static final String KEY_HTTP_RESPONSE = "httpResponse";
+        public static final String KEY_HTTP_RESPONSE = "httpResponse";
 
         @Column(Column.FieldType.TEXT)
-        public  static final String KEY_EVENT_TYPE = "eventType";
+        public static final String KEY_EVENT_TYPE = "eventType";
 
         @Column(Column.FieldType.TEXT)
-        public  static final String KEY_FENCE_TYPE = "fenceType";
+        public static final String KEY_FENCE_TYPE = "fenceType";
 
         @Column(Column.FieldType.TEXT)
-        public  static final String KEY_ORIGIN = "origin";
+        public static final String KEY_ORIGIN = "origin";
     }
 }

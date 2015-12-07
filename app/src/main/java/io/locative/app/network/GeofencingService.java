@@ -1,4 +1,4 @@
-package io.locative.app;
+package io.locative.app.network;
 
 import android.app.PendingIntent;
 import android.app.Service;
@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import io.locative.app.geo.GeofenceErrorMessages;
+import io.locative.app.model.Geofences;
+import io.locative.app.utils.Constants;
 
 public class GeofencingService extends Service implements
         GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
@@ -44,10 +46,10 @@ public class GeofencingService extends Service implements
     private Action mAction;
     private PendingIntent mGeofencePendingIntent;
 
-    public static enum Action implements Serializable {
+    public enum Action implements Serializable {
         ADD,
         REMOVE
-    };
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -63,7 +65,7 @@ public class GeofencingService extends Service implements
         switch (mAction) {
             case ADD:
                 ArrayList<Geofences.Geofence> geofences = (ArrayList<Geofences.Geofence>) intent.getSerializableExtra(EXTRA_GEOFENCE);
-                for (Geofences.Geofence newGeofence: geofences) {
+                for (Geofences.Geofence newGeofence : geofences) {
                     Geofence googleGeofence = newGeofence.toGeofence();
                     if (googleGeofence != null) {
                         Log.d(Constants.LOG, "Adding Geofence: " + googleGeofence);
@@ -103,7 +105,7 @@ public class GeofencingService extends Service implements
                     result.setResultCallback(new ResultCallback<Status>() {
                         @Override
                         public void onResult(Status status) {
-                            if(status.isSuccess()){
+                            if (status.isSuccess()) {
                                 Log.d(TAG, "Geofences added " + mGeofenceListsToAdd);
                                 for (Geofence geofenceId : mGeofenceListsToAdd) {
                                     Toast.makeText(GeofencingService.this, "Geofences added: " + geofenceId, Toast.LENGTH_SHORT).show();
@@ -124,7 +126,7 @@ public class GeofencingService extends Service implements
                     result.setResultCallback(new ResultCallback<Status>() {
                         @Override
                         public void onResult(Status status) {
-                            if(status.isSuccess()){
+                            if (status.isSuccess()) {
                                 Log.d(TAG, "Geofences removed " + mGeofenceListsToRemove);
                                 for (String geofenceId : mGeofenceListsToRemove) {
                                     Toast.makeText(GeofencingService.this, "Geofences removed: " + geofenceId, Toast.LENGTH_SHORT).show();

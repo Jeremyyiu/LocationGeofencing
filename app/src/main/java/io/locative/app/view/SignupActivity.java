@@ -1,6 +1,5 @@
-package io.locative.app;
+package io.locative.app.view;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -9,40 +8,37 @@ import android.net.Uri;
 import android.widget.Button;
 import android.widget.EditText;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.ViewById;
+import butterknife.Bind;
+import butterknife.OnClick;
+import io.locative.app.GeofancyApplication;
+import io.locative.app.R;
+import io.locative.app.network.GeofancyNetworkingCallback;
+import io.locative.app.utils.Constants;
 
-@EActivity(R.layout.activity_signup)
+public class SignupActivity extends BaseActivity {
 
-public class SignupActivity extends Activity {
 
-    @ViewById(R.id.username_text)
+    @Bind(R.id.username_text)
     EditText mUsernameText;
 
-    @ViewById(R.id.email_text)
+    @Bind(R.id.email_text)
     EditText mEmailText;
 
-    @ViewById(R.id.password_text)
+    @Bind(R.id.password_text)
     EditText mPasswordText;
 
-    @ViewById(R.id.signup_button)
+    @Bind(R.id.signup_button)
     Button mSignupButton;
 
-    @ViewById(R.id.tos_button)
+    @Bind(R.id.tos_button)
     Button mTosButtonl;
 
     private GeofancyNetworkingCallback mNetworkingCallback = null;
     private ProgressDialog mProgressDialog = null;
 
-    @AfterViews
-    void setup(){
 
-    }
-
-    @Click(R.id.signup_button)
-    void signup(){
+    @OnClick(R.id.signup_button)
+    public void signup() {
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle(R.string.loading);
         mProgressDialog.setMessage("Creating Account…");
@@ -91,20 +87,35 @@ public class SignupActivity extends Activity {
         getApp().getNetworking().doSignup(mUsernameText.getText().toString(), mPasswordText.getText().toString(), mEmailText.getText().toString(), networkingCallback);
     }
 
-    @Click(R.id.tos_button)
-    void tosClick(){
+    @OnClick(R.id.tos_button)
+    public void tosClick() {
         Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.TOS_URI));
         startActivity(intent);
     }
 
-    private void simpleAlert(String msg){
+    private void simpleAlert(String msg) {
         new AlertDialog.Builder(this)
                 .setMessage(msg)
                 .setNeutralButton("OK", null)
                 .show();
     }
 
-    private GeofancyApplication getApp(){
+    private GeofancyApplication getApp() {
         return (GeofancyApplication) getApplication();
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_signup;
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        return "Sign Up";
+    }
+
+    @Override
+    protected int getMenuResourceId() {
+        return 0;
     }
 }

@@ -1,4 +1,4 @@
-package io.locative.app;
+package io.locative.app.network;
 
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -16,7 +16,12 @@ import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.List;
 
+import io.locative.app.GeofancyApplication;
+import io.locative.app.R;
 import io.locative.app.model.EventType;
+import io.locative.app.model.Fencelog;
+import io.locative.app.persistent.GeofenceProvider;
+import io.locative.app.view.GeofencesActivity;
 
 public class ReceiveTransitionsIntentService extends IntentService {
 
@@ -98,7 +103,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     private void reportFenceLogToApi(String customId, float latitude, float longitude, @Nullable EventType eventType) {
         String sessionId = getApp().getSessionId();
-        if(sessionId != null && eventType != null) {
+        if (sessionId != null && eventType != null) {
             Fencelog fencelog = new Fencelog();
             fencelog.locationId = customId;
             fencelog.latitude = latitude;
@@ -128,7 +133,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
         }
     }
 
-    private GeofancyApplication getApp(){
+    private GeofancyApplication getApp() {
         return (GeofancyApplication) getApplication();
     }
 
@@ -147,7 +152,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     }
 
     @Nullable
-    private EventType getEventType(int transitionType){
+    private EventType getEventType(int transitionType) {
         switch (transitionType) {
             case Geofence.GEOFENCE_TRANSITION_ENTER:
                 return EventType.ENTER;
