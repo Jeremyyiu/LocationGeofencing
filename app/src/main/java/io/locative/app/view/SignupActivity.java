@@ -5,14 +5,19 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.widget.Button;
 import android.widget.EditText;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 import io.locative.app.GeofancyApplication;
 import io.locative.app.R;
 import io.locative.app.network.GeofancyNetworkingCallback;
+import io.locative.app.network.GeofancyNetworkingWrapper;
 import io.locative.app.utils.Constants;
 
 public class SignupActivity extends BaseActivity {
@@ -33,9 +38,18 @@ public class SignupActivity extends BaseActivity {
     @Bind(R.id.tos_button)
     Button mTosButtonl;
 
+    @Inject
+    GeofancyNetworkingWrapper mGeofancyNetworkingWrapper;
+
     private GeofancyNetworkingCallback mNetworkingCallback = null;
     private ProgressDialog mProgressDialog = null;
 
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        GeofancyApplication.inject(this);
+
+    }
 
     @OnClick(R.id.signup_button)
     public void signup() {
@@ -84,7 +98,7 @@ public class SignupActivity extends BaseActivity {
             }
         };
 
-        getApp().getNetworking().doSignup(mUsernameText.getText().toString(), mPasswordText.getText().toString(), mEmailText.getText().toString(), networkingCallback);
+        mGeofancyNetworkingWrapper.doSignup(mUsernameText.getText().toString(), mPasswordText.getText().toString(), mEmailText.getText().toString(), networkingCallback);
     }
 
     @OnClick(R.id.tos_button)

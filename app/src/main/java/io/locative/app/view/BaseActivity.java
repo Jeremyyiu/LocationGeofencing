@@ -11,6 +11,7 @@ import android.view.WindowManager;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.locative.app.GeofancyApplication;
 import io.locative.app.R;
 
 /**
@@ -25,6 +26,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GeofancyApplication.inject(this);
         if (getLayoutResourceId() != 0) {
             setContentView(getLayoutResourceId());
         }

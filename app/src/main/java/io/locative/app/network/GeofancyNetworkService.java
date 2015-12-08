@@ -12,7 +12,7 @@ import retrofit.http.Query;
  * Created by mkida on 16/08/2014.
  */
 
-public interface GeofancyNetworkingInterface {
+public interface GeofancyNetworkService {
 
     @GET("/api/session")
     void login(

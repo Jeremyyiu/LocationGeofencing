@@ -16,6 +16,8 @@ import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import io.locative.app.GeofancyApplication;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
@@ -29,8 +31,17 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     private final String TAG = "TRANSITION";
 
+    @Inject
+    GeofancyNetworkingWrapper mGeofancyNetworkingWrapper;
+
     public ReceiveTransitionsIntentService() {
         super(TRANSITION_INTENT_SERVICE);
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        GeofancyApplication.inject(this, getApplicationContext());
     }
 
     @Override
@@ -109,7 +120,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
             fencelog.latitude = latitude;
             fencelog.longitude = longitude;
             fencelog.eventType = eventType;
-            getApp().getNetworking().doDispatchFencelog(sessionId, fencelog, new GeofancyNetworkingCallback() {
+            mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, new GeofancyNetworkingCallback() {
                 @Override
                 public void onLoginFinished(boolean success, String sessionId) {
                     // WTF could not care less

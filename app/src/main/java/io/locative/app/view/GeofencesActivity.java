@@ -1,5 +1,6 @@
 package io.locative.app.view;
 
+import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -56,6 +57,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GeofancyApplication.inject(this);
 
         if (savedInstanceState == null) {
             firstResume = true;

@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.OnClick;
 import io.locative.app.GeofancyApplication;
@@ -21,6 +23,7 @@ import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.network.GeofancyNetworkingCallback;
+import io.locative.app.network.GeofancyNetworkingWrapper;
 import io.locative.app.utils.Constants;
 
 public class SettingsActivity extends BaseActivity {
@@ -81,9 +84,13 @@ public class SettingsActivity extends BaseActivity {
     @Bind(R.id.lostpass_button)
     Button mLostpassButton;
 
+    @Inject
+    GeofancyNetworkingWrapper mGeofancyNetworkingWrapper;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GeofancyApplication.inject(this);
 
         adjustUiToLoginState();
         SharedPreferences prefs = getPrefs();
@@ -154,7 +161,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        getApp().getNetworking().doCheckSession(getApp().getSessionId(), mNetworkingCallback);
+        mGeofancyNetworkingWrapper.doCheckSession(getApp().getSessionId(), mNetworkingCallback);
     }
 
 
@@ -189,7 +196,7 @@ public class SettingsActivity extends BaseActivity {
     public void loginOrLogout() {
         showProgressDialog("Please wait…");
         if (!getApp().hasSession()) {
-            getApp().getNetworking().doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
+            mGeofancyNetworkingWrapper.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
         } else {
             // TODO: Implement Logout via API (needs to be implemented on Server-Side)
             //mNetworking.doLogout()
@@ -207,7 +214,7 @@ public class SettingsActivity extends BaseActivity {
         showProgressDialog("Please wait…");
         String sessionId = getApp().getSessionId();
         if (sessionId != null) {
-            getApp().getNetworking().doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
+            mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
         }
     }
 

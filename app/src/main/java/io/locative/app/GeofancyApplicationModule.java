@@ -10,6 +10,8 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import io.locative.app.network.GeofancyNetworkModule;
+import io.locative.app.view.UIModule;
 
 /**
  * Created by chris on 08.12.15.
@@ -17,10 +19,11 @@ import dagger.Provides;
 
 @Module(
         includes = {
-
+                GeofancyNetworkModule.class,
+                UIModule.class
         },
         injects = {
-            GeofancyApplication.class
+                GeofancyApplication.class
         },
         library = true
 )

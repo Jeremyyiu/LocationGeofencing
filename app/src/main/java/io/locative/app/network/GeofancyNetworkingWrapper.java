@@ -4,6 +4,9 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import io.locative.app.model.Fencelog;
 import io.locative.app.utils.AeSimpleSHA1;
 import io.locative.app.utils.Constants;
@@ -13,19 +16,15 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-public class GeofancyNetworking {
+@Singleton
+public class GeofancyNetworkingWrapper {
 
-    private GeofancyNetworkingInterface getInterface() {
-        RestAdapter restAdapter = new RestAdapter.Builder()
-                .setEndpoint(Constants.API_ENDPOINT)
-                .setConverter(new StringConverter())
-                .build();
-        GeofancyNetworkingInterface network = restAdapter.create(GeofancyNetworkingInterface.class);
-        return network;
-    }
+    @Inject
+    GeofancyNetworkService mService;
+
 
     public void doLogin(String username, String password, final GeofancyNetworkingCallback callback) {
-        getInterface().login(username, password, Constants.API_ORIGIN, new Callback<String>() {
+        mService.login(username, password, Constants.API_ORIGIN, new Callback<String>() {
 
             @Override
             public void success(String string, Response response) {
@@ -58,7 +57,7 @@ public class GeofancyNetworking {
             Log.e(Constants.LOG, "Caught Exception: " + e);
         }
 
-        getInterface().signup(username, password, email, token, new Callback<String>() {
+        mService.signup(username, password, email, token, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
                 Log.d(Constants.LOG, "Signup Success: " + s);
@@ -74,7 +73,7 @@ public class GeofancyNetworking {
     }
 
     public void doCheckSession(String sessionId, final GeofancyNetworkingCallback callback) {
-        getInterface().checkSession(sessionId, new Callback<String>() {
+        mService.checkSession(sessionId, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
                 callback.onCheckSessionFinished(true);
@@ -88,7 +87,7 @@ public class GeofancyNetworking {
     }
 
     public void doDispatchFencelog(String sessionId, Fencelog fencelog, final GeofancyNetworkingCallback callback) {
-        getInterface().dispatchFencelog(
+        mService.dispatchFencelog(
                 sessionId,
                 fencelog.longitude,
                 fencelog.latitude,
