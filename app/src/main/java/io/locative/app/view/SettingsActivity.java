@@ -93,23 +93,22 @@ public class SettingsActivity extends BaseActivity {
         GeofancyApplication.inject(this);
 
         adjustUiToLoginState();
-        SharedPreferences prefs = getPrefs();
 
-        mUrlText.setText(prefs.getString(HTTP_URL, null));
+        mUrlText.setText(mPrefs.getString(HTTP_URL, null));
         mGlobalHttpMethodButton.setText(
-                prefs.getInt(HTTP_METHOD, 0) == 0 ? "POST" : "GET"
+                mPrefs.getInt(HTTP_METHOD, 0) == 0 ? "POST" : "GET"
         );
         mGlobalHttpAuthSwitch.setChecked(
-                prefs.getBoolean(HTTP_AUTH, false)
+                mPrefs.getBoolean(HTTP_AUTH, false)
         );
         switchHttpAuth();
 
-        mGlobalHttpAuthUsername.setText(prefs.getString(HTTP_USERNAME, null));
-        mGlobalHttpAuthPassword.setText(prefs.getString(HTTP_PASSWORD, null));
-        mNotificationSoundSwitch.setChecked(prefs.getBoolean(NOTIFICATION_SUCCESS, false));
-        mNotificationFailSwitch.setChecked(prefs.getBoolean(NOTIFICATION_FAIL, false));
-        mNotificationSoundSwitch.setChecked(prefs.getBoolean(NOTIFICATION_SOUND, false));
-        mHttpMethod = (Constants.HttpMethod.POST.ordinal() == getPrefs().getInt(HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
+        mGlobalHttpAuthUsername.setText(mPrefs.getString(HTTP_USERNAME, null));
+        mGlobalHttpAuthPassword.setText(mPrefs.getString(HTTP_PASSWORD, null));
+        mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SUCCESS, false));
+        mNotificationFailSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_FAIL, false));
+        mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SOUND, false));
+        mHttpMethod = (Constants.HttpMethod.POST.ordinal() == mPrefs.getInt(HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
 
         mNetworkingCallback = new GeofancyNetworkingCallback() {
             @Override
@@ -240,9 +239,6 @@ public class SettingsActivity extends BaseActivity {
                 .show();
     }
 
-    private GeofancyApplication getApp() {
-        return (GeofancyApplication) getApplication();
-    }
 
     private void showProgressDialog(String message) {
         mProgressDialog = new ProgressDialog(this);
@@ -250,10 +246,6 @@ public class SettingsActivity extends BaseActivity {
         mProgressDialog.setMessage(message);
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.show();
-    }
-
-    private SharedPreferences getPrefs() {
-        return this.getPreferences(MODE_PRIVATE);
     }
 
     private void adjustUiToLoginState() {
@@ -279,7 +271,7 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void save(boolean finish) {
-        SharedPreferences.Editor editor = getPrefs().edit();
+        SharedPreferences.Editor editor = mPrefs.edit();
         editor.putString(HTTP_URL, mUrlText.getText().toString());
         editor.putInt(HTTP_METHOD, mHttpMethod.ordinal());
         editor.putBoolean(HTTP_AUTH, mGlobalHttpAuthSwitch.isChecked());

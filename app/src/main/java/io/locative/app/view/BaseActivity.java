@@ -1,5 +1,6 @@
 package io.locative.app.view;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -28,6 +29,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Inject
     protected SessionManager mSessionManager;
+
+    @Inject
+    protected SharedPreferences mPrefs;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
