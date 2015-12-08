@@ -1,4 +1,4 @@
-package io.locative.app;
+package io.locative.app.view;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -45,7 +45,12 @@ import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import io.locative.app.activity.BaseActivity;
+import io.locative.app.R;
+import io.locative.app.geo.GeofancyGeocoder;
+import io.locative.app.geo.GeofancyLocationManager;
+import io.locative.app.persistent.GeofenceProvider;
+import io.locative.app.utils.Constants;
+import io.locative.app.utils.GeocodeHandler;
 
 public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyCallback {
 

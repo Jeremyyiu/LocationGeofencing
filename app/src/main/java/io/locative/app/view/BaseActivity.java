@@ -1,4 +1,4 @@
-package io.locative.app.activity;
+package io.locative.app.view;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -65,7 +65,7 @@ public abstract class BaseActivity extends AppCompatActivity {
         super.onResume();
         if (mToolbar != null) {
             if (getToolbarTitle() != null) {
-                setTitle(getToolbarTitle().toUpperCase());
+                setTitle(getToolbarTitle());
             }
         }
     }

@@ -1,6 +1,4 @@
-package io.locative.app;
-
-import io.locative.app.model.EventType;
+package io.locative.app.model;
 
 /**
  * Created by mkida on 17/08/2014.

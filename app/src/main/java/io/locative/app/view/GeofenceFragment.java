@@ -1,29 +1,32 @@
-package io.locative.app;
+package io.locative.app.view;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ListFragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.app.ListFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import io.locative.app.R;
+import io.locative.app.model.Geofences;
+import io.locative.app.utils.Constants;
+
 
 /**
  * A fragment representing a list of Items.
- * <p />
- * <p />
+ * <p/>
+ * <p/>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
@@ -62,10 +65,10 @@ public class GeofenceFragment extends ListFragment {
     public void refresh() {
 
         // Each row in the list stores country name, currency and flag
-        List<HashMap<String,String>> aList = new ArrayList<HashMap<String,String>>();
+        List<HashMap<String, String>> aList = new ArrayList<HashMap<String, String>>();
 
-        for(int i=0; i < Geofences.ITEMS.size(); i++){
-            HashMap<String, String> hm = new HashMap<String,String>();
+        for (int i = 0; i < Geofences.ITEMS.size(); i++) {
+            HashMap<String, String> hm = new HashMap<String, String>();
             Geofences.Geofence geofence = Geofences.ITEMS.get(i);
             hm.put("image", "0");
             hm.put("title", geofence.title);
@@ -109,7 +112,7 @@ public class GeofenceFragment extends ListFragment {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                + " must implement OnFragmentInteractionListener");
+                    + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -152,7 +155,7 @@ public class GeofenceFragment extends ListFragment {
                                 Log.i(Constants.LOG, "Deleting Item with pos: " + Long.toString(pos) + " _id: " + item.id);
                                 ContentResolver resolver = aView.getContext().getContentResolver();
 
-                                resolver.delete(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), "_id = ?", new String[] { item.id });
+                                resolver.delete(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), "_id = ?", new String[]{item.id});
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -178,15 +181,15 @@ public class GeofenceFragment extends ListFragment {
     }
 
     /**
-    * This interface must be implemented by activities that contain this
-    * fragment to allow an interaction in this fragment to be communicated
-    * to the activity and potentially other fragments contained in that
-    * activity.
-    * <p>
-    * See the Android Training lesson <a href=
-    * "http://developer.android.com/training/basics/fragments/communicating.html"
-    * >Communicating with Other Fragments</a> for more information.
-    */
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p/>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         public void onFragmentInteraction(String id);

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.locative.app" >
+    package="io.locative.app">
 
     <uses-permission android:name="myapp.permission.MAPS_RECEIVE" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -11,11 +11,11 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
+        android:name="io.locative.app.GeofancyApplication"
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-        android:name="io.locative.app.GeofancyApplication">
+        android:theme="@style/AppTheme">
 
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
@@ -30,8 +30,8 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="io.locative.app.GeofencesActivity"
-            android:label="@string/app_name" >
+            android:name="io.locative.app.view.GeofencesActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -40,26 +40,23 @@
         </activity>
 
         <provider
-            android:name="io.locative.app.GeofenceProvider"
+            android:name="io.locative.app.persistent.GeofenceProvider"
             android:authorities="@string/authority"
             android:exported="false" />
 
         <activity
-            android:name="io.locative.app.AddEditGeofenceActivity"
-            android:label="@string/title_activity_add_edit_geofence" >
-        </activity>
+            android:name="io.locative.app.view.AddEditGeofenceActivity"
+            android:label="@string/title_activity_add_edit_geofence" />
 
         <activity
-            android:name="io.locative.app.SettingsActivity_"
-            android:label="@string/title_activity_settings" >
-        </activity>
+            android:name="io.locative.app.view.SettingsActivity"
+            android:label="@string/title_activity_settings" />
         <activity
-            android:name="io.locative.app.SignupActivity_"
-            android:label="@string/title_activity_signup" >
-        </activity>
+            android:name="io.locative.app.view.SignupActivity"
+            android:label="@string/title_activity_signup" />
 
-        <service android:name="io.locative.app.GeofencingService"/>
-        <service android:name="io.locative.app.ReceiveTransitionsIntentService"/>
+        <service android:name="io.locative.app.network.GeofencingService" />
+        <service android:name="io.locative.app.network.ReceiveTransitionsIntentService" />
 
     </application>
 

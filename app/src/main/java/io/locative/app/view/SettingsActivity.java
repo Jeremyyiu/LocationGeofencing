@@ -1,31 +1,29 @@
-package io.locative.app;
+package io.locative.app.view;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 
-import org.androidannotations.annotations.AfterViews;
-import org.androidannotations.annotations.Click;
-import org.androidannotations.annotations.EActivity;
-import org.androidannotations.annotations.OptionsItem;
-import org.androidannotations.annotations.OptionsMenu;
-import org.androidannotations.annotations.ViewById;
-
+import butterknife.Bind;
+import butterknife.OnClick;
+import io.locative.app.GeofancyApplication;
+import io.locative.app.R;
 import io.locative.app.model.EventType;
+import io.locative.app.model.Fencelog;
+import io.locative.app.network.GeofancyNetworkingCallback;
+import io.locative.app.utils.Constants;
 
-@EActivity(R.layout.activity_settings)
-
-@OptionsMenu(R.menu.settings)
-
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
     private static String HTTP_URL = "httpUrl";
     private static String HTTP_METHOD = "httpMethod";
@@ -41,61 +39,52 @@ public class SettingsActivity extends AppCompatActivity {
     private ProgressDialog mProgressDialog = null;
     private GeofancyNetworkingCallback mNetworkingCallback;
 
-    @ViewById(R.id.global_http_url)
+    @Bind(R.id.global_http_url)
     EditText mUrlText;
 
-    @ViewById(R.id.global_http_method_button)
+    @Bind(R.id.global_http_method_button)
     Button mGlobalHttpMethodButton;
 
-    @ViewById(R.id.global_auth_switch)
+    @Bind(R.id.global_auth_switch)
     Switch mGlobalHttpAuthSwitch;
 
-    @ViewById(R.id.global_auth_username)
+    @Bind(R.id.global_auth_username)
     EditText mGlobalHttpAuthUsername;
 
-    @ViewById(R.id.global_auth_password)
+    @Bind(R.id.global_auth_password)
     EditText mGlobalHttpAuthPassword;
 
-    @ViewById(R.id.send_test_button)
+    @Bind(R.id.send_test_button)
     Button mSendTestButton;
 
-    @ViewById(R.id.notification_success_switch)
+    @Bind(R.id.notification_success_switch)
     Switch mNotificationSuccessSwitch;
 
-    @ViewById(R.id.notification_fail_switch)
+    @Bind(R.id.notification_fail_switch)
     Switch mNotificationFailSwitch;
 
-    @ViewById(R.id.notification_sound_switch)
+    @Bind(R.id.notification_sound_switch)
     Switch mNotificationSoundSwitch;
 
-    @ViewById(R.id.account_username_text)
+    @Bind(R.id.account_username_text)
     EditText mAccountUsernameText;
 
-    @ViewById(R.id.account_password_text)
+    @Bind(R.id.account_password_text)
     EditText mAccountPasswordText;
 
-    @ViewById(R.id.login_button)
+    @Bind(R.id.login_button)
     Button mLoginButton;
 
-    @ViewById(R.id.signup_button)
+    @Bind(R.id.signup_button)
     Button mSignupButton;
 
-    @ViewById(R.id.lostpass_button)
+    @Bind(R.id.lostpass_button)
     Button mLostpassButton;
 
-    @OptionsItem(R.id.action_settings)
-    void save(){
-        save(true);
-    }
-
     @Override
-    public void onResume(){
-        super.onResume();
-        getApp().getNetworking().doCheckSession(getApp().getSessionId(), mNetworkingCallback);
-    }
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
-    @AfterViews
-    void setup(){
         adjustUiToLoginState();
         SharedPreferences prefs = getPrefs();
 
@@ -148,22 +137,56 @@ public class SettingsActivity extends AppCompatActivity {
                 simpleAlert(success ? "Your Fencelog was submitted successfully!" : "There was an error submitting your Fencelog.");
             }
         };
+
+
     }
 
-    @Click(R.id.global_auth_switch)
-    void switchHttpAuth(){
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                save(true);
+                return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getApp().getNetworking().doCheckSession(getApp().getSessionId(), mNetworkingCallback);
+    }
+
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.activity_settings;
+    }
+
+    @Override
+    protected String getToolbarTitle() {
+        return "Settings";
+    }
+
+    @Override
+    protected int getMenuResourceId() {
+        return R.menu.settings;
+    }
+
+    @OnClick(R.id.global_auth_switch)
+    public void switchHttpAuth() {
         mGlobalHttpAuthUsername.setEnabled(mGlobalHttpAuthSwitch.isChecked());
         mGlobalHttpAuthPassword.setEnabled(mGlobalHttpAuthSwitch.isChecked());
     }
 
-    @Click(R.id.signup_button)
-    void signup(){
-        Intent intent = new Intent(this, SignupActivity_.class);
+    @OnClick(R.id.signup_button)
+    public void signup() {
+        Intent intent = new Intent(this, SignupActivity.class);
         this.startActivity(intent);
     }
 
-    @Click(R.id.login_button)
-    void loginOrLogout(){
+    @OnClick(R.id.login_button)
+    public void loginOrLogout() {
         showProgressDialog("Please wait…");
         if (!getApp().hasSession()) {
             getApp().getNetworking().doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
@@ -176,20 +199,20 @@ public class SettingsActivity extends AppCompatActivity {
         }
     }
 
-    @Click(R.id.send_test_button)
-    void sendTestFencelog(){
+    @OnClick(R.id.send_test_button)
+    public void sendTestFencelog() {
         Fencelog fencelog = new Fencelog();
         fencelog.locationId = "test";
         fencelog.eventType = EventType.ENTER;
         showProgressDialog("Please wait…");
         String sessionId = getApp().getSessionId();
-        if(sessionId != null) {
+        if (sessionId != null) {
             getApp().getNetworking().doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
         }
     }
 
-    @Click(R.id.global_http_method_button)
-    void selectMethodForTriggerType() {
+    @OnClick(R.id.global_http_method_button)
+    public void selectMethodForTriggerType() {
 
         new AlertDialog.Builder(this)
                 .setMessage("Choose HTTP Method")
@@ -210,11 +233,11 @@ public class SettingsActivity extends AppCompatActivity {
                 .show();
     }
 
-    private GeofancyApplication getApp(){
+    private GeofancyApplication getApp() {
         return (GeofancyApplication) getApplication();
     }
 
-    private void showProgressDialog(String message){
+    private void showProgressDialog(String message) {
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setTitle(R.string.loading);
         mProgressDialog.setMessage(message);
@@ -222,11 +245,11 @@ public class SettingsActivity extends AppCompatActivity {
         mProgressDialog.show();
     }
 
-    private SharedPreferences getPrefs(){
+    private SharedPreferences getPrefs() {
         return this.getPreferences(MODE_PRIVATE);
     }
 
-    private void adjustUiToLoginState(){
+    private void adjustUiToLoginState() {
         int visibility = LinearLayout.VISIBLE;
 
         if (getApp().hasSession()) {
@@ -241,14 +264,14 @@ public class SettingsActivity extends AppCompatActivity {
         mLostpassButton.setVisibility(visibility);
     }
 
-    private void simpleAlert(String msg){
+    private void simpleAlert(String msg) {
         new AlertDialog.Builder(this)
                 .setMessage(msg)
                 .setNeutralButton("OK", null)
                 .show();
     }
 
-    private void save(boolean finish){
+    private void save(boolean finish) {
         SharedPreferences.Editor editor = getPrefs().edit();
         editor.putString(HTTP_URL, mUrlText.getText().toString());
         editor.putInt(HTTP_METHOD, mHttpMethod.ordinal());

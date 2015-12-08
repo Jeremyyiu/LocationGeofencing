@@ -1,4 +1,4 @@
-package io.locative.app;
+package io.locative.app.geo;
 
 import android.content.Context;
 import android.location.Address;
@@ -12,8 +12,7 @@ import java.util.Locale;
  * Created by mkida on 16/08/2014.
  */
 public class GeofancyGeocoder {
-    public Address getLatLongFromAddress(String addr, Context ctx)
-    {
+    public Address getLatLongFromAddress(String addr, Context ctx) {
         Geocoder geocoder = new Geocoder(ctx, Locale.getDefault());
         try {
             List<Address> list = geocoder.getFromLocationName(addr, 1);

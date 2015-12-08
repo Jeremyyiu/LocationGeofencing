@@ -8,7 +8,7 @@ public enum EventType {
 
     public final String apiName;
 
-    EventType(String apiName){
+    EventType(String apiName) {
         this.apiName = apiName;
     }
 }
