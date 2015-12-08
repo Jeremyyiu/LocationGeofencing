@@ -20,7 +20,7 @@ import io.locative.app.network.GeofancyNetworkingCallback;
 import io.locative.app.network.GeofancyServiceWrapper;
 import io.locative.app.utils.Constants;
 
-public class SignupActivity extends BaseActivity {
+public class SignupActivity extends BaseActivity implements GeofancyNetworkingCallback {
 
 
     @Bind(R.id.username_text)
@@ -41,8 +41,7 @@ public class SignupActivity extends BaseActivity {
     @Inject
     GeofancyServiceWrapper mGeofancyNetworkingWrapper;
 
-    private GeofancyNetworkingCallback mNetworkingCallback = null;
-    private ProgressDialog mProgressDialog = null;
+    private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,46 +58,7 @@ public class SignupActivity extends BaseActivity {
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.show();
 
-        GeofancyNetworkingCallback networkingCallback = new GeofancyNetworkingCallback() {
-            @Override
-            public void onLoginFinished(boolean success, String sessionId) {
-
-            }
-
-            @Override
-            public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
-                mProgressDialog.dismiss();
-                if (!success) {
-                    if (userAlreadyExisting) {
-                        simpleAlert("Error when creating Account. Username or E-Mail is already existing.");
-                        return;
-                    }
-                    simpleAlert("Error when creating Account. Please try again.");
-                    return;
-                }
-                new AlertDialog.Builder(SignupActivity.this)
-                        .setMessage("Your Account has been created. You may now sign in with your Username & Password")
-                        .setNeutralButton("OK", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                SignupActivity.this.finish();
-                            }
-                        })
-                        .show();
-            }
-
-            @Override
-            public void onCheckSessionFinished(boolean sessionValid) {
-
-            }
-
-            @Override
-            public void onDispatchFencelogFinished(boolean success) {
-
-            }
-        };
-
-        mGeofancyNetworkingWrapper.doSignup(mUsernameText.getText().toString(), mPasswordText.getText().toString(), mEmailText.getText().toString(), networkingCallback);
+        mGeofancyNetworkingWrapper.doSignup(mUsernameText.getText().toString(), mPasswordText.getText().toString(), mEmailText.getText().toString(), this);
     }
 
     @OnClick(R.id.tos_button)
@@ -114,10 +74,6 @@ public class SignupActivity extends BaseActivity {
                 .show();
     }
 
-    private GeofancyApplication getApp() {
-        return (GeofancyApplication) getApplication();
-    }
-
     @Override
     protected int getLayoutResourceId() {
         return R.layout.activity_signup;
@@ -131,5 +87,42 @@ public class SignupActivity extends BaseActivity {
     @Override
     protected int getMenuResourceId() {
         return 0;
+    }
+
+    @Override
+    public void onLoginFinished(boolean success, String sessionId) {
+
+    }
+
+    @Override
+    public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
+        mProgressDialog.dismiss();
+        if (!success) {
+            if (userAlreadyExisting) {
+                simpleAlert("Error when creating Account. Username or E-Mail is already existing.");
+                return;
+            }
+            simpleAlert("Error when creating Account. Please try again.");
+            return;
+        }
+        new AlertDialog.Builder(SignupActivity.this)
+                .setMessage("Your Account has been created. You may now sign in with your Username & Password")
+                .setNeutralButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        SignupActivity.this.finish();
+                    }
+                })
+                .show();
+    }
+
+    @Override
+    public void onCheckSessionFinished(boolean sessionValid) {
+
+    }
+
+    @Override
+    public void onDispatchFencelogFinished(boolean success) {
+
     }
 }
