@@ -13,7 +13,7 @@ import retrofit.RestAdapter;
 @Module(library = true, complete = false,
 
         injects = {
-                GeofancyNetworkingWrapper.class,
+                GeofancyServiceWrapper.class,
                 ReceiveTransitionsIntentService.class
         }
 

@@ -17,7 +17,7 @@ import butterknife.OnClick;
 import io.locative.app.GeofancyApplication;
 import io.locative.app.R;
 import io.locative.app.network.GeofancyNetworkingCallback;
-import io.locative.app.network.GeofancyNetworkingWrapper;
+import io.locative.app.network.GeofancyServiceWrapper;
 import io.locative.app.utils.Constants;
 
 public class SignupActivity extends BaseActivity {
@@ -39,7 +39,7 @@ public class SignupActivity extends BaseActivity {
     Button mTosButtonl;
 
     @Inject
-    GeofancyNetworkingWrapper mGeofancyNetworkingWrapper;
+    GeofancyServiceWrapper mGeofancyNetworkingWrapper;
 
     private GeofancyNetworkingCallback mNetworkingCallback = null;
     private ProgressDialog mProgressDialog = null;

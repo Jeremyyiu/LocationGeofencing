@@ -23,7 +23,7 @@ import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.network.GeofancyNetworkingCallback;
-import io.locative.app.network.GeofancyNetworkingWrapper;
+import io.locative.app.network.GeofancyServiceWrapper;
 import io.locative.app.utils.Constants;
 
 public class SettingsActivity extends BaseActivity {
@@ -85,7 +85,7 @@ public class SettingsActivity extends BaseActivity {
     Button mLostpassButton;
 
     @Inject
-    GeofancyNetworkingWrapper mGeofancyNetworkingWrapper;
+    GeofancyServiceWrapper mGeofancyNetworkingWrapper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

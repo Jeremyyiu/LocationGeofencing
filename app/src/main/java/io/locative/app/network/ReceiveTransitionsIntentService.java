@@ -32,7 +32,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     private final String TAG = "TRANSITION";
 
     @Inject
-    GeofancyNetworkingWrapper mGeofancyNetworkingWrapper;
+    GeofancyServiceWrapper mGeofancyNetworkingWrapper;
 
     public ReceiveTransitionsIntentService() {
         super(TRANSITION_INTENT_SERVICE);

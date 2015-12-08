@@ -17,7 +17,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 @Singleton
-public class GeofancyNetworkingWrapper {
+public class GeofancyServiceWrapper {
 
     @Inject
     GeofancyNetworkService mService;
