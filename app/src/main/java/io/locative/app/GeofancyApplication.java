@@ -1,10 +1,17 @@
 package io.locative.app;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.squareup.otto.Bus;
+
+import javax.inject.Inject;
+
+import dagger.ObjectGraph;
 import io.locative.app.network.GeofancyNetworking;
 
 public class GeofancyApplication extends Application {
@@ -14,11 +21,28 @@ public class GeofancyApplication extends Application {
 
     private GeofancyNetworking networking;
 
+    private ObjectGraph mObjectGraph;
+
     @Override
     public void onCreate() {
         super.onCreate();
         this.networking = new GeofancyNetworking();
+
+        // create ObjectGraph to provide all modules
+        mObjectGraph = ObjectGraph.create(new GeofancyApplicationModule(this));
+        mObjectGraph.inject(this);
+
     }
+
+
+    public static void inject(Context context) {
+        ((GeofancyApplication) context.getApplicationContext()).mObjectGraph.inject(context);
+    }
+
+    public static void inject(Object target, Context context) {
+        ((GeofancyApplication) context.getApplicationContext()).mObjectGraph.inject(target);
+    }
+
 
     public GeofancyNetworking getNetworking() {
         return networking;
