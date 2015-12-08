@@ -9,10 +9,13 @@ import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import io.locative.app.GeofancyApplication;
 import io.locative.app.R;
+import io.locative.app.network.SessionManager;
 
 /**
  * Created by chris on 28.11.15.
@@ -22,6 +25,9 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Bind(R.id.toolbar_actionbar)
     protected Toolbar mToolbar;
+
+    @Inject
+    protected SessionManager mSessionManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

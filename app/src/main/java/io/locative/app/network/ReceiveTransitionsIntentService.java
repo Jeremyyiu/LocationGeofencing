@@ -34,6 +34,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
     @Inject
     GeofancyServiceWrapper mGeofancyNetworkingWrapper;
 
+    @Inject
+    SessionManager mSessionManager;
+
     public ReceiveTransitionsIntentService() {
         super(TRANSITION_INTENT_SERVICE);
     }
@@ -113,7 +116,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     }
 
     private void reportFenceLogToApi(String customId, float latitude, float longitude, @Nullable EventType eventType) {
-        String sessionId = getApp().getSessionId();
+        String sessionId = mSessionManager.getSessionId();
         if (sessionId != null && eventType != null) {
             Fencelog fencelog = new Fencelog();
             fencelog.locationId = customId;

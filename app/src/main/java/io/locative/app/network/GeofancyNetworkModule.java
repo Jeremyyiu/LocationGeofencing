@@ -14,7 +14,7 @@ import retrofit.RestAdapter;
 
         injects = {
                 GeofancyServiceWrapper.class,
-                ReceiveTransitionsIntentService.class
+                ReceiveTransitionsIntentService.class,
         }
 
 )

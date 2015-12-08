@@ -121,7 +121,7 @@ public class SettingsActivity extends BaseActivity {
                 }
                 simpleAlert("Login successful! Your Fencelogs will now be visible when you log in at https://my.geofancy.com.");
                 Log.d(Constants.LOG, "Login success with SessionID: " + sessionId);
-                getApp().setSessionId(sessionId);
+                mSessionManager.setSessionId(sessionId);
                 adjustUiToLoginState();
             }
 
@@ -133,7 +133,7 @@ public class SettingsActivity extends BaseActivity {
             @Override
             public void onCheckSessionFinished(boolean sessionValid) {
                 if (!sessionValid) {
-                    getApp().clearSession();
+                    mSessionManager.clearSession();
                     adjustUiToLoginState();
                 }
             }
@@ -161,7 +161,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        mGeofancyNetworkingWrapper.doCheckSession(getApp().getSessionId(), mNetworkingCallback);
+        mGeofancyNetworkingWrapper.doCheckSession(mSessionManager.getSessionId(), mNetworkingCallback);
     }
 
 
@@ -195,12 +195,12 @@ public class SettingsActivity extends BaseActivity {
     @OnClick(R.id.login_button)
     public void loginOrLogout() {
         showProgressDialog("Please wait…");
-        if (!getApp().hasSession()) {
+        if (!mSessionManager.hasSession()) {
             mGeofancyNetworkingWrapper.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
         } else {
             // TODO: Implement Logout via API (needs to be implemented on Server-Side)
             //mNetworking.doLogout()
-            getApp().clearSession();
+            mSessionManager.clearSession();
             adjustUiToLoginState();
             mProgressDialog.dismiss();
         }
@@ -212,7 +212,7 @@ public class SettingsActivity extends BaseActivity {
         fencelog.locationId = "test";
         fencelog.eventType = EventType.ENTER;
         showProgressDialog("Please wait…");
-        String sessionId = getApp().getSessionId();
+        String sessionId = mSessionManager.getSessionId();
         if (sessionId != null) {
             mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
         }
@@ -259,7 +259,7 @@ public class SettingsActivity extends BaseActivity {
     private void adjustUiToLoginState() {
         int visibility = LinearLayout.VISIBLE;
 
-        if (getApp().hasSession()) {
+        if (mSessionManager.hasSession()) {
             // User is logged in
             visibility = LinearLayout.GONE;
         }
