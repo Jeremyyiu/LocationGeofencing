@@ -2,6 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
+    android:background="@color/background"
     android:layout_height="match_parent">
 
     <android.support.design.widget.AppBarLayout
@@ -21,6 +22,9 @@
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
+        android:layout_marginLeft="10dp"
+        android:background="@color/background"
+        android:layout_marginRight="10dp"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
@@ -31,136 +35,212 @@
             android:focusableInTouchMode="true"
             android:orientation="vertical">
 
-            <TextView
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:background="@color/white"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:background="#3333"
-                android:text="Global HTTP Settings" />
+                android:layout_gravity="center"
+                app:cardElevation="4dp">
 
-            <EditText
-                android:id="@+id/global_http_url"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="https://myserver.com/geo.php"
-                android:maxLines="1"
-                android:singleLine="true" />
+                <LinearLayout
 
-            <Button
-                android:id="@+id/global_http_method_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="POST" />
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:orientation="vertical">
 
-            <Switch
-                android:id="@+id/global_auth_switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:text="HTTP Basic Authentication" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:paddingLeft="5dp"
+                        android:text="Global HTTP Settings"
+                        android:textColor="@color/primary_dark"
+                        android:textSize="16sp" />
 
-            <EditText
-                android:id="@+id/global_auth_username"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Username"
-                android:maxLines="1"
-                android:singleLine="true" />
+                    <EditText
+                        android:id="@+id/global_http_url"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="https://myserver.com/geo.php"
+                        android:maxLines="1"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:singleLine="true" />
 
-            <EditText
-                android:id="@+id/global_auth_password"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Password"
-                android:maxLines="1"
-                android:password="true"
-                android:singleLine="true" />
+                    <Button
+                        android:id="@+id/global_http_method_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="10dp"
+                        android:text="POST" />
 
-            <Button
-                android:id="@+id/send_test_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Send Test-Request" />
+                    <Switch
+                        android:id="@+id/global_auth_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:text="HTTP Basic Authentication" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:background="#3333"
-                android:text="Notifications" />
+                    <EditText
+                        android:id="@+id/global_auth_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Username"
+                        android:maxLines="1"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:singleLine="true" />
 
-            <Switch
-                android:id="@+id/notification_success_switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:text="Notification on Success" />
+                    <EditText
+                        android:id="@+id/global_auth_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Password"
+                        android:maxLines="1"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:password="true"
+                        android:singleLine="true" />
 
-            <Switch
-                android:id="@+id/notification_fail_switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:text="Notification on Failure" />
+                    <Button
+                        android:id="@+id/send_test_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Send Test-Request" />
 
-            <Switch
-                android:id="@+id/notification_sound_switch"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:text="Play sound on Notification" />
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:background="#3333"
-                android:text="My Geofancy Account" />
 
-            <EditText
-                android:id="@+id/account_username_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Username"
-                android:maxLines="1"
-                android:singleLine="true" />
+            </android.support.v7.widget.CardView>
 
-            <EditText
-                android:id="@+id/account_password_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Password"
-                android:maxLines="1"
-                android:password="true"
-                android:singleLine="true" />
 
-            <Button
-                android:id="@+id/login_button"
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Login" />
+                android:background="@color/white"
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                app:cardElevation="4dp">
 
-            <Button
-                android:id="@+id/signup_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Signup new Account" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
 
-            <Button
-                android:id="@+id/lostpass_button"
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:text="Notifications"
+                        android:textColor="@color/primary_dark"
+                        android:textSize="16sp" />
+
+                    <Switch
+                        android:id="@+id/notification_success_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="10dp"
+                        android:paddingTop="10dp"
+                        android:text="Notification on Success" />
+
+                    <Switch
+                        android:id="@+id/notification_fail_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:text="Notification on Failure" />
+
+                    <Switch
+                        android:id="@+id/notification_sound_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:text="Play sound on Notification" />
+
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
+                android:background="@color/white"
                 android:layout_height="wrap_content"
-                android:text="Recover lost Password" />
+                android:layout_gravity="center"
+                android:layout_marginTop="10dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:text="My Geofancy Account"
+                        android:textColor="@color/primary_dark"
+                        android:textSize="16sp" />
+
+                    <EditText
+                        android:id="@+id/account_username_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Username"
+                        android:maxLines="1"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:singleLine="true" />
+
+                    <EditText
+                        android:id="@+id/account_password_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Password"
+                        android:maxLines="1"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:password="true"
+                        android:singleLine="true" />
+
+                    <Button
+                        android:id="@+id/login_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Login" />
+
+                    <Button
+                        android:id="@+id/signup_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Signup new Account" />
+
+                    <Button
+                        android:id="@+id/lostpass_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Recover lost Password" />
+
+                </LinearLayout>
+
+
+            </android.support.v7.widget.CardView>
 
         </LinearLayout>
-
 
     </android.support.v4.widget.NestedScrollView>
 
