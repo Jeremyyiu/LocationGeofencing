@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.OnClick;
 import io.locative.app.GeofancyApplication;
@@ -21,6 +23,7 @@ import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.network.GeofancyNetworkingCallback;
+import io.locative.app.network.GeofancyServiceWrapper;
 import io.locative.app.utils.Constants;
 
 public class SettingsActivity extends BaseActivity {
@@ -81,28 +84,31 @@ public class SettingsActivity extends BaseActivity {
     @Bind(R.id.lostpass_button)
     Button mLostpassButton;
 
+    @Inject
+    GeofancyServiceWrapper mGeofancyNetworkingWrapper;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GeofancyApplication.inject(this);
 
         adjustUiToLoginState();
-        SharedPreferences prefs = getPrefs();
 
-        mUrlText.setText(prefs.getString(HTTP_URL, null));
+        mUrlText.setText(mPrefs.getString(HTTP_URL, null));
         mGlobalHttpMethodButton.setText(
-                prefs.getInt(HTTP_METHOD, 0) == 0 ? "POST" : "GET"
+                mPrefs.getInt(HTTP_METHOD, 0) == 0 ? "POST" : "GET"
         );
         mGlobalHttpAuthSwitch.setChecked(
-                prefs.getBoolean(HTTP_AUTH, false)
+                mPrefs.getBoolean(HTTP_AUTH, false)
         );
         switchHttpAuth();
 
-        mGlobalHttpAuthUsername.setText(prefs.getString(HTTP_USERNAME, null));
-        mGlobalHttpAuthPassword.setText(prefs.getString(HTTP_PASSWORD, null));
-        mNotificationSoundSwitch.setChecked(prefs.getBoolean(NOTIFICATION_SUCCESS, false));
-        mNotificationFailSwitch.setChecked(prefs.getBoolean(NOTIFICATION_FAIL, false));
-        mNotificationSoundSwitch.setChecked(prefs.getBoolean(NOTIFICATION_SOUND, false));
-        mHttpMethod = (Constants.HttpMethod.POST.ordinal() == getPrefs().getInt(HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
+        mGlobalHttpAuthUsername.setText(mPrefs.getString(HTTP_USERNAME, null));
+        mGlobalHttpAuthPassword.setText(mPrefs.getString(HTTP_PASSWORD, null));
+        mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SUCCESS, false));
+        mNotificationFailSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_FAIL, false));
+        mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SOUND, false));
+        mHttpMethod = (Constants.HttpMethod.POST.ordinal() == mPrefs.getInt(HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
 
         mNetworkingCallback = new GeofancyNetworkingCallback() {
             @Override
@@ -114,7 +120,7 @@ public class SettingsActivity extends BaseActivity {
                 }
                 simpleAlert("Login successful! Your Fencelogs will now be visible when you log in at https://my.geofancy.com.");
                 Log.d(Constants.LOG, "Login success with SessionID: " + sessionId);
-                getApp().setSessionId(sessionId);
+                mSessionManager.setSessionId(sessionId);
                 adjustUiToLoginState();
             }
 
@@ -126,7 +132,7 @@ public class SettingsActivity extends BaseActivity {
             @Override
             public void onCheckSessionFinished(boolean sessionValid) {
                 if (!sessionValid) {
-                    getApp().clearSession();
+                    mSessionManager.clearSession();
                     adjustUiToLoginState();
                 }
             }
@@ -154,7 +160,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        getApp().getNetworking().doCheckSession(getApp().getSessionId(), mNetworkingCallback);
+        mGeofancyNetworkingWrapper.doCheckSession(mSessionManager.getSessionId(), mNetworkingCallback);
     }
 
 
@@ -188,12 +194,12 @@ public class SettingsActivity extends BaseActivity {
     @OnClick(R.id.login_button)
     public void loginOrLogout() {
         showProgressDialog("Please wait…");
-        if (!getApp().hasSession()) {
-            getApp().getNetworking().doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
+        if (!mSessionManager.hasSession()) {
+            mGeofancyNetworkingWrapper.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
         } else {
             // TODO: Implement Logout via API (needs to be implemented on Server-Side)
             //mNetworking.doLogout()
-            getApp().clearSession();
+            mSessionManager.clearSession();
             adjustUiToLoginState();
             mProgressDialog.dismiss();
         }
@@ -205,9 +211,9 @@ public class SettingsActivity extends BaseActivity {
         fencelog.locationId = "test";
         fencelog.eventType = EventType.ENTER;
         showProgressDialog("Please wait…");
-        String sessionId = getApp().getSessionId();
+        String sessionId = mSessionManager.getSessionId();
         if (sessionId != null) {
-            getApp().getNetworking().doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
+            mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
         }
     }
 
@@ -233,9 +239,6 @@ public class SettingsActivity extends BaseActivity {
                 .show();
     }
 
-    private GeofancyApplication getApp() {
-        return (GeofancyApplication) getApplication();
-    }
 
     private void showProgressDialog(String message) {
         mProgressDialog = new ProgressDialog(this);
@@ -245,14 +248,10 @@ public class SettingsActivity extends BaseActivity {
         mProgressDialog.show();
     }
 
-    private SharedPreferences getPrefs() {
-        return this.getPreferences(MODE_PRIVATE);
-    }
-
     private void adjustUiToLoginState() {
         int visibility = LinearLayout.VISIBLE;
 
-        if (getApp().hasSession()) {
+        if (mSessionManager.hasSession()) {
             // User is logged in
             visibility = LinearLayout.GONE;
         }
@@ -272,7 +271,7 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void save(boolean finish) {
-        SharedPreferences.Editor editor = getPrefs().edit();
+        SharedPreferences.Editor editor = mPrefs.edit();
         editor.putString(HTTP_URL, mUrlText.getText().toString());
         editor.putInt(HTTP_METHOD, mHttpMethod.ordinal());
         editor.putBoolean(HTTP_AUTH, mGlobalHttpAuthSwitch.isChecked());

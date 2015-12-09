@@ -45,6 +45,7 @@ import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import io.locative.app.GeofancyApplication;
 import io.locative.app.R;
 import io.locative.app.geo.GeofancyGeocoder;
 import io.locative.app.geo.GeofancyLocationManager;
@@ -123,6 +124,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GeofancyApplication.inject(this);
 
         // Already existing (editing) Geofence?
         mEditGeofenceId = getIntent().getIntExtra("geofenceId", 0);

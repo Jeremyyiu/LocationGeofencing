@@ -1,5 +1,6 @@
 package io.locative.app.view;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,9 +10,13 @@ import android.view.Menu;
 import android.view.View;
 import android.view.WindowManager;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import io.locative.app.GeofancyApplication;
 import io.locative.app.R;
+import io.locative.app.network.SessionManager;
 
 /**
  * Created by chris on 28.11.15.
@@ -22,9 +27,16 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Bind(R.id.toolbar_actionbar)
     protected Toolbar mToolbar;
 
+    @Inject
+    protected SessionManager mSessionManager;
+
+    @Inject
+    protected SharedPreferences mPrefs;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        GeofancyApplication.inject(this);
         if (getLayoutResourceId() != 0) {
             setContentView(getLayoutResourceId());
         }
