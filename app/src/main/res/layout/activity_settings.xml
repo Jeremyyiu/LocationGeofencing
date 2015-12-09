@@ -192,7 +192,7 @@
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
-                        android:text="My Geofancy Account"
+                        android:text="My Locative Account"
                         android:textColor="@color/primary_dark"
                         android:textSize="16sp" />
 
