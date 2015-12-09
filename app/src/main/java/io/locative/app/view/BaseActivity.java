@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import io.locative.app.GeofancyApplication;
+import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.network.SessionManager;
 
@@ -36,7 +36,7 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GeofancyApplication.inject(this);
+        LocativeApplication.inject(this);
         if (getLayoutResourceId() != 0) {
             setContentView(getLayoutResourceId());
         }

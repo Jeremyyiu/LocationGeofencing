@@ -13,21 +13,21 @@ import retrofit.RestAdapter;
 @Module(library = true, complete = false,
 
         injects = {
-                GeofancyServiceWrapper.class,
+                LocativeApiWrapper.class,
                 ReceiveTransitionsIntentService.class,
         }
 
 )
-public class GeofancyNetworkModule {
+public class LocativeNetworkModule {
 
     @SuppressWarnings("unused")
     @Provides
-    public GeofancyNetworkService provideDownloadService() {
+    public LocativeApiService provideDownloadService() {
         return new RestAdapter.Builder()
                 .setEndpoint(Constants.API_ENDPOINT)
                 .setConverter(new StringConverter())
                 .build()
-                .create(GeofancyNetworkService.class);
+                .create(LocativeApiService.class);
     }
 
 

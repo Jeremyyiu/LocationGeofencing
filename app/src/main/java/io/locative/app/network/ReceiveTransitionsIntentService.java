@@ -18,7 +18,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import io.locative.app.GeofancyApplication;
+import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
@@ -32,7 +32,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     private final String TAG = "TRANSITION";
 
     @Inject
-    GeofancyServiceWrapper mGeofancyNetworkingWrapper;
+    LocativeApiWrapper mGeofancyNetworkingWrapper;
 
     @Inject
     SessionManager mSessionManager;
@@ -44,7 +44,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        GeofancyApplication.inject(this, getApplicationContext());
+        LocativeApplication.inject(this, getApplicationContext());
     }
 
     @Override
@@ -123,7 +123,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
             fencelog.latitude = latitude;
             fencelog.longitude = longitude;
             fencelog.eventType = eventType;
-            mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, new GeofancyNetworkingCallback() {
+            mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, new LocativeNetworkingCallback() {
                 @Override
                 public void onLoginFinished(boolean success, String sessionId) {
                     // WTF could not care less
@@ -147,8 +147,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
         }
     }
 
-    private GeofancyApplication getApp() {
-        return (GeofancyApplication) getApplication();
+    private LocativeApplication getApp() {
+        return (LocativeApplication) getApplication();
     }
 
 
@@ -181,11 +181,11 @@ public class ReceiveTransitionsIntentService extends IntentService {
     }
 
     private void removeGeofences(List<String> requestIds) {
-        Intent intent = new Intent(getApplicationContext(), GeofencingService.class);
+        Intent intent = new Intent(getApplicationContext(), LocativeService.class);
 
         String[] ids = new String[0];
-        intent.putExtra(GeofencingService.EXTRA_REQUEST_IDS, requestIds.toArray(ids));
-        intent.putExtra(GeofencingService.EXTRA_ACTION, GeofencingService.Action.REMOVE);
+        intent.putExtra(LocativeService.EXTRA_REQUEST_IDS, requestIds.toArray(ids));
+        intent.putExtra(LocativeService.EXTRA_ACTION, LocativeService.Action.REMOVE);
 
         startService(intent);
     }
