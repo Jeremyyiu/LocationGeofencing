@@ -1,7 +1,7 @@
 package io.locative.app.network;
 
 
-public interface GeofancyNetworkingCallback {
+public interface LocativeNetworkingCallback {
 
     void onLoginFinished(boolean success, String sessionId);
 

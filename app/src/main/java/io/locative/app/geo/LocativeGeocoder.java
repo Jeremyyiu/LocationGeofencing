@@ -11,7 +11,7 @@ import java.util.Locale;
 /**
  * Created by mkida on 16/08/2014.
  */
-public class GeofancyGeocoder {
+public class LocativeGeocoder {
     public Address getLatLongFromAddress(String addr, Context ctx) {
         Geocoder geocoder = new Geocoder(ctx, Locale.getDefault());
         try {

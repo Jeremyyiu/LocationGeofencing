@@ -14,13 +14,13 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import io.locative.app.GeofancyApplication;
+import io.locative.app.LocativeApplication;
 import io.locative.app.R;
-import io.locative.app.network.GeofancyNetworkingCallback;
-import io.locative.app.network.GeofancyServiceWrapper;
+import io.locative.app.network.LocativeApiWrapper;
+import io.locative.app.network.LocativeNetworkingCallback;
 import io.locative.app.utils.Constants;
 
-public class SignupActivity extends BaseActivity implements GeofancyNetworkingCallback {
+public class SignupActivity extends BaseActivity implements LocativeNetworkingCallback {
 
 
     @Bind(R.id.username_text)
@@ -39,14 +39,14 @@ public class SignupActivity extends BaseActivity implements GeofancyNetworkingCa
     Button mTosButtonl;
 
     @Inject
-    GeofancyServiceWrapper mGeofancyNetworkingWrapper;
+    LocativeApiWrapper mGeofancyNetworkingWrapper;
 
     private ProgressDialog mProgressDialog;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GeofancyApplication.inject(this);
+        LocativeApplication.inject(this);
 
     }
 

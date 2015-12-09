@@ -18,12 +18,12 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import io.locative.app.GeofancyApplication;
+import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
-import io.locative.app.network.GeofancyNetworkingCallback;
-import io.locative.app.network.GeofancyServiceWrapper;
+import io.locative.app.network.LocativeNetworkingCallback;
+import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.utils.Constants;
 
 public class SettingsActivity extends BaseActivity {
@@ -40,7 +40,7 @@ public class SettingsActivity extends BaseActivity {
     private Constants.HttpMethod mHttpMethod = Constants.HttpMethod.POST;
 
     private ProgressDialog mProgressDialog = null;
-    private GeofancyNetworkingCallback mNetworkingCallback;
+    private LocativeNetworkingCallback mNetworkingCallback;
 
     @Bind(R.id.global_http_url)
     EditText mUrlText;
@@ -85,12 +85,12 @@ public class SettingsActivity extends BaseActivity {
     Button mLostpassButton;
 
     @Inject
-    GeofancyServiceWrapper mGeofancyNetworkingWrapper;
+    LocativeApiWrapper mGeofancyNetworkingWrapper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GeofancyApplication.inject(this);
+        LocativeApplication.inject(this);
 
         adjustUiToLoginState();
 
@@ -110,7 +110,7 @@ public class SettingsActivity extends BaseActivity {
         mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SOUND, false));
         mHttpMethod = (Constants.HttpMethod.POST.ordinal() == mPrefs.getInt(HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
 
-        mNetworkingCallback = new GeofancyNetworkingCallback() {
+        mNetworkingCallback = new LocativeNetworkingCallback() {
             @Override
             public void onLoginFinished(boolean success, String sessionId) {
                 mProgressDialog.dismiss();

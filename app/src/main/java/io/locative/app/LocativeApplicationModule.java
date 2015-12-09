@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.locative.app.network.GeofancyNetworkModule;
+import io.locative.app.network.LocativeNetworkModule;
 import io.locative.app.view.UIModule;
 
 /**
@@ -19,20 +19,20 @@ import io.locative.app.view.UIModule;
 
 @Module(
         includes = {
-                GeofancyNetworkModule.class,
+                LocativeNetworkModule.class,
                 UIModule.class
         },
         injects = {
-                GeofancyApplication.class
+                LocativeApplication.class
         },
         library = true
 )
-public class GeofancyApplicationModule {
+public class LocativeApplicationModule {
 
 
-    private final GeofancyApplication mApp;
+    private final LocativeApplication mApp;
 
-    public GeofancyApplicationModule(GeofancyApplication application) {
+    public LocativeApplicationModule(LocativeApplication application) {
         mApp = application;
     }
 

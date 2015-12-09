@@ -45,10 +45,10 @@ import java.util.UUID;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import io.locative.app.GeofancyApplication;
+import io.locative.app.LocativeApplication;
 import io.locative.app.R;
-import io.locative.app.geo.GeofancyGeocoder;
-import io.locative.app.geo.GeofancyLocationManager;
+import io.locative.app.geo.LocativeGeocoder;
+import io.locative.app.geo.LocativeLocationManager;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.GeocodeHandler;
@@ -94,7 +94,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     public int mEditGeofenceId = 0;
     private boolean mIsEditingGeofence = false;
 
-    private GeofancyLocationManager mGeofancyLocationManager = null;
+    private LocativeLocationManager mLocativeLocationManager = null;
     private MapAreaManager mCircleManager = null;
     private MapAreaWrapper mCircle = null;
     public ProgressDialog mProgressDialog = null;
@@ -109,7 +109,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
 
     private GoogleMap mMap = null;
 
-    GeofancyLocationManager.LocationResult locationResult = new GeofancyLocationManager.LocationResult() {
+    LocativeLocationManager.LocationResult locationResult = new LocativeLocationManager.LocationResult() {
         @Override
         public void gotLocation(Location location) {
             //LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
@@ -124,7 +124,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GeofancyApplication.inject(this);
+        LocativeApplication.inject(this);
 
         // Already existing (editing) Geofence?
         mEditGeofenceId = getIntent().getIntExtra("geofenceId", 0);
@@ -268,9 +268,9 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         }
 
 
-        mGeofancyLocationManager = new GeofancyLocationManager();
+        mLocativeLocationManager = new LocativeLocationManager();
         if (!mIsEditingGeofence) {
-            mGeofancyLocationManager.getLocation(this, locationResult);
+            mLocativeLocationManager.getLocation(this, locationResult);
         }
         Location location;
         if (mMap.isMyLocationEnabled() && mMap.getMyLocation() != null && !mIsEditingGeofence) {
@@ -306,8 +306,8 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case GeofancyLocationManager.MY_PERMISSIONS_REQUEST:
-                mGeofancyLocationManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            case LocativeLocationManager.MY_PERMISSIONS_REQUEST:
+                mLocativeLocationManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
                 break;
         }
     }
@@ -488,7 +488,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
 
     private void doGeocodingAndPositionCircle(String addr) {
         if (mCircle != null) {
-            Address address = new GeofancyGeocoder().getLatLongFromAddress(addr, this);
+            Address address = new LocativeGeocoder().getLatLongFromAddress(addr, this);
             if (address != null) {
                 LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
                 updateAddressField(address);

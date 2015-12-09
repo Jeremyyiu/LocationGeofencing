@@ -5,7 +5,7 @@ import android.content.Context;
 
 import dagger.ObjectGraph;
 
-public class GeofancyApplication extends Application {
+public class LocativeApplication extends Application {
 
     private ObjectGraph mObjectGraph;
 
@@ -14,18 +14,18 @@ public class GeofancyApplication extends Application {
         super.onCreate();
 
         // create ObjectGraph to provide all modules
-        mObjectGraph = ObjectGraph.create(new GeofancyApplicationModule(this));
+        mObjectGraph = ObjectGraph.create(new LocativeApplicationModule(this));
         mObjectGraph.inject(this);
 
     }
 
 
     public static void inject(Context context) {
-        ((GeofancyApplication) context.getApplicationContext()).mObjectGraph.inject(context);
+        ((LocativeApplication) context.getApplicationContext()).mObjectGraph.inject(context);
     }
 
     public static void inject(Object target, Context context) {
-        ((GeofancyApplication) context.getApplicationContext()).mObjectGraph.inject(target);
+        ((LocativeApplication) context.getApplicationContext()).mObjectGraph.inject(target);
     }
 
 }

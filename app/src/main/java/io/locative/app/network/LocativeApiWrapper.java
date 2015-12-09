@@ -10,20 +10,18 @@ import javax.inject.Singleton;
 import io.locative.app.model.Fencelog;
 import io.locative.app.utils.AeSimpleSHA1;
 import io.locative.app.utils.Constants;
-import io.locative.app.utils.StringConverter;
 import retrofit.Callback;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 @Singleton
-public class GeofancyServiceWrapper {
+public class LocativeApiWrapper {
 
     @Inject
-    GeofancyNetworkService mService;
+    LocativeApiService mService;
 
 
-    public void doLogin(String username, String password, final GeofancyNetworkingCallback callback) {
+    public void doLogin(String username, String password, final LocativeNetworkingCallback callback) {
         mService.login(username, password, Constants.API_ORIGIN, new Callback<String>() {
 
             @Override
@@ -48,7 +46,7 @@ public class GeofancyServiceWrapper {
         });
     }
 
-    public void doSignup(String username, String password, String email, final GeofancyNetworkingCallback callback) {
+    public void doSignup(String username, String password, String email, final LocativeNetworkingCallback callback) {
         String token = null;
         try {
             token = AeSimpleSHA1.SHA1(username + ":" + password + "%" + email);
@@ -72,7 +70,7 @@ public class GeofancyServiceWrapper {
         });
     }
 
-    public void doCheckSession(String sessionId, final GeofancyNetworkingCallback callback) {
+    public void doCheckSession(String sessionId, final LocativeNetworkingCallback callback) {
         mService.checkSession(sessionId, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
@@ -86,7 +84,7 @@ public class GeofancyServiceWrapper {
         });
     }
 
-    public void doDispatchFencelog(String sessionId, Fencelog fencelog, final GeofancyNetworkingCallback callback) {
+    public void doDispatchFencelog(String sessionId, Fencelog fencelog, final LocativeNetworkingCallback callback) {
         mService.dispatchFencelog(
                 sessionId,
                 fencelog.longitude,

@@ -19,7 +19,7 @@ import android.util.Log;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class GeofancyLocationManager {
+public class LocativeLocationManager {
 
     public static final int MY_PERMISSIONS_REQUEST = 1;
 

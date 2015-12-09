@@ -1,6 +1,5 @@
 package io.locative.app.view;
 
-import android.app.Application;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -26,10 +25,10 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.OnClick;
-import io.locative.app.GeofancyApplication;
+import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.Geofences;
-import io.locative.app.network.GeofencingService;
+import io.locative.app.network.LocativeService;
 import io.locative.app.utils.Constants;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
@@ -57,7 +56,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        GeofancyApplication.inject(this);
+        LocativeApplication.inject(this);
 
         if (savedInstanceState == null) {
             firstResume = true;
@@ -227,9 +226,9 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     }
 
     private void updateGeofencingService(ArrayList<Geofences.Geofence> items) {
-        Intent geofencingService = new Intent(this, GeofencingService.class);
-        geofencingService.putExtra(GeofencingService.EXTRA_ACTION, GeofencingService.Action.ADD);
-        geofencingService.putExtra(GeofencingService.EXTRA_GEOFENCE, items);
+        Intent geofencingService = new Intent(this, LocativeService.class);
+        geofencingService.putExtra(LocativeService.EXTRA_ACTION, LocativeService.Action.ADD);
+        geofencingService.putExtra(LocativeService.EXTRA_GEOFENCE, items);
         this.startService(geofencingService);
     }
 
@@ -242,7 +241,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         return this.getPreferences(MODE_PRIVATE);
     }
 
-    private GeofancyApplication getApp() {
-        return (GeofancyApplication) getApplication();
+    private LocativeApplication getApp() {
+        return (LocativeApplication) getApplication();
     }
 }
