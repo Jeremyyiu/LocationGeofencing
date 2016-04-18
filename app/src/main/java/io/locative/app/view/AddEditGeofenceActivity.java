@@ -124,7 +124,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LocativeApplication.inject(this);
+        ((LocativeApplication) getApplication()).inject(this);
 
         // Already existing (editing) Geofence?
         mEditGeofenceId = getIntent().getIntExtra("geofenceId", 0);

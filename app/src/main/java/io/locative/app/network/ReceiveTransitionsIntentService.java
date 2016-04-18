@@ -44,7 +44,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     @Override
     public void onCreate() {
         super.onCreate();
-        LocativeApplication.inject(this, getApplicationContext());
+        ((LocativeApplication) getApplication()).inject(this);
     }
 
     @Override

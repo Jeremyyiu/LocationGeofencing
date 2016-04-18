@@ -56,7 +56,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LocativeApplication.inject(this);
+        ((LocativeApplication) getApplication()).inject(this);
 
         if (savedInstanceState == null) {
             firstResume = true;
