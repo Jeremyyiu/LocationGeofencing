@@ -46,8 +46,7 @@ public class SignupActivity extends BaseActivity implements LocativeNetworkingCa
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LocativeApplication.inject(this);
-
+        ((LocativeApplication) getApplication()).inject(this);
     }
 
     @OnClick(R.id.signup_button)

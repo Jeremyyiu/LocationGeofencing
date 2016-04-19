@@ -90,7 +90,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LocativeApplication.inject(this);
+        ((LocativeApplication) getApplication()).inject(this);
 
         adjustUiToLoginState();
 
