@@ -18,6 +18,10 @@ Here's a screenshot from the iOS version (at the time of writing this):
 
 The Android app is pretty much feature complete, but definitely needs to be modernized before it can be used standalone or even with the [https://my.locative.io](https://my.locative.io) backend.
 
+## Fabric / Crashlytics
+
+As a developers create a fabric.properties file and include your own Fabric apiKey and apiSecret!
+
 ## License
 
 The MIT License (MIT)
