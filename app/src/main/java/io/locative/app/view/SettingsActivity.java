@@ -105,7 +105,7 @@ public class SettingsActivity extends BaseActivity {
 
         mGlobalHttpAuthUsername.setText(mPrefs.getString(HTTP_USERNAME, null));
         mGlobalHttpAuthPassword.setText(mPrefs.getString(HTTP_PASSWORD, null));
-        mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SUCCESS, false));
+        mNotificationSuccessSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SUCCESS, false));
         mNotificationFailSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_FAIL, false));
         mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SOUND, false));
         mHttpMethod = (Constants.HttpMethod.POST.ordinal() == mPrefs.getInt(HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
