@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.service.notification.StatusBarNotification;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -99,8 +100,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
         int id = Integer.parseInt(geofence.getRequestId());
 
         notificationBuilder
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher))
-                .setSmallIcon(R.drawable.ic_launcher)
+             //   .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher))
+                .setSmallIcon(R.drawable.ic_notification)
+                .setColor(0x29aae1)
 //                .setContentTitle("Geofence id: " + id)
                 .setContentTitle(locationName)
                 .setContentText("Has been " + getTransitionTypeString(transitionType))
@@ -109,6 +111,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 .setAutoCancel(true);
 
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        nm.cancelAll();
         nm.notify(transitionType * 100 + id, notificationBuilder.build());
 
         Log.d(TAG, "notification built:" + id);
