@@ -1,5 +1,9 @@
 package io.locative.app.persistent;
 
+import android.content.ContentValues;
+import android.net.Uri;
+import android.widget.Toast;
+
 import de.triplet.simpleprovider.AbstractProvider;
 import de.triplet.simpleprovider.Column;
 import de.triplet.simpleprovider.Table;
@@ -20,6 +24,24 @@ public class GeofenceProvider extends AbstractProvider {
     }
 
     @Override
+    public Uri insert(Uri uri, ContentValues values) {
+        Uri result =  super.insert(uri, values);
+        Toast.makeText(getContext(), "Geofence added", Toast.LENGTH_SHORT)
+                .show();
+        return result;
+    }
+
+    @Override
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
+        int result = super.delete(uri, selection, selectionArgs);
+        Toast.makeText(getContext(), "Geofence removed", Toast.LENGTH_SHORT)
+                .show();
+        return result;
+    }
+
+
+
+    @Override
     public int getSchemaVersion() {
         return SCHEMA_VERSION;
     }
@@ -30,7 +52,7 @@ public class GeofenceProvider extends AbstractProvider {
         @Column(value = Column.FieldType.INTEGER, primaryKey = true)
         public static final String KEY_ID = "_id";
 
-        @Column(Column.FieldType.TEXT)
+        @Column(value = Column.FieldType.TEXT, unique = true)
         public static final String KEY_CUSTOMID = "custom_id";
 
         @Column(Column.FieldType.INTEGER)

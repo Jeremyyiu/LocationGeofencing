@@ -107,9 +107,6 @@ public class LocativeService extends Service implements
                         public void onResult(Status status) {
                             if (status.isSuccess()) {
                                 Log.d(TAG, "Geofences added " + mGeofenceListsToAdd);
-                                for (Geofence geofenceId : mGeofenceListsToAdd) {
-                                    Toast.makeText(LocativeService.this, "Geofences added: " + geofenceId, Toast.LENGTH_SHORT).show();
-                                }
                             } else {
                                 // Get the status code for the error and log it using a user-friendly message.
                                 String errorMessage = GeofenceErrorMessages.getErrorString(LocativeService.this, status.getStatusCode());
@@ -128,9 +125,6 @@ public class LocativeService extends Service implements
                         public void onResult(Status status) {
                             if (status.isSuccess()) {
                                 Log.d(TAG, "Geofences removed " + mGeofenceListsToRemove);
-                                for (String geofenceId : mGeofenceListsToRemove) {
-                                    Toast.makeText(LocativeService.this, "Geofences removed: " + geofenceId, Toast.LENGTH_SHORT).show();
-                                }
                             } else {
                                 // Get the status code for the error and log it using a user-friendly message.
                                 String errorMessage = GeofenceErrorMessages.getErrorString(LocativeService.this, status.getStatusCode());
