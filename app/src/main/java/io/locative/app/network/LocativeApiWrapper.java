@@ -8,14 +8,21 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.format.DateTimeParseException;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 import io.locative.app.persistent.GeofenceProvider;
@@ -34,7 +41,7 @@ public class LocativeApiWrapper {
     LocativeApiService mService;
     @Inject JsonParser mParser;
     private final GsonToGeofenceConverter GEOFENCE_CONVERTER = new GsonToGeofenceConverter();
-
+    private final GsonToFencelogConverter FENCELOG_CONVERTER = new GsonToFencelogConverter();
 
     public void doLogin(String username, String password, final LocativeNetworkingCallback callback) {
         mService.login(username, password, Constants.API_ORIGIN, new Callback<String>() {
@@ -139,11 +146,11 @@ public class LocativeApiWrapper {
         });
     }
 
-    public void getFenceLogs(String sessionId) {
+    public void getFenceLogs(String sessionId, final LocativeNetworkingCallback callback) {
         mService.getFencelogs(sessionId, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
-
+                callback.onGetFencelogsFinished(FENCELOG_CONVERTER.makeList(mParser.parse(s)));
             }
 
             @Override
@@ -210,6 +217,48 @@ public class LocativeApiWrapper {
             if (triggerOnArrival.get(JSONKEY_ENABLED).getAsBoolean())
                 trigger |= GeofenceProvider.TRIGGER_ON_ENTER;
             return trigger;
+        }
+    }
+
+    private class GsonToFencelogConverter {
+        private static final String JSONKEY_FENCELOGS = "fencelogs",
+            JSONKEY_ORIGIN = "origin",
+            JSONKEY_CREATEDAT = "created_at",
+            JSONKEY_TYPE = "fenceType",
+            JSONKEY_EVENT = "eventType",
+            JSONKEY_HTTPRESPONSE = "httpResponse",
+            JSONKEY_HTTPMETHOD = "httpMethod",
+            JSONKEY_HTTPURL = "httpUrl",
+            JSONKEY_LOCATIONID = "locationId";
+        private final SimpleDateFormat FORMATTER = new SimpleDateFormat();
+
+        public List<Fencelog> makeList(JsonElement element) {
+            return this.getFencelogs(element.getAsJsonObject().getAsJsonArray(JSONKEY_FENCELOGS));
+        }
+
+        private List<Fencelog> getFencelogs(JsonArray logsJson) {
+            List<Fencelog> logs = new ArrayList<Fencelog>(logsJson.size());
+            for (JsonElement logJson: logsJson)
+                logs.add(buildFenceLog(logJson.getAsJsonObject()));
+            return logs;
+        }
+
+        private Fencelog buildFenceLog(JsonObject fenceJson) {
+            Fencelog fence = new Fencelog();
+            fence.origin = fenceJson.get(JSONKEY_ORIGIN).getAsString();
+            fence.locationId = fenceJson.get(JSONKEY_LOCATIONID).getAsString();
+            fence.httpMethod = fenceJson.get(JSONKEY_HTTPMETHOD).getAsString();
+            fence.eventType = fenceJson.get(JSONKEY_EVENT).getAsString().equals(EventType.ENTER.apiName) ? EventType.ENTER : EventType.EXIT;
+            fence.httpUrl = fenceJson.get(JSONKEY_HTTPURL).getAsString();
+            fence.httpResponse = fenceJson.get(JSONKEY_HTTPRESPONSE).getAsString();
+            fence.fenceType = fenceJson.get(JSONKEY_TYPE).getAsString();
+            try {
+                String dateString = fenceJson.get(JSONKEY_CREATEDAT).getAsString();
+                fence.createdAt = LocalDateTime.parse(dateString.substring(0, dateString.length() - 5));
+            } catch(DateTimeParseException dtpe) {
+                Log.d(getClass().getName(), dtpe.getParsedString());
+            }
+            return fence;
         }
     }
 }

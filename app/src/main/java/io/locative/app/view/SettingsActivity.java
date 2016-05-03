@@ -150,6 +150,11 @@ public class SettingsActivity extends BaseActivity {
             public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
 
             }
+
+            @Override
+            public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
+
+            }
         };
 
 

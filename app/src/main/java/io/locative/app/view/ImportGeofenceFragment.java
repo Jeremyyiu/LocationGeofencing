@@ -14,6 +14,7 @@ import java.util.*;
 import javax.inject.Inject;
 
 import io.locative.app.R;
+import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkingCallback;
@@ -111,6 +112,11 @@ public class ImportGeofenceFragment extends ListFragment {
             public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
                 mFences = fences;
                 refresh();
+            }
+
+            @Override
+            public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
+
             }
         });
     }

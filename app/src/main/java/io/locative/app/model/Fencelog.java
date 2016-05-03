@@ -1,5 +1,9 @@
 package io.locative.app.model;
 
+import org.threeten.bp.LocalDateTime;
+
+import java.util.Date;
+
 /**
  * Created by mkida on 17/08/2014.
  */
@@ -28,4 +32,5 @@ public class Fencelog {
     public EventType eventType;
     public String fenceType;
     public String origin;
+    public LocalDateTime createdAt;
 }
