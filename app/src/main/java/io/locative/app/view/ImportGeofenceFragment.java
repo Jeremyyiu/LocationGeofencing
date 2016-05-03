@@ -48,8 +48,8 @@ public class ImportGeofenceFragment extends ListFragment {
         for (Geofences.Geofence geofence : mFences) {
             HashMap<String, String> hm = new HashMap<>();
             hm.put(IMAGE_KEY, IMAGE_VAL_DEFAULT);
-            hm.put(TITLE_KEY, geofence.title);
-            hm.put(SUBTITLE_KEY, geofence.subtitle);
+            hm.put(TITLE_KEY, geofence.subtitle);
+            hm.put(SUBTITLE_KEY, geofence.longitude + ", " + geofence.latitude + (!geofence.title.equals(LocativeApiWrapper.UNNAMED_FENCE) ? (" - " + geofence.title): ""));
             aList.add(hm);
         }
         GeofencesAdapter adapter = new GeofencesAdapter(getActivity().getBaseContext(), aList, R.layout.geofence_row, FROM, TO);

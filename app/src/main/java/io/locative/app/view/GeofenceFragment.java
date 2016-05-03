@@ -20,6 +20,7 @@ import java.util.List;
 
 import io.locative.app.R;
 import io.locative.app.model.Geofences;
+import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.utils.Constants;
 
 
@@ -71,8 +72,8 @@ public class GeofenceFragment extends ListFragment {
             HashMap<String, String> hm = new HashMap<String, String>();
             Geofences.Geofence geofence = Geofences.ITEMS.get(i);
             hm.put("image", "0");
-            hm.put("title", geofence.title);
-            hm.put("subtitle", geofence.subtitle);
+            hm.put("title", geofence.subtitle);
+            hm.put("subtitle", geofence.longitude + ", " + geofence.latitude + (!geofence.title.equals(LocativeApiWrapper.UNNAMED_FENCE) ? (" - " + geofence.title): ""));
             aList.add(hm);
         }
 
