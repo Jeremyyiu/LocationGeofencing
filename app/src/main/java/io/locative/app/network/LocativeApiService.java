@@ -50,4 +50,10 @@ public interface LocativeApiService {
             @Field("fenceType") String fenceType,
             @Field("origin") String origin,
             Callback<String> callback);
+
+    @GET("/api/geofences")
+    void getGeofences(
+            @Query("sessionId") String sessionId,
+            Callback<String> callback);
+
 }

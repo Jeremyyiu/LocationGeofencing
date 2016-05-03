@@ -4,6 +4,8 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -11,28 +13,37 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.Geofences;
+import io.locative.app.network.LocativeApiWrapper;
+import io.locative.app.network.LocativeNetworkingCallback;
 import io.locative.app.network.LocativeService;
+import io.locative.app.network.SessionManager;
+import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.Constants;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
-        LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener {
+        LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener, ImportGeofenceFragment.OnGeofenceSelection {
 
     @Bind(R.id.drawer)
     DrawerLayout mDrawerLayout;
@@ -45,6 +56,9 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
     @Bind(R.id.add_geofence)
     FloatingActionButton mFabButton;
+
+    @Inject
+    LocativeApiWrapper mGeofancyNetworkingWrapper;
 
     private ActionBarDrawerToggle mDrawerToogle;
 
@@ -189,8 +203,26 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @SuppressWarnings("unused")
     @OnClick(R.id.add_geofence)
     public void addGeofenceClick() {
-        Intent addEditGeofencesIntent = new Intent(this, AddEditGeofenceActivity.class);
-        startActivity(addEditGeofencesIntent);
+        AddGeofenceDialog geofenceDialog = AddGeofenceDialogFragment.createInstance();
+        geofenceDialog.setLocallyListener(new AddGeofenceDialogFragment.AddGeofenceResultListener() {
+            @Override
+            public void onResult() {
+                Intent addEditGeofencesIntent = new Intent(GeofencesActivity.this, AddEditGeofenceActivity.class);
+                GeofencesActivity.this.startActivity(addEditGeofencesIntent);
+            }
+        });
+        geofenceDialog.setImportListener(new AddGeofenceDialogFragment.AddGeofenceResultListener() {
+            @Override
+            public void onResult() {
+                Fragment fragment = new ImportGeofenceFragment();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.container, fragment, "").commit();
+                setTitle(R.string.geofence_import);
+                mFabButton.hide();
+            }
+        });
+        geofenceDialog.show(getFragmentManager());
     }
 
     @Override
@@ -202,11 +234,8 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         //DatabaseUtils.dumpCursor(data);
-
         mGeofenceFragment.geofences.clear();
-
         ArrayList<Geofences.Geofence> items = new ArrayList<Geofences.Geofence>();
-
         while (data.moveToNext()) {
             Geofences.Geofence item = new Geofences.Geofence(
                     data.getString(data.getColumnIndex("_id")),
@@ -243,5 +272,41 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
     private LocativeApplication getApp() {
         return (LocativeApplication) getApplication();
+    }
+
+    public void onFragmentInteraction(Geofences.Geofence fence) {
+        final String QUERY = GeofenceProvider.Geofence.KEY_CUSTOMID + " = ?";
+        final String[] PARAMETERS = new String[]{fence.subtitle};
+        final Uri URL = Uri.parse("content://" + getString(R.string.authority) + "/geofences");
+        ContentResolver resolver = this.getContentResolver();
+        Cursor existingCursor = resolver.query(URL, null, QUERY, PARAMETERS, null);
+        if (existingCursor != null && existingCursor.getCount() > 0)
+            resolver.update(URL, makeContentValuesForGeofence(fence), QUERY, PARAMETERS);
+        else
+            resolver.insert(URL, makeContentValuesForGeofence(fence));
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.replace(R.id.container, mGeofenceFragment, "").commit();
+        setTitle(R.string.title_geofences);
+        mFabButton.show();
+    }
+
+    @NonNull
+    private ContentValues makeContentValuesForGeofence(Geofences.Geofence fence) {
+        ContentValues values = new ContentValues();
+        values.put(GeofenceProvider.Geofence.KEY_NAME, fence.title);
+        values.put(GeofenceProvider.Geofence.KEY_RADIUS, fence.radius);
+        values.put(GeofenceProvider.Geofence.KEY_CUSTOMID, fence.subtitle);
+        values.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, (int) fence.importValues.get(GeofenceProvider.Geofence.KEY_ENTER_METHOD));
+        values.put(GeofenceProvider.Geofence.KEY_ENTER_URL, (String) fence.importValues.get(GeofenceProvider.Geofence.KEY_ENTER_URL));
+        values.put(GeofenceProvider.Geofence.KEY_TRIGGER, fence.triggers);
+        values.put(GeofenceProvider.Geofence.KEY_EXIT_METHOD, (int) fence.importValues.get(GeofenceProvider.Geofence.KEY_EXIT_METHOD));
+        values.put(GeofenceProvider.Geofence.KEY_EXIT_URL, (String) fence.importValues.get(GeofenceProvider.Geofence.KEY_EXIT_URL));
+        values.put(GeofenceProvider.Geofence.KEY_HTTP_AUTH, (int) fence.importValues.get(GeofenceProvider.Geofence.KEY_HTTP_AUTH));
+        values.put(GeofenceProvider.Geofence.KEY_HTTP_USERNAME, (String) fence.importValues.get(GeofenceProvider.Geofence.KEY_HTTP_USERNAME));
+        values.put(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD, (String) fence.importValues.get(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD));
+        values.put(GeofenceProvider.Geofence.KEY_LATITUDE, fence.latitude);
+        values.put(GeofenceProvider.Geofence.KEY_LONGITUDE, fence.longitude);
+        return values;
     }
 }

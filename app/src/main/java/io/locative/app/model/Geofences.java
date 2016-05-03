@@ -46,7 +46,7 @@ public class Geofences {
         public final float latitude;
         public final float longitude;
         public final int radius;
-
+        public final Map<String, Object> importValues;
 
         public Geofence(String id, String title, String subtitle, int triggers, float latitude, float longitude, int radius) {
             this.id = id;
@@ -56,8 +56,9 @@ public class Geofences {
             this.latitude = latitude;
             this.longitude = longitude;
             this.radius = radius;
-
+            importValues = new HashMap<>();
         }
+
 
         @Override
         public String toString() {

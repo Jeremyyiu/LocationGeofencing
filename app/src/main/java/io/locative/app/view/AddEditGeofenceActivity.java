@@ -54,6 +54,7 @@ import io.locative.app.utils.Constants;
 import io.locative.app.utils.GeocodeHandler;
 
 public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyCallback {
+    public static final String TYPE = "type";
 
     @Bind(R.id.address_button)
     Button mLocationButton;
@@ -106,7 +107,6 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     private boolean mSaved = false;
     private Constants.HttpMethod mEnterMethod = Constants.HttpMethod.POST;
     private Constants.HttpMethod mExitMethod = Constants.HttpMethod.POST;
-
     private GoogleMap mMap = null;
 
     LocativeLocationManager.LocationResult locationResult = new LocativeLocationManager.LocationResult() {

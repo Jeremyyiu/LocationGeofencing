@@ -14,6 +14,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.Bind;
@@ -22,6 +24,7 @@ import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
+import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeNetworkingCallback;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.utils.Constants;
@@ -141,6 +144,11 @@ public class SettingsActivity extends BaseActivity {
             public void onDispatchFencelogFinished(boolean success) {
                 mProgressDialog.dismiss();
                 simpleAlert(success ? "Your Fencelog was submitted successfully!" : "There was an error submitting your Fencelog.");
+            }
+
+            @Override
+            public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
+
             }
         };
 

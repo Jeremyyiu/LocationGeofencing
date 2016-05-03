@@ -10,12 +10,15 @@ import android.support.annotation.Nullable;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
+import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkingCallback;
 import io.locative.app.utils.Constants;
@@ -122,6 +125,11 @@ public class SignupActivity extends BaseActivity implements LocativeNetworkingCa
 
     @Override
     public void onDispatchFencelogFinished(boolean success) {
+
+    }
+
+    @Override
+    public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
 
     }
 }
