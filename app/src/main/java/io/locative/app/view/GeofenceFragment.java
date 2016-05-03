@@ -90,8 +90,10 @@ public class GeofenceFragment extends ListFragment {
                 R.id.subtitle
         };
 
-        GeofencesAdapter adapter = new GeofencesAdapter(getActivity().getBaseContext(), aList, R.layout.geofence_row, from, to);
-        setListAdapter(adapter);
+        if (getActivity() != null) {
+            GeofencesAdapter adapter = new GeofencesAdapter(getActivity().getBaseContext(), aList, R.layout.geofence_row, from, to);
+            setListAdapter(adapter);
+        }
     }
 
     @Override
@@ -108,11 +110,10 @@ public class GeofenceFragment extends ListFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
+        try {            mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnGeofenceSelection");
         }
     }
 

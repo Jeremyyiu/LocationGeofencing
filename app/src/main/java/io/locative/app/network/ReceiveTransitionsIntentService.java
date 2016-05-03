@@ -22,6 +22,7 @@ import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
+import io.locative.app.model.Geofences;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.view.GeofencesActivity;
 
@@ -145,6 +146,11 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 @Override
                 public void onDispatchFencelogFinished(boolean success) {
                     // WTF could not care less
+                }
+
+                @Override
+                public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
+
                 }
             });
         }

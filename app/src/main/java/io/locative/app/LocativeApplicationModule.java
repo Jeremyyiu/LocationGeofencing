@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import com.google.gson.JsonParser;
 import com.squareup.otto.Bus;
 
 import javax.inject.Singleton;
@@ -34,6 +35,13 @@ public class LocativeApplicationModule {
 
     public LocativeApplicationModule(LocativeApplication application) {
         mApp = application;
+    }
+
+    @SuppressWarnings("unused")
+    @Provides
+    @Singleton
+    public JsonParser getJsonParser() {
+        return new JsonParser();
     }
 
     @SuppressWarnings("unused")

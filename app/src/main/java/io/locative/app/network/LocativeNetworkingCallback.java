@@ -1,6 +1,9 @@
 package io.locative.app.network;
 
 
+import java.util.List;
+import io.locative.app.model.Geofences;
+
 public interface LocativeNetworkingCallback {
 
     void onLoginFinished(boolean success, String sessionId);
@@ -10,5 +13,7 @@ public interface LocativeNetworkingCallback {
     void onCheckSessionFinished(boolean sessionValid);
 
     void onDispatchFencelogFinished(boolean success);
+
+    void onGetGeoFencesFinished(List<Geofences.Geofence> fences);
 
 }
