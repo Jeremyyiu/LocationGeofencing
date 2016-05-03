@@ -28,25 +28,12 @@ import retrofit.client.Response;
 
 @Singleton
 public class LocativeApiWrapper {
-    private static final String JSONKEY_ENABLED = "enabled",
-            JSONKEY_LOCATIONID = "locationId",
-            JSONKEY_UUID = "uuid",
-            JSONKEY_LOCATION = "location",
-            JSONKEY_BASICAUTH = "basicAuth",
-            JSONKEY_TRIGGERONLEAVE = "triggerOnLeave",
-            JSONKEY_TRIGGERONARRIVAL = "triggerOnArrival",
-            JSONKEY_LAT = "lat",
-            JSONKEY_LONG = "lon",
-            JSONKEY_RADIUS = "radius",
-            JSONKEY_USERNAME = "username",
-            JSONKEY_PASSWORD = "password",
-            JSONKEY_METHOD = "method",
-            JSONKEY_URL = "url",
-            JSONKEY_GEOFENCES = "geofences";
+
 
     @Inject
     LocativeApiService mService;
     @Inject JsonParser mParser;
+    private final GsonToGeofenceConverter GEOFENCE_CONVERTER = new GsonToGeofenceConverter();
 
 
     public void doLogin(String username, String password, final LocativeNetworkingCallback callback) {
@@ -143,8 +130,7 @@ public class LocativeApiWrapper {
             @Override
             public void success(String s, Response response) {
                 JsonElement json = mParser.parse(s);
-                JsonArray geofencesJson = json.getAsJsonObject().getAsJsonArray(JSONKEY_GEOFENCES);
-                callback.onGetGeoFencesFinished(getGeofences(geofencesJson));
+                callback.onGetGeoFencesFinished(GEOFENCE_CONVERTER.makeList(json));
             }
 
             @Override
@@ -153,42 +139,77 @@ public class LocativeApiWrapper {
         });
     }
 
-    @NonNull
-    private List<Geofences.Geofence> getGeofences(JsonArray geofencesJson) {
-        List<Geofences.Geofence> geofences = new ArrayList<>(geofencesJson.size());
-        for (JsonElement geofenceJson : geofencesJson)
-            geofences.add(makeGeofence(geofenceJson.getAsJsonObject()));
-        return geofences;
+    public void getFenceLogs(String sessionId) {
+        mService.getFencelogs(sessionId, new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+
+            }
+        });
     }
 
-    private Geofences.Geofence makeGeofence(JsonObject geofenceJson) {
-        String locationId = geofenceJson.get(JSONKEY_LOCATIONID).getAsString();
-        String subtitle = geofenceJson.get(JSONKEY_UUID).getAsString();
-        JsonObject location =geofenceJson.getAsJsonObject(JSONKEY_LOCATION);
-        JsonObject basicAuth = geofenceJson.getAsJsonObject(JSONKEY_BASICAUTH);
-        JsonObject triggerOnLeave = geofenceJson.getAsJsonObject(JSONKEY_TRIGGERONLEAVE);
-        JsonObject triggerOnArrival = geofenceJson.getAsJsonObject(JSONKEY_TRIGGERONARRIVAL);
-        int triggers = createTrigger(triggerOnLeave, triggerOnArrival);
-        float lat = location.get(JSONKEY_LAT).getAsFloat();
-        float lon = location.get(JSONKEY_LONG).getAsFloat();
-        int radius = location.get(JSONKEY_RADIUS).getAsInt();
-        Geofences.Geofence geofence = new Geofences.Geofence("0", locationId, subtitle, triggers, lat, lon, radius);
-        geofence.importValues.put(GeofenceProvider.Geofence.KEY_HTTP_AUTH, (basicAuth.get(JSONKEY_ENABLED).getAsBoolean() ? 1 : 0));
-        geofence.importValues.put(GeofenceProvider.Geofence.KEY_HTTP_USERNAME, basicAuth.get(JSONKEY_USERNAME).getAsString());
-        geofence.importValues.put(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD, basicAuth.get(JSONKEY_PASSWORD).getAsString());
-        geofence.importValues.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, triggerOnArrival.get(JSONKEY_METHOD).getAsInt());
-        geofence.importValues.put(GeofenceProvider.Geofence.KEY_ENTER_URL, triggerOnArrival.get(JSONKEY_URL).getAsString());
-        geofence.importValues.put(GeofenceProvider.Geofence.KEY_EXIT_METHOD, triggerOnLeave.get(JSONKEY_METHOD).getAsInt());
-        geofence.importValues.put(GeofenceProvider.Geofence.KEY_ENTER_URL, triggerOnLeave.get(JSONKEY_URL).getAsString());
-        return geofence;
-    }
+    private class GsonToGeofenceConverter {
+        private static final String JSONKEY_ENABLED = "enabled",
+                JSONKEY_LOCATIONID = "locationId",
+                JSONKEY_UUID = "uuid",
+                JSONKEY_LOCATION = "location",
+                JSONKEY_BASICAUTH = "basicAuth",
+                JSONKEY_TRIGGERONLEAVE = "triggerOnLeave",
+                JSONKEY_TRIGGERONARRIVAL = "triggerOnArrival",
+                JSONKEY_LAT = "lat",
+                JSONKEY_LONG = "lon",
+                JSONKEY_RADIUS = "radius",
+                JSONKEY_USERNAME = "username",
+                JSONKEY_PASSWORD = "password",
+                JSONKEY_METHOD = "method",
+                JSONKEY_URL = "url",
+                JSONKEY_GEOFENCES = "geofences";
 
-    private int createTrigger(JsonObject triggerOnLeave, JsonObject triggerOnArrival) {
-        int trigger = 0;
-        if (triggerOnLeave.get(JSONKEY_ENABLED).getAsBoolean())
-            trigger |= GeofenceProvider.TRIGGER_ON_EXIT;
-        if (triggerOnArrival.get(JSONKEY_ENABLED).getAsBoolean())
-            trigger |= GeofenceProvider.TRIGGER_ON_ENTER;
-        return trigger;
+        public List<Geofences.Geofence> makeList(JsonElement json) {
+           return this.getGeofences(json.getAsJsonObject().getAsJsonArray(JSONKEY_GEOFENCES));
+        }
+        @NonNull
+        private List<Geofences.Geofence> getGeofences(JsonArray geofencesJson) {
+            List<Geofences.Geofence> geofences = new ArrayList<>(geofencesJson.size());
+            for (JsonElement geofenceJson : geofencesJson)
+                geofences.add(makeGeofence(geofenceJson.getAsJsonObject()));
+            return geofences;
+        }
+
+        private Geofences.Geofence makeGeofence(JsonObject geofenceJson) {
+            String locationId = geofenceJson.get(JSONKEY_LOCATIONID).getAsString();
+            String subtitle = geofenceJson.get(JSONKEY_UUID).getAsString();
+            JsonObject location = geofenceJson.getAsJsonObject(JSONKEY_LOCATION);
+            JsonObject basicAuth = geofenceJson.getAsJsonObject(JSONKEY_BASICAUTH);
+            JsonObject triggerOnLeave = geofenceJson.getAsJsonObject(JSONKEY_TRIGGERONLEAVE);
+            JsonObject triggerOnArrival = geofenceJson.getAsJsonObject(JSONKEY_TRIGGERONARRIVAL);
+            int triggers = createTrigger(triggerOnLeave, triggerOnArrival);
+            float lat = location.get(JSONKEY_LAT).getAsFloat();
+            float lon = location.get(JSONKEY_LONG).getAsFloat();
+            int radius = location.get(JSONKEY_RADIUS).getAsInt();
+            Geofences.Geofence geofence = new Geofences.Geofence("0", locationId, subtitle, triggers, lat, lon, radius);
+            geofence.importValues.put(GeofenceProvider.Geofence.KEY_HTTP_AUTH, (basicAuth.get(JSONKEY_ENABLED).getAsBoolean() ? 1 : 0));
+            geofence.importValues.put(GeofenceProvider.Geofence.KEY_HTTP_USERNAME, basicAuth.get(JSONKEY_USERNAME).getAsString());
+            geofence.importValues.put(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD, basicAuth.get(JSONKEY_PASSWORD).getAsString());
+            geofence.importValues.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, triggerOnArrival.get(JSONKEY_METHOD).getAsInt());
+            geofence.importValues.put(GeofenceProvider.Geofence.KEY_ENTER_URL, triggerOnArrival.get(JSONKEY_URL).getAsString());
+            geofence.importValues.put(GeofenceProvider.Geofence.KEY_EXIT_METHOD, triggerOnLeave.get(JSONKEY_METHOD).getAsInt());
+            geofence.importValues.put(GeofenceProvider.Geofence.KEY_ENTER_URL, triggerOnLeave.get(JSONKEY_URL).getAsString());
+            return geofence;
+        }
+
+        private int createTrigger(JsonObject triggerOnLeave, JsonObject triggerOnArrival) {
+            int trigger = 0;
+            if (triggerOnLeave.get(JSONKEY_ENABLED).getAsBoolean())
+                trigger |= GeofenceProvider.TRIGGER_ON_EXIT;
+            if (triggerOnArrival.get(JSONKEY_ENABLED).getAsBoolean())
+                trigger |= GeofenceProvider.TRIGGER_ON_ENTER;
+            return trigger;
+        }
     }
 }

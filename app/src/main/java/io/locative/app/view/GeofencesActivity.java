@@ -64,6 +64,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
 
     private GeofenceFragment mGeofenceFragment = null;
+    private FencelogsFragment mFenceLogsFragment = null;
     private boolean firstResume = false;
 
 
@@ -175,6 +176,11 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                     mGeofenceFragment = GeofenceFragment.newInstance("str1", "str2");
                 }
                 fragment = mGeofenceFragment;
+                break;
+            case R.id.fencelogs:
+                if (mFenceLogsFragment == null)
+                    mFenceLogsFragment = new FencelogsFragment();
+                fragment = mFenceLogsFragment;
                 break;
             case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));

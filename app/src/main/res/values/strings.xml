@@ -36,4 +36,6 @@
     <string name="geofence_add_message">Would you like to add a new Geofence locally or import it from my.locative.io?</string>
     <string name="geofence_locally">Locally</string>
     <string name="geofence_import">Import</string>
+
+    <string name="fencelogs">Fencelogs</string>
 </resources>
