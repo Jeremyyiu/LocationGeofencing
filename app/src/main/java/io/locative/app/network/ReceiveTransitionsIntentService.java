@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Build;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -127,6 +128,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
             fencelog.latitude = latitude;
             fencelog.longitude = longitude;
             fencelog.eventType = eventType;
+            fencelog.origin = Build.MODEL;
             mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, new LocativeNetworkingCallback() {
                 @Override
                 public void onLoginFinished(boolean success, String sessionId) {
