@@ -44,7 +44,7 @@ import io.locative.app.utils.Constants;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener, ImportGeofenceFragment.OnGeofenceSelection {
-
+    public static final String NOTIFICATION_CLICK = "notification_click";
     @Bind(R.id.drawer)
     DrawerLayout mDrawerLayout;
 
@@ -64,6 +64,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
 
     private GeofenceFragment mGeofenceFragment = null;
+    private FencelogsFragment mFenceLogsFragment = null;
     private boolean firstResume = false;
 
 
@@ -74,6 +75,18 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
         if (savedInstanceState == null) {
             firstResume = true;
+        }
+
+        if (getIntent() != null) {
+            Intent intent = getIntent();
+            if (intent.getBooleanExtra(NOTIFICATION_CLICK, false)) {
+                if (mFenceLogsFragment == null)
+                    mFenceLogsFragment = new FencelogsFragment();
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction transaction = fragmentManager.beginTransaction();
+                transaction.replace(R.id.container, mFenceLogsFragment, "").commit();
+                mFabButton.hide();
+            }
         }
 
         if (mToolbar != null) {
@@ -175,6 +188,13 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                     mGeofenceFragment = GeofenceFragment.newInstance("str1", "str2");
                 }
                 fragment = mGeofenceFragment;
+                mFabButton.show();
+                break;
+            case R.id.fencelogs:
+                if (mFenceLogsFragment == null)
+                    mFenceLogsFragment = new FencelogsFragment();
+                fragment = mFenceLogsFragment;
+                mFabButton.hide();
                 break;
             case R.id.settings:
                 startActivity(new Intent(this, SettingsActivity.class));

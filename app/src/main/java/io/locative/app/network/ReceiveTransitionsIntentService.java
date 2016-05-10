@@ -95,8 +95,10 @@ public class ReceiveTransitionsIntentService extends IntentService {
         cursor.close();
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
+        Intent intent = new Intent(this, GeofencesActivity.class);
+        intent.putExtra(GeofencesActivity.NOTIFICATION_CLICK, true);
+        PendingIntent openActivityIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        PendingIntent openActivityIntetnt = PendingIntent.getActivity(this, 0, new Intent(this, GeofencesActivity.class), PendingIntent.FLAG_UPDATE_CURRENT);
         int id = Integer.parseInt(geofence.getRequestId());
 
         notificationBuilder
@@ -107,7 +109,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 .setContentTitle(locationName)
                 .setContentText("Has been " + getTransitionTypeString(transitionType))
                 .setVibrate(new long[]{500, 500})
-                .setContentIntent(openActivityIntetnt)
+                .setContentIntent(openActivityIntent)
                 .setAutoCancel(true);
 
         NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
@@ -152,6 +154,11 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
                 @Override
                 public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
+
+                }
+
+                @Override
+                public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
 
                 }
             });

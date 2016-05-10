@@ -18,6 +18,7 @@ import butterknife.Bind;
 import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
+import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkingCallback;
@@ -130,6 +131,11 @@ public class SignupActivity extends BaseActivity implements LocativeNetworkingCa
 
     @Override
     public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
+
+    }
+
+    @Override
+    public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
 
     }
 }

@@ -8,6 +8,10 @@
             android:title="@string/title_geofences" />
 
         <item
+            android:id="@+id/fencelogs"
+            android:title="@string/fencelogs" />
+
+        <item
             android:id="@+id/settings"
             android:title="@string/title_settings" />
         <item

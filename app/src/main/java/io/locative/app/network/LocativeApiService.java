@@ -56,4 +56,8 @@ public interface LocativeApiService {
             @Query("sessionId") String sessionId,
             Callback<String> callback);
 
+    @GET("/api/fencelogs/{session}")
+    void getFencelogs(
+            @Path("session") String sessionId,
+            Callback<String> callback);
 }
