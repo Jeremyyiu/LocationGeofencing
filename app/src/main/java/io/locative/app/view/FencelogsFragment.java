@@ -18,6 +18,7 @@ import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
+import io.locative.app.network.LocativeNetworkingAdapter;
 import io.locative.app.network.LocativeNetworkingCallback;
 
 /**
@@ -91,32 +92,7 @@ public class FencelogsFragment extends ListFragment {
 
         GeofencesActivity ga = (GeofencesActivity)getActivity();
         ga.mFabButton.hide();
-        ga.mGeofancyNetworkingWrapper.getFenceLogs(ga.mSessionManager.getSessionId(), new LocativeNetworkingCallback() {
-            @Override
-            public void onLoginFinished(boolean success, String sessionId) {
-
-            }
-
-            @Override
-            public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
-
-            }
-
-            @Override
-            public void onCheckSessionFinished(boolean sessionValid) {
-
-            }
-
-            @Override
-            public void onDispatchFencelogFinished(boolean success) {
-
-            }
-
-            @Override
-            public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
-
-            }
-
+        ga.mGeofancyNetworkingWrapper.getFenceLogs(ga.mSessionManager.getSessionId(), new LocativeNetworkingAdapter() {
             @Override
             public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
                 mFences = fencelogs;

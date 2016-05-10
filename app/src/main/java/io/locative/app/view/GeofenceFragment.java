@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -109,12 +110,12 @@ public class GeofenceFragment extends ListFragment {
 
 
     @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {            mListener = (OnFragmentInteractionListener) activity;
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mListener = (OnFragmentInteractionListener) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnGeofenceSelection");
+            throw new ClassCastException(context.getClass().getSimpleName() + " must implement OnGeofenceSelection");
         }
     }
 
@@ -193,8 +194,7 @@ public class GeofenceFragment extends ListFragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
+        void onFragmentInteraction(String id);
     }
 
 }

@@ -6,6 +6,8 @@ import java.util.List;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 
+// TODO clean this up, bad design
+
 public interface LocativeNetworkingCallback {
 
     void onLoginFinished(boolean success, String sessionId);

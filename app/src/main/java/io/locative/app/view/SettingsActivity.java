@@ -25,6 +25,7 @@ import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
+import io.locative.app.network.LocativeNetworkingAdapter;
 import io.locative.app.network.LocativeNetworkingCallback;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.utils.Constants;
@@ -113,7 +114,7 @@ public class SettingsActivity extends BaseActivity {
         mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SOUND, false));
         mHttpMethod = (Constants.HttpMethod.POST.ordinal() == mPrefs.getInt(HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
 
-        mNetworkingCallback = new LocativeNetworkingCallback() {
+        mNetworkingCallback = new LocativeNetworkingAdapter() {
             @Override
             public void onLoginFinished(boolean success, String sessionId) {
                 mProgressDialog.dismiss();
@@ -128,11 +129,6 @@ public class SettingsActivity extends BaseActivity {
             }
 
             @Override
-            public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
-
-            }
-
-            @Override
             public void onCheckSessionFinished(boolean sessionValid) {
                 if (!sessionValid) {
                     mSessionManager.clearSession();
@@ -144,16 +140,6 @@ public class SettingsActivity extends BaseActivity {
             public void onDispatchFencelogFinished(boolean success) {
                 mProgressDialog.dismiss();
                 simpleAlert(success ? "Your Fencelog was submitted successfully!" : "There was an error submitting your Fencelog.");
-            }
-
-            @Override
-            public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
-
-            }
-
-            @Override
-            public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
-
             }
         };
 

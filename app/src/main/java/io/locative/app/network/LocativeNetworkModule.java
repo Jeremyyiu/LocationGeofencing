@@ -6,10 +6,6 @@ import io.locative.app.utils.Constants;
 import io.locative.app.utils.StringConverter;
 import retrofit.RestAdapter;
 
-/**
- * Created by chris on 08.12.15.
- */
-
 @Module(library = true, complete = false,
 
         injects = {
