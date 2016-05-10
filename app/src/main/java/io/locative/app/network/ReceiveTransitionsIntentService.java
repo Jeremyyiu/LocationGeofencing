@@ -131,35 +131,10 @@ public class ReceiveTransitionsIntentService extends IntentService {
             fencelog.longitude = longitude;
             fencelog.eventType = eventType;
             fencelog.origin = Build.MODEL;
-            mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, new LocativeNetworkingCallback() {
-                @Override
-                public void onLoginFinished(boolean success, String sessionId) {
-                    // WTF could not care less
-                }
-
-                @Override
-                public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
-                    // WTF could not care less
-                }
-
-                @Override
-                public void onCheckSessionFinished(boolean sessionValid) {
-                    // WTF could not care less
-                }
-
+            mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, new LocativeNetworkingAdapter() {
                 @Override
                 public void onDispatchFencelogFinished(boolean success) {
-                    // WTF could not care less
-                }
-
-                @Override
-                public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
-
-                }
-
-                @Override
-                public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
-
+                    // nothing to do here
                 }
             });
         }

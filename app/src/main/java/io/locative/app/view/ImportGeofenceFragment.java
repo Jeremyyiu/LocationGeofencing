@@ -1,38 +1,34 @@
 package io.locative.app.view;
 
-import android.app.Activity;
 import android.app.ListFragment;
-import android.content.Intent;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 
 import java.util.*;
-
-import javax.inject.Inject;
 
 import io.locative.app.R;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
+import io.locative.app.network.LocativeNetworkingAdapter;
 import io.locative.app.network.LocativeNetworkingCallback;
-import io.locative.app.network.SessionManager;
 
-/**
- * Created by Jasper De Vrient on 2/05/2016.
- */
 public class ImportGeofenceFragment extends ListFragment {
-    private static final String IMAGE_KEY = "image",
-        TITLE_KEY = "title",
-        SUBTITLE_KEY = "subtitle",
-        IMAGE_VAL_DEFAULT = "0";
+
+    private static final String IMAGE_KEY = "image";
+    private static final String TITLE_KEY = "title";
+    private static final String SUBTITLE_KEY = "subtitle";
+
+    private static final String IMAGE_VAL_DEFAULT = "0";
+
     // Keys used in Hashmap
     private static final String[] FROM = {
-            "image",
-            "title",
-            "subtitle"
+            IMAGE_KEY,
+            TITLE_KEY,
+            SUBTITLE_KEY
     };
 
     // Ids of views in listview_layout
@@ -57,13 +53,12 @@ public class ImportGeofenceFragment extends ListFragment {
         setListAdapter(adapter);
     }
 
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
+    public void onAttach(Context context) {
+        super.onAttach(context);
         try {
-            mListener = (OnGeofenceSelection) activity;
+            mListener = (OnGeofenceSelection) context;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnGeofenceSelection");
+            throw new ClassCastException(context.getClass().getSimpleName() + " must implement OnGeofenceSelection");
         }
     }
 
@@ -87,41 +82,17 @@ public class ImportGeofenceFragment extends ListFragment {
             }
         });
 
-        ga.mGeofancyNetworkingWrapper.getGeofences(ga.mSessionManager.getSessionId(), new LocativeNetworkingCallback() {
-            @Override
-            public void onLoginFinished(boolean success, String sessionId) {
-
-            }
-
-            @Override
-            public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
-
-            }
-
-            @Override
-            public void onCheckSessionFinished(boolean sessionValid) {
-
-            }
-
-            @Override
-            public void onDispatchFencelogFinished(boolean success) {
-
-            }
+        ga.mGeofancyNetworkingWrapper.getGeofences(ga.mSessionManager.getSessionId(), new LocativeNetworkingAdapter() {
 
             @Override
             public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {
                 mFences = fences;
                 refresh();
             }
-
-            @Override
-            public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
-
-            }
         });
     }
 
     public interface OnGeofenceSelection {
-        public void onFragmentInteraction(Geofences.Geofence fence);
+        void onFragmentInteraction(Geofences.Geofence fence);
     }
 }
