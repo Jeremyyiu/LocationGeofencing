@@ -10,7 +10,9 @@ import com.google.gson.JsonParser;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.threeten.bp.Instant;
 import org.threeten.bp.LocalDateTime;
+import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeParseException;
 
 import java.text.ParseException;
@@ -254,7 +256,9 @@ public class LocativeApiWrapper {
             fence.fenceType = fenceJson.get(JSONKEY_TYPE).getAsString();
             try {
                 String dateString = fenceJson.get(JSONKEY_CREATEDAT).getAsString();
-                fence.createdAt = LocalDateTime.parse(dateString.substring(0, dateString.length() - 5));
+                ZonedDateTime zdt =  ZonedDateTime.parse(dateString);
+                zdt = zdt.withZoneSameInstant(ZonedDateTime.now().getZone());
+                fence.createdAt = zdt.toLocalDateTime();
             } catch(DateTimeParseException dtpe) {
                 Log.d(getClass().getName(), dtpe.getParsedString());
             }
