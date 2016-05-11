@@ -65,7 +65,7 @@
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
-                        android:text="Geofence Settings"
+                        android:text="@string/geofence_settings"
                         android:textColor="@color/primary_dark"
                         android:textSize="16sp" />
 
@@ -132,7 +132,7 @@
                         android:layout_height="wrap_content"
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
-                        android:text="HTTP Settings"
+                        android:text="@string/http_settings"
                         android:textColor="@color/primary_dark"
                         android:textSize="16sp" />
 
@@ -145,7 +145,7 @@
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
                         android:checked="true"
-                        android:text="@string/trigger_on_arrival" />
+                        android:text="@string/trigger_on_enter" />
 
 
 
@@ -181,7 +181,7 @@
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
                         android:checked="true"
-                        android:text="Trigger on Departure" />
+                        android:text="@string/trigger_on_exit" />
 
                     <LinearLayout
                         android:layout_width="match_parent"

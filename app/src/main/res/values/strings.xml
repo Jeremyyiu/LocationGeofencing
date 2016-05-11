@@ -29,7 +29,10 @@
     </string>
     <string name="unknown_location">Unknown Location</string>
     <string name="custom_location_id">Custom Location ID</string>
-    <string name="trigger_on_arrival">Trigger on Arrival</string>
+
+    <string name="trigger_on_enter">Trigger on enter</string>
+    <string name="trigger_on_exit">Trigger on exit</string>
+
     <string name="error_permission_refused">Location permission is needed to use the app!</string>
 
     <string name="geofence_add">Add geofence</string>
@@ -38,4 +41,7 @@
     <string name="geofence_import">Import</string>
 
     <string name="fencelogs">Fencelogs</string>
+    
+    <string name="http_settings">HTTP Settings</string>
+    <string name="geofence_settings">Geofence Settings</string>
 </resources>
