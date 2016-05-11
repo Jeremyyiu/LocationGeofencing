@@ -26,6 +26,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -54,7 +55,11 @@ import io.locative.app.utils.Constants;
 import io.locative.app.utils.GeocodeHandler;
 
 public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyCallback {
+
     public static final String TYPE = "type";
+
+    public static final int DEFAULT_RADIUS_METERS = 50;
+    public static final int MAX_RADIUS_METERS = 500;
 
     @Bind(R.id.address_button)
     Button mLocationButton;
@@ -82,6 +87,9 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
 
     @Bind(R.id.radius_slider)
     SeekBar mRadiusSlider;
+
+    @Bind(R.id.radius_label)
+    TextView mRadiusLabel;
 
     @Bind(R.id.basic_auth_switch)
     Switch mBasicAuthSwitch;
@@ -133,11 +141,13 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
             mIsEditingGeofence = true;
         }
 
+        mRadiusSlider.setMax(MAX_RADIUS_METERS);
+        mRadiusSlider.setProgress(DEFAULT_RADIUS_METERS);
         mRadiusSlider.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            public void onProgressChanged(SeekBar seekBar, int radiusMeters, boolean fromUser) {
                 if (mCircle != null) {
-                    mCircle.setRadius(progress * 10);
+                    updateRadius();
                 }
             }
 
@@ -168,8 +178,9 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
 
 
         mGeocoderHandler = new GeocodeHandler(this);
-
+        updateRadius();
     }
+
 
     @SuppressWarnings("unsed")
     @OnClick({R.id.address_button, R.id.enter_method_button, R.id.exit_method_button})
@@ -292,10 +303,11 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         setupCircleManager();
         if (mIsEditingGeofence) {
             setCircleToLocation(location);
-            int radius = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_RADIUS));
-            mCircle.setRadius(radius * 10);
-            mRadiusSlider.setProgress(radius);
+            int radiusMeters = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_RADIUS));
+            mRadiusSlider.setProgress(radiusMeters);
         }
+
+        updateRadius();
 
 //        // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
@@ -397,7 +409,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         Log.d(Constants.LOG, "Triggers: " + triggers);
 
         values.put(GeofenceProvider.Geofence.KEY_NAME, mLocationButton.getText().toString());
-        values.put(GeofenceProvider.Geofence.KEY_RADIUS, mRadiusSlider.getProgress());
+        values.put(GeofenceProvider.Geofence.KEY_RADIUS, mCircle.getRadius()); // in meters
         values.put(GeofenceProvider.Geofence.KEY_CUSTOMID, custom_id);
         values.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, this.methodForTriggerType(Constants.TriggerType.ARRIVAL).ordinal());
         values.put(GeofenceProvider.Geofence.KEY_ENTER_URL, mEnterUrl.getText().toString());
@@ -439,7 +451,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
             LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
             mCircle = new MapAreaWrapper(mMap, position, 100, 5.0f, 0xffff0000, 0x33ff0000, 1, 1000);
             mCircleManager.add(mCircle);
-            mRadiusSlider.setProgress(10);
+            mRadiusSlider.setProgress(DEFAULT_RADIUS_METERS);
         }
     }
 
@@ -604,5 +616,13 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         return mExitMethod;
     }
 
-    ;
+
+    private void updateRadius() {
+        int radiusMeters = mRadiusSlider.getProgress();
+        mRadiusLabel.setText(String.format(getResources().getConfiguration().locale, "%d m", radiusMeters));
+        if(mCircle != null) {
+            mCircle.setRadius(radiusMeters);
+        }
+    }
+
 }

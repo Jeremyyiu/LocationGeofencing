@@ -11,9 +11,6 @@ import java.util.Map;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.Constants;
 
-/**
- * Created by mkida on 3/08/2014.
- */
 public class Geofences {
 
     /**
@@ -35,9 +32,6 @@ public class Geofences {
         ITEM_MAP.put(item.id, item);
     }
 
-    /**
-     * A dummy item representing a piece of content.
-     */
     public static class Geofence implements Serializable {
         public final String id;
         public final String title;
@@ -45,17 +39,17 @@ public class Geofences {
         public final int triggers;
         public final float latitude;
         public final float longitude;
-        public final int radius;
+        public final int radiusMeters;
         public final Map<String, Object> importValues;
 
-        public Geofence(String id, String title, String subtitle, int triggers, float latitude, float longitude, int radius) {
+        public Geofence(String id, String title, String subtitle, int triggers, float latitude, float longitude, int radiusMeters) {
             this.id = id;
             this.title = title;
             this.subtitle = subtitle;
             this.triggers = triggers;
             this.latitude = latitude;
             this.longitude = longitude;
-            this.radius = radius;
+            this.radiusMeters = radiusMeters;
             importValues = new HashMap<>();
         }
 
@@ -95,7 +89,7 @@ public class Geofences {
                     .setCircularRegion(
                             this.latitude,
                             this.longitude,
-                            this.radius)
+                            this.radiusMeters)
                     .setExpirationDuration(com.google.android.gms.location.Geofence.NEVER_EXPIRE)
                     .build();
         }

@@ -95,7 +95,7 @@ public class GeofenceProvider extends AbstractProvider {
         public static final String KEY_NAME = "name";
 
         @Column(Column.FieldType.FLOAT)
-        public static final String KEY_RADIUS = "radius";
+        public static final String KEY_RADIUS = "radius"; // in meters?
 
         @Column(Column.FieldType.INTEGER)
         public static final String KEY_TRIGGER = "triggers";

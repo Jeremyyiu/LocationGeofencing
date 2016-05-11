@@ -39,7 +39,7 @@ public enum Storage {
     private ContentValues makeContentValuesForGeofence(Geofences.Geofence fence) {
         ContentValues values = new ContentValues();
         values.put(GeofenceProvider.Geofence.KEY_NAME, fence.title);
-        values.put(GeofenceProvider.Geofence.KEY_RADIUS, fence.radius);
+        values.put(GeofenceProvider.Geofence.KEY_RADIUS, fence.radiusMeters);
         values.put(GeofenceProvider.Geofence.KEY_CUSTOMID, fence.subtitle);
         values.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, (int) fence.importValues.get(GeofenceProvider.Geofence.KEY_ENTER_METHOD));
         values.put(GeofenceProvider.Geofence.KEY_ENTER_URL, (String) fence.importValues.get(GeofenceProvider.Geofence.KEY_ENTER_URL));
