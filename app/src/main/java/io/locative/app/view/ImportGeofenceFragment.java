@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ListView;
 
 import java.util.*;
 
@@ -72,15 +73,6 @@ public class ImportGeofenceFragment extends ListFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         GeofencesActivity ga = (GeofencesActivity) getActivity();
-        getListView().setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mListener != null) {
-                    Geofences.Geofence item = mFences.get(position);
-                    mListener.onFragmentInteraction(item);
-                }
-            }
-        });
 
         ga.mGeofancyNetworkingWrapper.getGeofences(ga.mSessionManager.getSessionId(), new LocativeNetworkingAdapter() {
 
@@ -94,5 +86,13 @@ public class ImportGeofenceFragment extends ListFragment {
 
     public interface OnGeofenceSelection {
         void onFragmentInteraction(Geofences.Geofence fence);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        if (mListener != null) {
+            Geofences.Geofence item = mFences.get(position);
+            mListener.onFragmentInteraction(item);
+        }
     }
 }
