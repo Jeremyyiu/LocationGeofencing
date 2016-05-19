@@ -201,7 +201,7 @@ public class LocativeApiWrapper {
             float lat = location.get(JSONKEY_LAT).getAsFloat();
             float lon = location.get(JSONKEY_LONG).getAsFloat();
             int radius = location.get(JSONKEY_RADIUS).getAsInt();
-            Geofences.Geofence geofence = new Geofences.Geofence("0", locationId, subtitle, triggers, lat, lon, radius);
+            Geofences.Geofence geofence = new Geofences.Geofence("0", subtitle, locationId, triggers, lat, lon, radius);
             geofence.importValues.put(GeofenceProvider.Geofence.KEY_HTTP_AUTH, (basicAuth.get(JSONKEY_ENABLED).getAsBoolean() ? 1 : 0));
             geofence.importValues.put(GeofenceProvider.Geofence.KEY_HTTP_USERNAME, basicAuth.get(JSONKEY_USERNAME).getAsString());
             geofence.importValues.put(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD, basicAuth.get(JSONKEY_PASSWORD).getAsString());
