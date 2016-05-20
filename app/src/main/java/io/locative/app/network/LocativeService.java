@@ -20,7 +20,9 @@ import com.google.android.gms.location.LocationServices;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import io.locative.app.geo.GeofenceErrorMessages;
 import io.locative.app.model.Geofences;
@@ -32,6 +34,7 @@ public class LocativeService extends Service implements
     public static final String EXTRA_REQUEST_IDS = "requestId";
     public static final String EXTRA_GEOFENCE = "geofence";
     public static final String EXTRA_ACTION = "action";
+    private static final Set<String> fencesSET = new HashSet<>();
 
     private static final String TAG = "GEO";
 
@@ -66,15 +69,20 @@ public class LocativeService extends Service implements
             case ADD:
                 ArrayList<Geofences.Geofence> geofences = (ArrayList<Geofences.Geofence>) intent.getSerializableExtra(EXTRA_GEOFENCE);
                 for (Geofences.Geofence newGeofence : geofences) {
-                    Geofence googleGeofence = newGeofence.toGeofence();
-                    if (googleGeofence != null) {
-                        Log.d(Constants.LOG, "Adding Geofence: " + googleGeofence);
-                        mGeofenceListsToAdd.add(googleGeofence);
+                    if (!fencesSET.contains(newGeofence.id)) {
+                        Geofence googleGeofence = newGeofence.toGeofence();
+                        if (googleGeofence != null) {
+                            Log.d(Constants.LOG, "Adding Geofence: " + googleGeofence);
+                            mGeofenceListsToAdd.add(googleGeofence);
+                            fencesSET.add(newGeofence.id);
+                        }
                     }
                 }
                 break;
             case REMOVE:
                 mGeofenceListsToRemove = Arrays.asList(intent.getStringArrayExtra(EXTRA_REQUEST_IDS));
+                for (String id : mGeofenceListsToRemove)
+                    fencesSET.remove(id);
                 break;
         }
 

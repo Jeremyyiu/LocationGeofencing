@@ -89,7 +89,7 @@ public class GeofenceFragment extends ListFragment {
         int[] to = {
                 R.id.image,
                 R.id.title,
-                R.id.subtitle
+                 R.id.subtitle
         };
 
         if (getActivity() != null) {
