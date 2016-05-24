@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -20,9 +19,7 @@ import com.google.android.gms.location.LocationServices;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import io.locative.app.geo.GeofenceErrorMessages;
 import io.locative.app.model.Geofences;
@@ -34,8 +31,6 @@ public class LocativeService extends Service implements
     public static final String EXTRA_REQUEST_IDS = "requestId";
     public static final String EXTRA_GEOFENCE = "geofence";
     public static final String EXTRA_ACTION = "action";
-    private static final Set<String> fencesSET = new HashSet<>();
-
     private static final String TAG = "GEO";
 
     private final List<Geofence> mGeofenceListsToAdd = new ArrayList<Geofence>();
@@ -69,23 +64,17 @@ public class LocativeService extends Service implements
             case ADD:
                 ArrayList<Geofences.Geofence> geofences = (ArrayList<Geofences.Geofence>) intent.getSerializableExtra(EXTRA_GEOFENCE);
                 for (Geofences.Geofence newGeofence : geofences) {
-                    if (!fencesSET.contains(newGeofence.id)) {
-                        Geofence googleGeofence = newGeofence.toGeofence();
-                        if (googleGeofence != null) {
-                            Log.d(Constants.LOG, "Adding Geofence: " + googleGeofence);
-                            mGeofenceListsToAdd.add(googleGeofence);
-                            fencesSET.add(newGeofence.id);
-                        }
+                    Geofence googleGeofence = newGeofence.toGeofence();
+                    if (googleGeofence != null) {
+                        Log.d(Constants.LOG, "Adding Geofence: " + googleGeofence);
+                        mGeofenceListsToAdd.add(googleGeofence);
                     }
                 }
                 break;
             case REMOVE:
                 mGeofenceListsToRemove = Arrays.asList(intent.getStringArrayExtra(EXTRA_REQUEST_IDS));
-                for (String id : mGeofenceListsToRemove)
-                    fencesSET.remove(id);
                 break;
         }
-
         // Kick off the request to build GoogleApiClient.
         buildGoogleApiClient();
         mGoogleApiClient.connect();
@@ -193,7 +182,7 @@ public class LocativeService extends Service implements
         // The INITIAL_TRIGGER_ENTER flag indicates that geofencing service should trigger a
         // GEOFENCE_TRANSITION_ENTER notification when the geofence is added and if the device
         // is already inside that geofence.
-        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.setInitialTrigger(0);
         builder.addGeofences(geofenceList);
         return builder.build();
     }
