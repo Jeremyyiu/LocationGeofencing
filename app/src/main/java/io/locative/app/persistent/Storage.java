@@ -16,9 +16,10 @@ public enum Storage {
 
     INSTANCE;
 
-    public void insertOrUpdateFence(Geofences.Geofence fence, Context context) {
+    public Geofences.Geofence insertOrUpdateFence(Geofences.Geofence fence, Context context) {
         final String QUERY = GeofenceProvider.Geofence.KEY_CUSTOMID + " = ?";
         final String[] PARAMETERS = new String[]{fence.subtitle};
+        Geofences.Geofence returnFence = fence;
         final Uri URL = Uri.parse("content://" + context.getString(R.string.authority) + "/geofences");
         ContentResolver resolver = context.getContentResolver();
         Cursor existingCursor = resolver.query(URL, null, QUERY, PARAMETERS, null);
@@ -26,13 +27,16 @@ public enum Storage {
             if (existingCursor != null && existingCursor.getCount() > 0) {
                 resolver.update(URL, makeContentValuesForGeofence(fence), QUERY, PARAMETERS);
             } else {
-                resolver.insert(URL, makeContentValuesForGeofence(fence));
+                Uri result = resolver.insert(URL, makeContentValuesForGeofence(fence));
+                returnFence = fence.setId(result.getLastPathSegment());
             }
         }finally {
             if (existingCursor != null) {
                 existingCursor.close();
             }
         }
+
+        return returnFence;
     }
 
     @NonNull

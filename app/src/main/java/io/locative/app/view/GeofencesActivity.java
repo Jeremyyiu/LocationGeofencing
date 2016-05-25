@@ -4,8 +4,6 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -13,7 +11,6 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -35,7 +32,6 @@ import io.locative.app.R;
 import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeService;
-import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.persistent.Storage;
 import io.locative.app.utils.Constants;
 
@@ -59,14 +55,19 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
     private ActionBarDrawerToggle mDrawerToogle;
 
-
     private GeofenceFragment mGeofenceFragment = null;
     private FencelogsFragment mFenceLogsFragment = null;
     private boolean firstResume = false;
 
+    private String fragmentTag = "g";
+    private static final String FRAGMENTTAG = "current.fragment";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
+            if (savedInstanceState.containsKey(FRAGMENTTAG))
+                fragmentTag = savedInstanceState.getString(FRAGMENTTAG);
+        }
         super.onCreate(savedInstanceState);
         ((LocativeApplication) getApplication()).inject(this);
 
@@ -118,17 +119,49 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         mDrawerLayout.setDrawerListener(mDrawerToogle);
         mNavigationView.setNavigationItemSelectedListener(this);
 
-
-        mGeofenceFragment = GeofenceFragment.newInstance("str1", "str2");
-        getFragmentManager().beginTransaction().replace(R.id.container, mGeofenceFragment, "").commit();
-
         /*ContentResolver resolver = this.getContentResolver();
 
         ContentValues values = new ContentValues();
         values.put("custom_id", "123");
         resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);*/
+    }
 
-        getLoaderManager().initLoader(0, null, this);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(FRAGMENTTAG, fragmentTag);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FragmentManager fragman = getFragmentManager();
+        switch (fragmentTag) {
+            case "g": {
+                Fragment f = fragman.getFragment(new Bundle(), "g");
+                if (mGeofenceFragment == null)
+                    mGeofenceFragment = f != null ? (GeofenceFragment) f : GeofenceFragment.newInstance("str1", "str2");
+                fragman.beginTransaction().replace(R.id.container, mGeofenceFragment, "g").commit();
+                if (Geofences.ITEMS.size() == 0)
+                   load();
+                mGeofenceFragment.setLoading(false);
+                break;
+            }
+            case "f": {
+                Fragment f = fragman.getFragment(new Bundle(), "f");
+                if (mFenceLogsFragment == null)
+                    mFenceLogsFragment = f != null ? (FencelogsFragment)f : new FencelogsFragment();
+                fragman.beginTransaction().replace(R.id.container, mFenceLogsFragment, "f").commit();
+                break;
+            }
+        }
+    }
+
+    public void load() {
+        if (getLoaderManager().getLoader(0) == null)
+            getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().getLoader(0).forceLoad();
     }
 
     @Override
@@ -139,7 +172,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Override
     public void onResume() {
         super.onResume();
-        // first start of this activity , open drawer and hide FAB 
+        // first start of this activity , open drawer and hide FAB
         if (firstResume) {
             mDrawerLayout.openDrawer(Gravity.LEFT);
             mDrawerToogle.syncState();
@@ -185,6 +218,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                     mGeofenceFragment = GeofenceFragment.newInstance("str1", "str2");
                 }
                 fragment = mGeofenceFragment;
+                fragmentTag = "g";
                 mFabButton.show();
                 break;
             case R.id.fencelogs:
@@ -192,6 +226,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                     mFenceLogsFragment = new FencelogsFragment();
                 }
                 fragment = mFenceLogsFragment;
+                fragmentTag = "f";
                 mFabButton.hide();
                 break;
             case R.id.settings:
@@ -210,7 +245,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 break;
         }
         if (fragment != null) {
-            transaction.replace(R.id.container, fragment, "").commit();
+            transaction.replace(R.id.container, fragment, fragmentTag).commit();
         }
         setTitle(item.getTitle());
         mDrawerLayout.closeDrawer(GravityCompat.START);
@@ -294,10 +329,12 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     }
 
     public void onFragmentInteraction(Geofences.Geofence fence) {
-        Storage.INSTANCE.insertOrUpdateFence(fence, this);
+        fence = Storage.INSTANCE.insertOrUpdateFence(fence, this);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.replace(R.id.container, mGeofenceFragment, "").commit();
+        Geofences.ITEMS.add(fence);
+        mGeofenceFragment.setLoading(false);
+        transaction.replace(R.id.container, mGeofenceFragment, "g").commit();
         setTitle(R.string.title_geofences);
         mFabButton.show();
     }

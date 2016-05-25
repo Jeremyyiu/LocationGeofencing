@@ -50,6 +50,7 @@ import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.geo.LocativeGeocoder;
 import io.locative.app.geo.LocativeLocationManager;
+import io.locative.app.model.Geofences;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.GeocodeHandler;

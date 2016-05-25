@@ -53,6 +53,10 @@ public class Geofences {
             importValues = new HashMap<>();
         }
 
+        public Geofence setId(String id) {
+            return new Geofence(id, title, subtitle, triggers, latitude, longitude, radiusMeters);
+        }
+
 
         @Override
         public String toString() {
