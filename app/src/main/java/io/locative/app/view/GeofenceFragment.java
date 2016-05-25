@@ -34,6 +34,7 @@ import io.locative.app.utils.Constants;
 public class GeofenceFragment extends ListFragment {
 
     public Geofences geofences = new Geofences();
+    public static final String TAG = "fragment.geofences";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER

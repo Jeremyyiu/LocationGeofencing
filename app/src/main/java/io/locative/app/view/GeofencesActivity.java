@@ -59,7 +59,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     private FencelogsFragment mFenceLogsFragment = null;
     private boolean firstResume = false;
 
-    private String fragmentTag = "g";
+    private String fragmentTag = GeofenceFragment.TAG;
     private static final String FRAGMENTTAG = "current.fragment";
 
     @Override
@@ -138,21 +138,21 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         super.onStart();
         FragmentManager fragman = getFragmentManager();
         switch (fragmentTag) {
-            case "g": {
-                Fragment f = fragman.getFragment(new Bundle(), "g");
+            case GeofenceFragment.TAG: {
+                Fragment f = fragman.getFragment(new Bundle(), GeofenceFragment.TAG);
                 if (mGeofenceFragment == null)
                     mGeofenceFragment = f != null ? (GeofenceFragment) f : GeofenceFragment.newInstance("str1", "str2");
-                fragman.beginTransaction().replace(R.id.container, mGeofenceFragment, "g").commit();
+                fragman.beginTransaction().replace(R.id.container, mGeofenceFragment, GeofenceFragment.TAG).commit();
                 if (Geofences.ITEMS.size() == 0)
                    load();
                 mGeofenceFragment.setLoading(false);
                 break;
             }
-            case "f": {
-                Fragment f = fragman.getFragment(new Bundle(), "f");
+            case FencelogsFragment.TAG: {
+                Fragment f = fragman.getFragment(new Bundle(), FencelogsFragment.TAG);
                 if (mFenceLogsFragment == null)
                     mFenceLogsFragment = f != null ? (FencelogsFragment)f : new FencelogsFragment();
-                fragman.beginTransaction().replace(R.id.container, mFenceLogsFragment, "f").commit();
+                fragman.beginTransaction().replace(R.id.container, mFenceLogsFragment, FencelogsFragment.TAG).commit();
                 break;
             }
         }
@@ -218,7 +218,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                     mGeofenceFragment = GeofenceFragment.newInstance("str1", "str2");
                 }
                 fragment = mGeofenceFragment;
-                fragmentTag = "g";
+                fragmentTag = GeofenceFragment.TAG;
                 mFabButton.show();
                 break;
             case R.id.fencelogs:
@@ -226,7 +226,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                     mFenceLogsFragment = new FencelogsFragment();
                 }
                 fragment = mFenceLogsFragment;
-                fragmentTag = "f";
+                fragmentTag = FencelogsFragment.TAG;
                 mFabButton.hide();
                 break;
             case R.id.settings:
@@ -334,7 +334,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         Geofences.ITEMS.add(fence);
         mGeofenceFragment.setLoading(false);
-        transaction.replace(R.id.container, mGeofenceFragment, "g").commit();
+        transaction.replace(R.id.container, mGeofenceFragment, GeofenceFragment.TAG).commit();
         setTitle(R.string.title_geofences);
         mFabButton.show();
     }
