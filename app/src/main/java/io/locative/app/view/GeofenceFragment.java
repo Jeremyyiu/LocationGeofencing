@@ -24,7 +24,6 @@ import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.utils.Constants;
 
-
 /**
  * A fragment representing a list of Items.
  * <p/>
@@ -35,6 +34,7 @@ import io.locative.app.utils.Constants;
 public class GeofenceFragment extends ListFragment {
 
     public Geofences geofences = new Geofences();
+    public static final String TAG = "fragment.geofences";
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -44,6 +44,8 @@ public class GeofenceFragment extends ListFragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+
+    private boolean mLoading = true;
 
     private OnFragmentInteractionListener mListener;
 
@@ -108,6 +110,9 @@ public class GeofenceFragment extends ListFragment {
         }
     }
 
+    public void setLoading(boolean loading) {
+        mLoading = loading;
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -117,6 +122,7 @@ public class GeofenceFragment extends ListFragment {
         } catch (ClassCastException e) {
             throw new ClassCastException(context.getClass().getSimpleName() + " must implement OnGeofenceSelection");
         }
+
     }
 
     @Override
@@ -124,7 +130,6 @@ public class GeofenceFragment extends ListFragment {
         super.onDetach();
         mListener = null;
     }
-
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
@@ -140,6 +145,11 @@ public class GeofenceFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedState) {
         super.onActivityCreated(savedState);
+
+        if (!mLoading) {
+            setListShown(true);
+            refresh();
+        }
 
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
@@ -159,6 +169,8 @@ public class GeofenceFragment extends ListFragment {
                                 ContentResolver resolver = aView.getContext().getContentResolver();
 
                                 resolver.delete(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), "_id = ?", new String[]{item.id});
+                                Geofences.ITEMS.remove(pos);
+                                refresh();
                             }
                         })
                         .setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -196,5 +208,4 @@ public class GeofenceFragment extends ListFragment {
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(String id);
     }
-
 }

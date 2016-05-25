@@ -25,6 +25,7 @@ import io.locative.app.network.LocativeNetworkingCallback;
  * Created by Jasper De Vrient on 3/05/2016.
  */
 public class FencelogsFragment extends ListFragment {
+    public static final String TAG = "fragment.fencelogs";
     private final DateTimeFormatter TODAYFORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private final DateTimeFormatter WEEKFORMATTER = DateTimeFormatter.ofPattern("EE, HH:mm");
     private final DateTimeFormatter THISMONTHFORMATTER = DateTimeFormatter.ofPattern("d LLL, HH:mm");
