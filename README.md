@@ -6,7 +6,7 @@
 
 [http://locative.io](http://locative.io)
 
-This is the Locative app for Android. It's not yet available in the Google Play Store but it will be soon.
+This is the Locative app for Android, it will soon be available in the Google Play Store.
 
 If you'd like to contribute to it just fork this repository and create a pull-request.
 
