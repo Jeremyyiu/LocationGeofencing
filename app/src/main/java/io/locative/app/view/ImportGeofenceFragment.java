@@ -5,17 +5,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.*;
 
 import io.locative.app.R;
-import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkingAdapter;
-import io.locative.app.network.LocativeNetworkingCallback;
 
 public class ImportGeofenceFragment extends ListFragment {
 

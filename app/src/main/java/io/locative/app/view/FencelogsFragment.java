@@ -6,10 +6,7 @@ import android.widget.SimpleAdapter;
 
 import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.format.DateTimeFormatter;
-import org.threeten.bp.format.DateTimeFormatterBuilder;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,9 +14,7 @@ import java.util.List;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
-import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeNetworkingAdapter;
-import io.locative.app.network.LocativeNetworkingCallback;
 
 /**
  * Created by Jasper De Vrient on 3/05/2016.

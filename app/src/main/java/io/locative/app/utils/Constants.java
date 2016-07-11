@@ -16,14 +16,10 @@ public class Constants {
     public enum TriggerType {
         ARRIVAL,
         DEPARTURE
-    }
-
-    ;
+    };
 
     public enum HttpMethod {
         POST,
         GET;
-    }
-
-    ;
+    };
 }
