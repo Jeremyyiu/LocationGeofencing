@@ -14,7 +14,7 @@ If you'd like to contribute to it just fork this repository and create a pull-re
 
 ## Fabric / Crashlytics
 
-As a developers create a fabric.properties file and include your own Fabric apiKey and apiSecret!
+As a developers create a `fabric.properties` file and include your own Fabric `apiKey` and `apiSecret`!
 
 ## License
 
