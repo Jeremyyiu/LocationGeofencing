@@ -11,7 +11,7 @@ public class Constants {
     public static String TOS_URI = "https://my.locative.io/legal";
     public static String TWITTER_URI = "https://twitter.com/LocativeHQ";
     public static String FACEBOOK_URI = "https://www.facebook.com/LocativeHQ";
-    public static String SUPPORT_MAIL_URI = "mailto:support@geofancy.com";
+    public static String SUPPORT_URI = "https://my.locative.io/support";
 
     public enum TriggerType {
         ARRIVAL,
