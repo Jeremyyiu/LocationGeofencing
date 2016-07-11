@@ -4,10 +4,7 @@
 
     To get one, follow this link, follow the directions and press "Create" at the end:
 
-    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=13:AD:0D:F3:89:17:B5:A2:E7:2A:AB:8B:A9:6A:A4:3F:6A:EC:10:A7%3Bio.kida.geofancy
-
-    You can also add your credentials to an existing key, using this line:
-    13:AD:0D:F3:89:17:B5:A2:E7:2A:AB:8B:A9:6A:A4:3F:6A:EC:10:A7;io.kida.geofancy
+    https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID
 
     Alternatively, follow the directions here:
     https://developers.google.com/maps/documentation/android/start#get-key
