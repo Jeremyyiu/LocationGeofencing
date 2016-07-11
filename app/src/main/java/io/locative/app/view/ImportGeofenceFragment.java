@@ -74,7 +74,7 @@ public class ImportGeofenceFragment extends ListFragment {
         super.onActivityCreated(savedInstanceState);
         GeofencesActivity ga = (GeofencesActivity) getActivity();
 
-        ga.mGeofancyNetworkingWrapper.getGeofences(ga.mSessionManager.getSessionId(), new LocativeNetworkingAdapter() {
+        ga.mLocativeNetworkingWrapper.getGeofences(ga.mSessionManager.getSessionId(), new LocativeNetworkingAdapter() {
 
             @Override
             public void onGetGeoFencesFinished(List<Geofences.Geofence> fences) {

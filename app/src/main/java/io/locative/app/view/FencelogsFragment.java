@@ -93,7 +93,7 @@ public class FencelogsFragment extends ListFragment {
 
         GeofencesActivity ga = (GeofencesActivity)getActivity();
         ga.mFabButton.hide();
-        ga.mGeofancyNetworkingWrapper.getFenceLogs(ga.mSessionManager.getSessionId(), new LocativeNetworkingAdapter() {
+        ga.mLocativeNetworkingWrapper.getFenceLogs(ga.mSessionManager.getSessionId(), new LocativeNetworkingAdapter() {
             @Override
             public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
                 mFences = fencelogs;

@@ -34,7 +34,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     private final String TAG = "TRANSITION";
 
     @Inject
-    LocativeApiWrapper mGeofancyNetworkingWrapper;
+    LocativeApiWrapper mLocativeNetworkingWrapper;
 
     @Inject
     SessionManager mSessionManager;
@@ -131,7 +131,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
             fencelog.longitude = longitude;
             fencelog.eventType = eventType;
             fencelog.origin = Build.MODEL;
-            mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, new LocativeNetworkingAdapter() {
+            mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, new LocativeNetworkingAdapter() {
                 @Override
                 public void onDispatchFencelogFinished(boolean success) {
                     // nothing to do here

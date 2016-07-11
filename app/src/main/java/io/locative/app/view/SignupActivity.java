@@ -43,7 +43,7 @@ public class SignupActivity extends BaseActivity implements LocativeNetworkingCa
     Button mTosButtonl;
 
     @Inject
-    LocativeApiWrapper mGeofancyNetworkingWrapper;
+    LocativeApiWrapper mLocativeNetworkingWrapper;
 
     private ProgressDialog mProgressDialog;
 
@@ -61,7 +61,7 @@ public class SignupActivity extends BaseActivity implements LocativeNetworkingCa
         mProgressDialog.setIndeterminate(true);
         mProgressDialog.show();
 
-        mGeofancyNetworkingWrapper.doSignup(mUsernameText.getText().toString(), mPasswordText.getText().toString(), mEmailText.getText().toString(), this);
+        mLocativeNetworkingWrapper.doSignup(mUsernameText.getText().toString(), mPasswordText.getText().toString(), mEmailText.getText().toString(), this);
     }
 
     @OnClick(R.id.tos_button)

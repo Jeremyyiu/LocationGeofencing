@@ -51,7 +51,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     FloatingActionButton mFabButton;
 
     @Inject
-    LocativeApiWrapper mGeofancyNetworkingWrapper;
+    LocativeApiWrapper mLocativeNetworkingWrapper;
 
     private ActionBarDrawerToggle mDrawerToogle;
 

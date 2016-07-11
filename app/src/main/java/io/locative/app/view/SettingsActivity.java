@@ -89,7 +89,7 @@ public class SettingsActivity extends BaseActivity {
     Button mLostpassButton;
 
     @Inject
-    LocativeApiWrapper mGeofancyNetworkingWrapper;
+    LocativeApiWrapper mLocativeNetworkingWrapper;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -159,7 +159,7 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-        mGeofancyNetworkingWrapper.doCheckSession(mSessionManager.getSessionId(), mNetworkingCallback);
+        mLocativeNetworkingWrapper.doCheckSession(mSessionManager.getSessionId(), mNetworkingCallback);
     }
 
 
@@ -194,7 +194,7 @@ public class SettingsActivity extends BaseActivity {
     public void loginOrLogout() {
         showProgressDialog("Please wait…");
         if (!mSessionManager.hasSession()) {
-            mGeofancyNetworkingWrapper.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
+            mLocativeNetworkingWrapper.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
         } else {
             // TODO: Implement Logout via API (needs to be implemented on Server-Side)
             //mNetworking.doLogout()
@@ -212,7 +212,7 @@ public class SettingsActivity extends BaseActivity {
         showProgressDialog("Please wait…");
         String sessionId = mSessionManager.getSessionId();
         if (sessionId != null) {
-            mGeofancyNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
+            mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
         }
     }
 
