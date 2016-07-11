@@ -2,7 +2,7 @@
 
 [![Join the chat at https://gitter.im/LocativeHQ/android-app](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/LocativeHQ/android-app?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-[![Build Status](https://travis-ci.org/LocativeHQ/android-app.svg?branch=master)](https://travis-ci.org/LocativeHQ/android-app)
+[![Build Status](https://travis-ci.org/LocativeHQ/Locative-Android.svg?branch=master)](https://travis-ci.org/LocativeHQ/Locative-Android)
 
 [http://locative.io](http://locative.io)
 
