@@ -233,7 +233,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 startActivity(new Intent(this, SettingsActivity.class));
                 break;
             case R.id.feedback:
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.SUPPORT_MAIL_URI)));
+                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.SUPPORT_URI)));
                 break;
             case R.id.twitter:
                 startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.TWITTER_URI)));

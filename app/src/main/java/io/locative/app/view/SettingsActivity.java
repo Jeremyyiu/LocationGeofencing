@@ -122,7 +122,7 @@ public class SettingsActivity extends BaseActivity {
                     simpleAlert("Username or Password incorrect. Please try again.");
                     return;
                 }
-                simpleAlert("Login successful! Your Fencelogs will now be visible when you log in at https://my.geofancy.com.");
+                simpleAlert("Login successful! Your Fencelogs will now be visible when you log in at https://my.locative.io");
                 Log.d(Constants.LOG, "Login success with SessionID: " + sessionId);
                 mSessionManager.setSessionId(sessionId);
                 adjustUiToLoginState();
