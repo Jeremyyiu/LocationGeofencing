@@ -52,9 +52,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
-//            String errorMessage = GeofenceErrorMessages.getErrorString(this,
-//                    geofencingEvent.getErrorCode());
-//            Log.e(TAG, errorMessage);
             Log.e(TAG, "Location Services error: " + geofencingEvent.getErrorCode());
             return;
         }
@@ -62,17 +59,11 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
         int transitionType = geofencingEvent.getGeofenceTransition();
         List<Geofence> triggeredGeofences = geofencingEvent.getTriggeringGeofences();
-        //List<String> triggeredIds = new ArrayList<String>();
 
         for (Geofence geofence : triggeredGeofences) {
             Log.d(TAG, "onHandle:" + geofence.getRequestId());
             processGeofence(geofence, transitionType);
-            //triggeredIds.add(geofence.getRequestId());
         }
-
-//        if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
-//            removeGeofences(triggeredIds);
-//        }
     }
 
     private void processGeofence(Geofence geofence, int transitionType) {
@@ -101,10 +92,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
         int id = Integer.parseInt(geofence.getRequestId());
 
         notificationBuilder
-             //   .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher))
                 .setSmallIcon(R.drawable.ic_notification)
                 .setColor(0x29aae1)
-//                .setContentTitle("Geofence id: " + id)
                 .setContentTitle(locationName)
                 .setContentText("Has been " + getTransitionTypeString(transitionType))
                 .setVibrate(new long[]{500, 500})
