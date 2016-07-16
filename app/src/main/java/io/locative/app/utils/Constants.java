@@ -4,8 +4,8 @@ package io.locative.app.utils;
  * Created by mkida on 3/08/2014.
  */
 public class Constants {
-    public static String LOG = "io.locative.app";
 
+    public static String LOG = "io.locative.app";
     public static String API_ENDPOINT = "https://my.locative.io";
     public static String API_ORIGIN = android.os.Build.MODEL;//"Android App";
     public static String TOS_URI = "https://my.locative.io/legal";
