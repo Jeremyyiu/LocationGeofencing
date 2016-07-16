@@ -119,12 +119,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
             fencelog.longitude = longitude;
             fencelog.eventType = eventType;
             fencelog.origin = Build.MODEL;
-            mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, new LocativeNetworkingAdapter() {
-                @Override
-                public void onDispatchFencelogFinished(boolean success) {
-                    // nothing to do here
-                }
-            });
+            mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, null);
         }
     }
 
