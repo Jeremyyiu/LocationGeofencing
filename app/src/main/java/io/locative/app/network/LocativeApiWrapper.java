@@ -124,12 +124,16 @@ public class LocativeApiWrapper {
                 new Callback<String>() {
                     @Override
                     public void success(String s, Response response) {
-                        callback.onDispatchFencelogFinished(true);
+                        if (callback != null) {
+                            callback.onDispatchFencelogFinished(true);
+                        }
                     }
 
                     @Override
                     public void failure(RetrofitError error) {
-                        callback.onDispatchFencelogFinished(false);
+                        if (callback != null) {
+                            callback.onDispatchFencelogFinished(false);
+                        }
                     }
                 });
     }
