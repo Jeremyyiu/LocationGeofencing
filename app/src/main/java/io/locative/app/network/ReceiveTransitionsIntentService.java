@@ -23,6 +23,7 @@ import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
+import io.locative.app.model.Geofences;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.view.GeofencesActivity;
 
@@ -37,6 +38,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     @Inject
     SessionManager mSessionManager;
+
+    @Inject
+    RequestManager mRequestManager;
 
     public ReceiveTransitionsIntentService() {
         super(TRANSITION_INTENT_SERVICE);
@@ -73,6 +77,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
         if (cursor == null || cursor.getCount() == 0) {
             return; // TODO: Handle errors here
         }
+
         cursor.moveToFirst();
 
         String customId = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID));
@@ -82,6 +87,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
         if (locationName.length() == 0) {
             locationName = "Unknown Location";
         }
+
+        Geofences.Geofence fence = GeofenceProvider.fromCursor(cursor);
+
         cursor.close();
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
@@ -105,22 +113,13 @@ public class ReceiveTransitionsIntentService extends IntentService {
         nm.notify(transitionType * 100 + id, notificationBuilder.build());
 
         Log.d(TAG, "notification built:" + id);
-        reportFenceLogToApi(customId, latitude, longitude, getEventType(transitionType));
+        reportFenceLogToApi(fence, getEventType(transitionType));
         Log.d(TAG, "fence logged:" + customId);
 
     }
 
-    private void reportFenceLogToApi(String customId, float latitude, float longitude, @Nullable EventType eventType) {
-        String sessionId = mSessionManager.getSessionId();
-        if (sessionId != null && eventType != null) {
-            Fencelog fencelog = new Fencelog();
-            fencelog.locationId = customId;
-            fencelog.latitude = latitude;
-            fencelog.longitude = longitude;
-            fencelog.eventType = eventType;
-            fencelog.origin = Build.MODEL;
-            mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, null);
-        }
+    private void reportFenceLogToApi(final Geofences.Geofence geofence, final @Nullable EventType eventType) {
+        mRequestManager.dispatch(geofence, eventType);
     }
 
     private LocativeApplication getApp() {
