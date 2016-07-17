@@ -1,6 +1,7 @@
 package io.locative.app.persistent;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 import android.net.Uri;
 import android.widget.Toast;
 
@@ -8,6 +9,7 @@ import de.triplet.simpleprovider.AbstractProvider;
 import de.triplet.simpleprovider.Column;
 import de.triplet.simpleprovider.Table;
 import io.locative.app.R;
+import io.locative.app.model.Geofences;
 
 /**
  * Created by kimar on 16.05.14.
@@ -39,7 +41,17 @@ public class GeofenceProvider extends AbstractProvider {
         return result;
     }
 
-
+    public static Geofences.Geofence fromCursor (Cursor cursor) {
+        return new Geofences.Geofence(
+                cursor.getString(cursor.getColumnIndex("_id")),
+                cursor.getString(cursor.getColumnIndex("name")),
+                cursor.getString(cursor.getColumnIndex("custom_id")),
+                cursor.getInt(cursor.getColumnIndex("triggers")),
+                cursor.getFloat(cursor.getColumnIndex("latitude")),
+                cursor.getFloat(cursor.getColumnIndex("longitude")),
+                cursor.getInt(cursor.getColumnIndex("radius"))
+        );
+    }
 
     @Override
     public int getSchemaVersion() {
