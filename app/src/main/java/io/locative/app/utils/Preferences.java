@@ -9,4 +9,5 @@ public class Preferences {
     public static String NOTIFICATION_SUCCESS = "notificationSuccess";
     public static String NOTIFICATION_FAIL = "notificationFailure";
     public static String NOTIFICATION_SOUND = "notificationSound";
+    public static String SESSION_ID = "sessionId";
 }

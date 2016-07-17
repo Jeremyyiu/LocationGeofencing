@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.locative.app.utils.Preferences;
+
 /**
  * Created by chris on 08.12.15.
  */
@@ -14,29 +16,27 @@ import javax.inject.Singleton;
 @Singleton
 public class SessionManager {
 
-    private static final String PREF_SESSION_ID = "sessionId";
-
     @Inject
     SharedPreferences mPrefs;
 
 
     public boolean hasSession() {
-        return mPrefs.contains(PREF_SESSION_ID);
+        return mPrefs.contains(Preferences.SESSION_ID);
     }
 
     @Nullable
     public String getSessionId() {
-        return mPrefs.getString(PREF_SESSION_ID, null);
+        return mPrefs.getString(Preferences.SESSION_ID, null);
     }
 
     public void setSessionId(@NonNull String sessionId) {
         // async
-        mPrefs.edit().putString(PREF_SESSION_ID, sessionId).apply();
+        mPrefs.edit().putString(Preferences.SESSION_ID, sessionId).apply();
     }
 
     public void clearSession() {
         // async
-        mPrefs.edit().remove(PREF_SESSION_ID).apply();
+        mPrefs.edit().remove(Preferences.SESSION_ID).apply();
     }
 
 
