@@ -90,7 +90,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
         String locationName = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_NAME));
         if (locationName.length() == 0 && customId.length() > 0) {
             locationName = customId;
-        } else {
+        } else if (customId.length() == 0) {
             locationName = "Unknown Location";
         }
 
