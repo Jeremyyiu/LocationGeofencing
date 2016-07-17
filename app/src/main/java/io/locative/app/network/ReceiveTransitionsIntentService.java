@@ -71,7 +71,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
         ContentResolver resolver = this.getContentResolver();
         Cursor cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{geofence.getRequestId()}, null);
         if (cursor == null || cursor.getCount() == 0) {
-            return;
+            return; // TODO: Handle errors here
         }
         cursor.moveToFirst();
 
