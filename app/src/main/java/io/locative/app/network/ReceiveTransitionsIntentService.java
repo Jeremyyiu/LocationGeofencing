@@ -79,17 +79,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
         }
 
         cursor.moveToFirst();
-
-        String customId = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID));
-        float latitude = cursor.getFloat(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LATITUDE));
-        float longitude = cursor.getFloat(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LONGITUDE));
-        String locationName = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID));
-        if (locationName.length() == 0) {
-            locationName = "Unknown Location";
-        }
-
         Geofences.Geofence fence = GeofenceProvider.fromCursor(cursor);
-
         cursor.close();
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
@@ -102,7 +92,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
         notificationBuilder
                 .setSmallIcon(R.drawable.ic_notification)
                 .setColor(0x29aae1)
-                .setContentTitle(locationName)
+                .setContentTitle(fence.title != null ? fence.title : "Unknown Location")
                 .setContentText("Has been " + getTransitionTypeString(transitionType))
                 .setVibrate(new long[]{500, 500})
                 .setContentIntent(openActivityIntent)
@@ -113,13 +103,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
         nm.notify(transitionType * 100 + id, notificationBuilder.build());
 
         Log.d(TAG, "notification built:" + id);
-        reportFenceLogToApi(fence, getEventType(transitionType));
-        Log.d(TAG, "fence logged:" + customId);
+        mRequestManager.dispatch(fence, getEventType(transitionType));
+        Log.d(TAG, "fence logged:" + fence.id);
 
-    }
-
-    private void reportFenceLogToApi(final Geofences.Geofence geofence, final @Nullable EventType eventType) {
-        mRequestManager.dispatch(geofence, eventType);
     }
 
     private LocativeApplication getApp() {

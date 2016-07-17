@@ -42,10 +42,13 @@ public class GeofenceProvider extends AbstractProvider {
     }
 
     public static Geofences.Geofence fromCursor (Cursor cursor) {
+        final String id = cursor.getString(cursor.getColumnIndex("custom_id")) != null ?
+                cursor.getString(cursor.getColumnIndex("custom_id")) :
+                cursor.getString(cursor.getColumnIndex("_id"));
         return new Geofences.Geofence(
-                cursor.getString(cursor.getColumnIndex("_id")),
+                id,
                 cursor.getString(cursor.getColumnIndex("name")),
-                cursor.getString(cursor.getColumnIndex("custom_id")),
+                "",
                 cursor.getInt(cursor.getColumnIndex("triggers")),
                 cursor.getFloat(cursor.getColumnIndex("latitude")),
                 cursor.getFloat(cursor.getColumnIndex("longitude")),
