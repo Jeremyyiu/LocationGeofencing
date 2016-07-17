@@ -87,10 +87,13 @@ public class ReceiveTransitionsIntentService extends IntentService {
         String customId = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID));
         float latitude = cursor.getFloat(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LATITUDE));
         float longitude = cursor.getFloat(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LONGITUDE));
-        String locationName = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID));
-        if (locationName.length() == 0) {
+        String locationName = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_NAME));
+        if (locationName.length() == 0 && customId.length() > 0) {
+            locationName = customId;
+        } else {
             locationName = "Unknown Location";
         }
+
         cursor.close();
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
