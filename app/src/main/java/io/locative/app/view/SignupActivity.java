@@ -14,7 +14,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
@@ -27,19 +27,19 @@ import io.locative.app.utils.Constants;
 public class SignupActivity extends BaseActivity implements LocativeNetworkingCallback {
 
 
-    @Bind(R.id.username_text)
+    @BindView(R.id.username_text)
     EditText mUsernameText;
 
-    @Bind(R.id.email_text)
+    @BindView(R.id.email_text)
     EditText mEmailText;
 
-    @Bind(R.id.password_text)
+    @BindView(R.id.password_text)
     EditText mPasswordText;
 
-    @Bind(R.id.signup_button)
+    @BindView(R.id.signup_button)
     Button mSignupButton;
 
-    @Bind(R.id.tos_button)
+    @BindView(R.id.tos_button)
     Button mTosButtonl;
 
     @Inject

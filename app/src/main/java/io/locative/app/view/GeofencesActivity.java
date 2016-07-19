@@ -25,7 +25,7 @@ import java.util.ArrayList;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
@@ -38,16 +38,16 @@ import io.locative.app.utils.Constants;
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener, ImportGeofenceFragment.OnGeofenceSelection {
     public static final String NOTIFICATION_CLICK = "notification_click";
-    @Bind(R.id.drawer)
+    @BindView(R.id.drawer)
     DrawerLayout mDrawerLayout;
 
-    @Bind(R.id.nav_view)
+    @BindView(R.id.nav_view)
     NavigationView mNavigationView;
 
-    @Bind(R.id.container)
+    @BindView(R.id.container)
     FrameLayout mContentFrame;
 
-    @Bind(R.id.add_geofence)
+    @BindView(R.id.add_geofence)
     FloatingActionButton mFabButton;
 
     @Inject
@@ -144,14 +144,14 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                     mGeofenceFragment = f != null ? (GeofenceFragment) f : GeofenceFragment.newInstance("str1", "str2");
                 fragman.beginTransaction().replace(R.id.container, mGeofenceFragment, GeofenceFragment.TAG).commit();
                 if (Geofences.ITEMS.size() == 0)
-                   load();
+                    load();
                 mGeofenceFragment.setLoading(false);
                 break;
             }
             case FencelogsFragment.TAG: {
                 Fragment f = fragman.getFragment(new Bundle(), FencelogsFragment.TAG);
                 if (mFenceLogsFragment == null)
-                    mFenceLogsFragment = f != null ? (FencelogsFragment)f : new FencelogsFragment();
+                    mFenceLogsFragment = f != null ? (FencelogsFragment) f : new FencelogsFragment();
                 fragman.beginTransaction().replace(R.id.container, mFenceLogsFragment, FencelogsFragment.TAG).commit();
                 break;
             }

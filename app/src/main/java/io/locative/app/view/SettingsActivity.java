@@ -16,15 +16,15 @@ import android.widget.Switch;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
+import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkingAdapter;
 import io.locative.app.network.LocativeNetworkingCallback;
-import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.utils.Constants;
 
 public class SettingsActivity extends BaseActivity {
@@ -43,46 +43,46 @@ public class SettingsActivity extends BaseActivity {
     private ProgressDialog mProgressDialog = null;
     private LocativeNetworkingCallback mNetworkingCallback;
 
-    @Bind(R.id.global_http_url)
+    @BindView(R.id.global_http_url)
     EditText mUrlText;
 
-    @Bind(R.id.global_http_method_button)
+    @BindView(R.id.global_http_method_button)
     Button mGlobalHttpMethodButton;
 
-    @Bind(R.id.global_auth_switch)
+    @BindView(R.id.global_auth_switch)
     Switch mGlobalHttpAuthSwitch;
 
-    @Bind(R.id.global_auth_username)
+    @BindView(R.id.global_auth_username)
     EditText mGlobalHttpAuthUsername;
 
-    @Bind(R.id.global_auth_password)
+    @BindView(R.id.global_auth_password)
     EditText mGlobalHttpAuthPassword;
 
-    @Bind(R.id.send_test_button)
+    @BindView(R.id.send_test_button)
     Button mSendTestButton;
 
-    @Bind(R.id.notification_success_switch)
+    @BindView(R.id.notification_success_switch)
     Switch mNotificationSuccessSwitch;
 
-    @Bind(R.id.notification_fail_switch)
+    @BindView(R.id.notification_fail_switch)
     Switch mNotificationFailSwitch;
 
-    @Bind(R.id.notification_sound_switch)
+    @BindView(R.id.notification_sound_switch)
     Switch mNotificationSoundSwitch;
 
-    @Bind(R.id.account_username_text)
+    @BindView(R.id.account_username_text)
     EditText mAccountUsernameText;
 
-    @Bind(R.id.account_password_text)
+    @BindView(R.id.account_password_text)
     EditText mAccountPasswordText;
 
-    @Bind(R.id.login_button)
+    @BindView(R.id.login_button)
     Button mLoginButton;
 
-    @Bind(R.id.signup_button)
+    @BindView(R.id.signup_button)
     Button mSignupButton;
 
-    @Bind(R.id.lostpass_button)
+    @BindView(R.id.lostpass_button)
     Button mLostpassButton;
 
     @Inject
