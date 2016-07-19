@@ -78,6 +78,16 @@ public class ReceiveTransitionsIntentService extends IntentService {
             return; // TODO: Handle errors here
         }
 
+        String customId = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID));
+        float latitude = cursor.getFloat(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LATITUDE));
+        float longitude = cursor.getFloat(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LONGITUDE));
+        String locationName = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_NAME));
+        if (customId.length() == 0 && locationName.length() > 0) {
+            customId = locationName;
+        } else if (locationName.length() == 0) {
+            customId = "Unknown Location";
+        }
+
         cursor.moveToFirst();
         Geofences.Geofence fence = GeofenceProvider.fromCursor(cursor);
         cursor.close();
@@ -92,7 +102,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
         notificationBuilder
                 .setSmallIcon(R.drawable.ic_notification)
                 .setColor(0x29aae1)
-                .setContentTitle(fence.title != null ? fence.title : "Unknown Location")
+//                .setContentTitle("Geofence id: " + id)
+                .setContentTitle(customId)
                 .setContentText("Has been " + getTransitionTypeString(transitionType))
                 .setVibrate(new long[]{500, 500})
                 .setContentIntent(openActivityIntent)

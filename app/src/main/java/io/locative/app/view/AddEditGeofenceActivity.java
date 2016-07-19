@@ -44,7 +44,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.UUID;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
@@ -62,43 +62,43 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     public static final int DEFAULT_RADIUS_METERS = 50;
     public static final int MAX_RADIUS_METERS = 500;
 
-    @Bind(R.id.address_button)
+    @BindView(R.id.address_button)
     Button mLocationButton;
 
-    @Bind(R.id.customLocationId)
+    @BindView(R.id.customLocationId)
     EditText mCustomId;
 
-    @Bind(R.id.trigger_enter)
+    @BindView(R.id.trigger_enter)
     Switch mTriggerEnter;
 
-    @Bind(R.id.trigger_exit)
+    @BindView(R.id.trigger_exit)
     Switch mTriggerExit;
 
-    @Bind(R.id.enter_method_button)
+    @BindView(R.id.enter_method_button)
     Button mEnterMethodButton;
 
-    @Bind(R.id.enter_url_text)
+    @BindView(R.id.enter_url_text)
     EditText mEnterUrl;
 
-    @Bind(R.id.exit_method_button)
+    @BindView(R.id.exit_method_button)
     Button mExitMethodButton;
 
-    @Bind(R.id.exit_url_text)
+    @BindView(R.id.exit_url_text)
     EditText mExitUrl;
 
-    @Bind(R.id.radius_slider)
+    @BindView(R.id.radius_slider)
     SeekBar mRadiusSlider;
 
-    @Bind(R.id.radius_label)
+    @BindView(R.id.radius_label)
     TextView mRadiusLabel;
 
-    @Bind(R.id.basic_auth_switch)
+    @BindView(R.id.basic_auth_switch)
     Switch mBasicAuthSwitch;
 
-    @Bind(R.id.basic_auth_username)
+    @BindView(R.id.basic_auth_username)
     EditText mBasicAuthUsername;
 
-    @Bind(R.id.basic_auth_password)
+    @BindView(R.id.basic_auth_password)
     EditText mBasicAuthPassword;
 
     public int mEditGeofenceId = 0;

@@ -14,8 +14,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
-import butterknife.Bind;
 import butterknife.BindString;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.locative.app.R;
 import javax.inject.Inject;
@@ -24,7 +24,7 @@ import io.locative.app.LocativeApplication;
 import io.locative.app.network.SessionManager;
 
 public abstract class BaseActivity extends AppCompatActivity {
-  @Bind(R.id.toolbar_actionbar) protected Toolbar mToolbar;
+  @BindView(R.id.toolbar_actionbar) protected Toolbar mToolbar;
 
   @BindString(R.string.error_permission_refused) String error_permission_refused;
 

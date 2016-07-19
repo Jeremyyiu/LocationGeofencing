@@ -29,8 +29,8 @@ android {
         applicationId "io.locative.app"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 3
-        versionName "1.0.1"
+        versionCode 6
+        versionName "1.0.4"
     }
 
     buildTypes {
@@ -95,7 +95,7 @@ dependencies {
 
     compile 'com.github.triplet.simpleprovider:simpleprovider:1.1.0'
 
-    compile 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.jakewharton:butterknife:8.2.1'
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.3'
 
     compile 'com.squareup.dagger:dagger:1.2.2'
