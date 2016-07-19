@@ -60,7 +60,13 @@ public class Geofences {
 
         @Override
         public String toString() {
-            return title;
+            if (title != null && title.length() > 0) {
+                return title;
+            }
+            if (subtitle != null && subtitle.length() > 0) {
+                return subtitle;
+            }
+            return id;
         }
 
         public com.google.android.gms.location.Geofence toGeofence() {
