@@ -90,7 +90,7 @@ public class RequestManager {
             fencelog.origin = Build.MODEL;
             fencelog.httpMethod = httpMethod;
             fencelog.httpResponseCode = String.valueOf(httpResponseCode);
-            fencelog.httpResponse = httpResponse
+            fencelog.httpResponse = httpResponse;
             mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, null);
         }
     }
