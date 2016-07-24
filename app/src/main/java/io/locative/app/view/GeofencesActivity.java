@@ -32,12 +32,14 @@ import io.locative.app.R;
 import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeService;
+import io.locative.app.network.SessionManager;
 import io.locative.app.persistent.Storage;
 import io.locative.app.utils.Constants;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener, ImportGeofenceFragment.OnGeofenceSelection {
     public static final String NOTIFICATION_CLICK = "notification_click";
+
     @BindView(R.id.drawer)
     DrawerLayout mDrawerLayout;
 
@@ -52,6 +54,9 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
     @Inject
     LocativeApiWrapper mLocativeNetworkingWrapper;
+
+    @Inject
+    SessionManager mSessionManager;
 
     private ActionBarDrawerToggle mDrawerToogle;
 
@@ -256,12 +261,19 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @SuppressWarnings("unused")
     @OnClick(R.id.add_geofence)
     public void addGeofenceClick() {
+
+        if (!mSessionManager.hasSession()) {
+            // We're not logged in, automatically go to create new Geofence and omit import
+            createGeofence();
+            return;
+        }
+
+        // use is logged in, let him chose between creating or importing Geofences
         AddGeofenceDialog geofenceDialog = AddGeofenceDialogFragment.createInstance();
         geofenceDialog.setLocallyListener(new AddGeofenceDialogFragment.AddGeofenceResultListener() {
             @Override
             public void onResult() {
-                Intent addEditGeofencesIntent = new Intent(GeofencesActivity.this, AddEditGeofenceActivity.class);
-                GeofencesActivity.this.startActivity(addEditGeofencesIntent);
+                createGeofence();
             }
         });
         geofenceDialog.setImportListener(new AddGeofenceDialogFragment.AddGeofenceResultListener() {
@@ -277,6 +289,11 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
             }
         });
         geofenceDialog.show(getFragmentManager());
+    }
+
+    private void createGeofence() {
+        Intent addEditGeofencesIntent = new Intent(GeofencesActivity.this, AddEditGeofenceActivity.class);
+        GeofencesActivity.this.startActivity(addEditGeofencesIntent);
     }
 
     @Override
