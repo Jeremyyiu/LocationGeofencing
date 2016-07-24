@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
@@ -16,6 +17,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,12 +34,14 @@ import io.locative.app.R;
 import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeService;
+import io.locative.app.network.SessionManager;
 import io.locative.app.persistent.Storage;
 import io.locative.app.utils.Constants;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener, ImportGeofenceFragment.OnGeofenceSelection {
     public static final String NOTIFICATION_CLICK = "notification_click";
+
     @BindView(R.id.drawer)
     DrawerLayout mDrawerLayout;
 
@@ -52,6 +56,9 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
     @Inject
     LocativeApiWrapper mLocativeNetworkingWrapper;
+
+    @Inject
+    SessionManager mSessionManager;
 
     private ActionBarDrawerToggle mDrawerToogle;
 
@@ -211,6 +218,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+        boolean cancelled = false;
 
         switch (item.getItemId()) {
             case R.id.geofence:
@@ -222,6 +230,26 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 mFabButton.show();
                 break;
             case R.id.fencelogs:
+                if (!mSessionManager.hasSession()) {
+                    // don't try to show FencelogsFragment if user is not logged in
+                    // instead show AlertDialog and offer chance to log in / create account
+                    final GeofencesActivity self = this;
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.not_logged_in)
+                            .setMessage(R.string.need_login)
+                            .setPositiveButton(R.string.login, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    startActivity(new Intent(self, SettingsActivity.class));
+                                }
+                            })
+                            .setNegativeButton(R.string.cancel, null)
+                            .setCancelable(true)
+                            .create().show();
+                    cancelled = true;
+                    break;
+                }
+                // in case the user is logged in, just continue as usual
                 if (mFenceLogsFragment == null) {
                     mFenceLogsFragment = new FencelogsFragment();
                 }
@@ -247,6 +275,13 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         if (fragment != null) {
             transaction.replace(R.id.container, fragment, fragmentTag).commit();
         }
+
+        if (cancelled) {
+            // operation has been cancelled because prerequisites have failed
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return false;
+        }
+
         setTitle(item.getTitle());
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
@@ -256,12 +291,19 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @SuppressWarnings("unused")
     @OnClick(R.id.add_geofence)
     public void addGeofenceClick() {
+
+        if (!mSessionManager.hasSession()) {
+            // We're not logged in, automatically go to create new Geofence and omit import
+            createGeofence();
+            return;
+        }
+
+        // use is logged in, let him chose between creating or importing Geofences
         AddGeofenceDialog geofenceDialog = AddGeofenceDialogFragment.createInstance();
         geofenceDialog.setLocallyListener(new AddGeofenceDialogFragment.AddGeofenceResultListener() {
             @Override
             public void onResult() {
-                Intent addEditGeofencesIntent = new Intent(GeofencesActivity.this, AddEditGeofenceActivity.class);
-                GeofencesActivity.this.startActivity(addEditGeofencesIntent);
+                createGeofence();
             }
         });
         geofenceDialog.setImportListener(new AddGeofenceDialogFragment.AddGeofenceResultListener() {
@@ -277,6 +319,11 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
             }
         });
         geofenceDialog.show(getFragmentManager());
+    }
+
+    private void createGeofence() {
+        Intent addEditGeofencesIntent = new Intent(GeofencesActivity.this, AddEditGeofenceActivity.class);
+        GeofencesActivity.this.startActivity(addEditGeofencesIntent);
     }
 
     @Override

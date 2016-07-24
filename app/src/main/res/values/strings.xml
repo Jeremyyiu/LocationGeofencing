@@ -35,12 +35,17 @@
 
     <string name="error_permission_refused">Location permission is needed to use the app!</string>
 
+    <string name="geofences_empty">You currently don\'t have any Geofences. Click the "+" to add some and get started.</string>
     <string name="geofence_add">Add geofence</string>
     <string name="geofence_add_message">Would you like to add a new Geofence locally or import it from my.locative.io?</string>
     <string name="geofence_locally">Locally</string>
     <string name="geofence_import">Import</string>
 
     <string name="fencelogs">Fencelogs</string>
+    <string name="not_logged_in">Not logged in</string>
+    <string name="need_login">To use this functionality you need to be logged in to my.locative.io</string>
+    <string name="login">Login</string>
+    <string name="cancel">Cancel</string>
     
     <string name="http_settings">HTTP Settings</string>
     <string name="geofence_settings">Geofence Settings</string>

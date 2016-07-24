@@ -2,12 +2,14 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:2.1.2'
         classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
 }
 
 apply plugin: 'com.android.application'
 apply plugin: 'android-apt'
 apply plugin: 'io.fabric'
+apply plugin: 'com.neenbedankt.android-apt'
 
 repositories {
     maven { url 'https://maven.fabric.io/public' }
@@ -29,8 +31,8 @@ android {
         applicationId "io.locative.app"
         minSdkVersion 16
         targetSdkVersion 23
-        versionCode 6
-        versionName "1.0.4"
+        versionCode 7
+        versionName "1.0.5"
     }
 
     buildTypes {
@@ -81,6 +83,8 @@ apt {
     }
 }
 
+def butterknifeVersion = '8.2.1'
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
@@ -95,7 +99,9 @@ dependencies {
 
     compile 'com.github.triplet.simpleprovider:simpleprovider:1.1.0'
 
-    compile 'com.jakewharton:butterknife:8.2.1'
+    compile "com.jakewharton:butterknife:$butterknifeVersion"
+    apt "com.jakewharton:butterknife-compiler:$butterknifeVersion"
+
     compile 'com.jakewharton.threetenabp:threetenabp:1.0.3'
 
     compile 'com.squareup.dagger:dagger:1.2.2'

@@ -151,6 +151,7 @@ public class GeofenceFragment extends ListFragment {
             refresh();
         }
 
+        setEmptyText(getString(R.string.geofences_empty));
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             public boolean onItemLongClick(AdapterView<?> av, View v, int position, long id) {
                 //Get your item here with the position
