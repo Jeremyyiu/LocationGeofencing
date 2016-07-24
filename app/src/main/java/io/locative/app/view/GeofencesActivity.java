@@ -218,6 +218,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+        boolean cancelled = false;
 
         switch (item.getItemId()) {
             case R.id.geofence:
@@ -245,6 +246,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                             .setNegativeButton(R.string.cancel, null)
                             .setCancelable(true)
                             .create().show();
+                    cancelled = true;
                     break;
                 }
                 // in case the user is logged in, just continue as usual
@@ -273,6 +275,13 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         if (fragment != null) {
             transaction.replace(R.id.container, fragment, fragmentTag).commit();
         }
+
+        if (cancelled) {
+            // operation has been cancelled because prerequisites have failed
+            mDrawerLayout.closeDrawer(GravityCompat.START);
+            return false;
+        }
+
         setTitle(item.getTitle());
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
