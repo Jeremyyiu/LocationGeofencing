@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
+import io.locative.app.notification.NotificationManager;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.Preferences;
 import okhttp3.Call;
@@ -34,6 +35,8 @@ public class RequestManager {
     LocativeApiWrapper mLocativeNetworkingWrapper;
     @Inject
     Context mContext;
+    @Inject
+    NotificationManager mNotificationManager;
 
     private final OkHttpClient client = new OkHttpClient();
 
@@ -55,11 +58,17 @@ public class RequestManager {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                if (mPreferences.getBoolean(Preferences.NOTIFICATION_FAIL, false)) {
+                    mNotificationManager.showNotification("Error when sending HTTP request for " + geofence.subtitle);
+                }
                 dispatchFencelog(geofence, eventType, httpMethod, 0, null);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
+                if (mPreferences.getBoolean(Preferences.NOTIFICATION_SUCCESS, false)) {
+                    mNotificationManager.showNotification("Success when sending HTTP request for " + geofence.subtitle);
+                }
                 dispatchFencelog(
                         geofence,
                         eventType,
