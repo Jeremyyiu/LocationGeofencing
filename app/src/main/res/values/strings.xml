@@ -35,6 +35,7 @@
 
     <string name="error_permission_refused">Location permission is needed to use the app!</string>
 
+    <string name="geofences_empty">You currently don\'t have any Geofences. Click the "+" to add some and get started.</string>
     <string name="geofence_add">Add geofence</string>
     <string name="geofence_add_message">Would you like to add a new Geofence locally or import it from my.locative.io?</string>
     <string name="geofence_locally">Locally</string>
