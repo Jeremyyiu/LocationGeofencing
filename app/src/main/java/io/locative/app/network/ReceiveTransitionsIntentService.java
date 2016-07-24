@@ -3,6 +3,7 @@ package io.locative.app.network;
 import android.app.IntentService;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.support.annotation.Nullable;
@@ -19,7 +20,9 @@ import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Geofences;
+import io.locative.app.notification.NotificationManager;
 import io.locative.app.persistent.GeofenceProvider;
+import io.locative.app.utils.Preferences;
 
 public class ReceiveTransitionsIntentService extends IntentService {
 
@@ -36,6 +39,12 @@ public class ReceiveTransitionsIntentService extends IntentService {
     @Inject
     RequestManager mRequestManager;
 
+    @Inject
+    SharedPreferences mPreferences;
+
+    @Inject
+    NotificationManager mNotificationManager;
+
     public ReceiveTransitionsIntentService() {
         super(TRANSITION_INTENT_SERVICE);
     }
@@ -44,10 +53,12 @@ public class ReceiveTransitionsIntentService extends IntentService {
     public void onCreate() {
         super.onCreate();
         ((LocativeApplication) getApplication()).inject(this);
+        android.os.Debug.waitForDebugger();
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d(TAG, "Geofencing event occured");
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             Log.e(TAG, "Location Services error: " + geofencingEvent.getErrorCode());
@@ -76,6 +87,18 @@ public class ReceiveTransitionsIntentService extends IntentService {
         Geofences.Geofence fence = GeofenceProvider.fromCursor(cursor);
         cursor.close();
 
+        if (mPreferences.getString(Preferences.HTTP_URL, "").length() == 0) {
+            // not global url is set, bail out and show classic notification
+            Log.d(TAG, "Presenting classic notification for " + fence.subtitle);
+            mNotificationManager.showNotification(
+                    fence.toString(),
+                    Integer.parseInt(geofence.getRequestId()),
+                    transitionType
+            );
+            return;
+        }
+
+        Log.d(TAG, "Dispatching Request for " + fence.subtitle);
         mRequestManager.dispatch(fence, getEventType(transitionType));
     }
 
