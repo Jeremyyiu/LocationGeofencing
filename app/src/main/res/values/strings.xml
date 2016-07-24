@@ -41,6 +41,10 @@
     <string name="geofence_import">Import</string>
 
     <string name="fencelogs">Fencelogs</string>
+    <string name="not_logged_in">Not logged in</string>
+    <string name="need_login">To use this functionality you need to be logged in to my.locative.io</string>
+    <string name="login">Login</string>
+    <string name="cancel">Cancel</string>
     
     <string name="http_settings">HTTP Settings</string>
     <string name="geofence_settings">Geofence Settings</string>
