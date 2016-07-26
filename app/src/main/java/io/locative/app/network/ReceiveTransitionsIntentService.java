@@ -53,7 +53,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
     public void onCreate() {
         super.onCreate();
         ((LocativeApplication) getApplication()).inject(this);
-        android.os.Debug.waitForDebugger();
     }
 
     @Override
