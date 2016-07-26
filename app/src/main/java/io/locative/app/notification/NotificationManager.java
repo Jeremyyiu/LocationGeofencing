@@ -18,8 +18,8 @@ public class NotificationManager {
         mContext = context;
     }
 
-    public void showNotification(String title) {
-        notify(getDefaultBuilder(title), 0);
+    public void showNotification(String title, String body) {
+        notify(getDefaultBuilder(title).setContentText(body), 0);
     }
 
     public void showNotification(String title, int id, int transitionType) {
