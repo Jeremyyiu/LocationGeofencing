@@ -35,6 +35,7 @@ import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeService;
 import io.locative.app.network.SessionManager;
+import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.persistent.Storage;
 import io.locative.app.utils.Constants;
 
@@ -334,19 +335,10 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        //DatabaseUtils.dumpCursor(data);
         mGeofenceFragment.geofences.clear();
         ArrayList<Geofences.Geofence> items = new ArrayList<Geofences.Geofence>();
         while (data.moveToNext()) {
-            Geofences.Geofence item = new Geofences.Geofence(
-                    data.getString(data.getColumnIndex("_id")),
-                    data.getString(data.getColumnIndex("name")),
-                    data.getString(data.getColumnIndex("custom_id")),
-                    data.getInt(data.getColumnIndex("triggers")),
-                    data.getFloat(data.getColumnIndex("latitude")),
-                    data.getFloat(data.getColumnIndex("longitude")),
-                    data.getInt(data.getColumnIndex("radius")));
-
+            Geofences.Geofence item = GeofenceProvider.fromCursor(data);
             mGeofenceFragment.geofences.addItem(item);
             items.add(item);
         }

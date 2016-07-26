@@ -11,9 +11,6 @@ import de.triplet.simpleprovider.Table;
 import io.locative.app.R;
 import io.locative.app.model.Geofences;
 
-/**
- * Created by kimar on 16.05.14.
- */
 public class GeofenceProvider extends AbstractProvider {
 
     private static int SCHEMA_VERSION = 1;
@@ -27,7 +24,7 @@ public class GeofenceProvider extends AbstractProvider {
 
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        Uri result =  super.insert(uri, values);
+        Uri result = super.insert(uri, values);
         Toast.makeText(getContext(), "Geofence added", Toast.LENGTH_SHORT)
                 .show();
         return result;
@@ -41,19 +38,23 @@ public class GeofenceProvider extends AbstractProvider {
         return result;
     }
 
-    public static Geofences.Geofence fromCursor (Cursor cursor) {
-        final String id = cursor.getString(cursor.getColumnIndex("custom_id")) != null ?
-                cursor.getString(cursor.getColumnIndex("custom_id")) :
-                cursor.getString(cursor.getColumnIndex("_id"));
+    public static Geofences.Geofence fromCursor(Cursor cursor) {
         return new Geofences.Geofence(
-                id,
-                cursor.getString(cursor.getColumnIndex("name")),
-                "",
-                cursor.getInt(cursor.getColumnIndex("triggers")),
-                cursor.getFloat(cursor.getColumnIndex("latitude")),
-                cursor.getFloat(cursor.getColumnIndex("longitude")),
-                cursor.getInt(cursor.getColumnIndex("radius"))
-        );
+                cursor.getString(cursor.getColumnIndex(Geofence.KEY_ID)),
+                cursor.getString(cursor.getColumnIndex(Geofence.KEY_NAME)),
+                cursor.getString(cursor.getColumnIndex(Geofence.KEY_CUSTOMID)),
+                cursor.getInt(cursor.getColumnIndex(Geofence.KEY_TRIGGER)),
+                cursor.getFloat(cursor.getColumnIndex(Geofence.KEY_LATITUDE)),
+                cursor.getFloat(cursor.getColumnIndex(Geofence.KEY_LONGITUDE)),
+                cursor.getInt(cursor.getColumnIndex(Geofence.KEY_RADIUS)),
+                cursor.getInt(cursor.getColumnIndex(Geofence.KEY_HTTP_AUTH)),
+                cursor.getString(cursor.getColumnIndex(Geofence.KEY_HTTP_USERNAME)),
+                cursor.getString(cursor.getColumnIndex(Geofence.KEY_HTTP_PASSWORD)),
+                cursor.getInt(cursor.getColumnIndex(Geofence.KEY_ENTER_METHOD)),
+                cursor.getString(cursor.getColumnIndex(Geofence.KEY_ENTER_URL)),
+                cursor.getInt(cursor.getColumnIndex(Geofence.KEY_EXIT_METHOD)),
+                cursor.getString(cursor.getColumnIndex(Geofence.KEY_EXIT_URL))
+                );
     }
 
     @Override
