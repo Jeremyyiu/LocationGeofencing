@@ -1,9 +1,5 @@
 package io.locative.app.geo;
 
-/**
- * Created by mkida on 3/08/2014.
- */
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;

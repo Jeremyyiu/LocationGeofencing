@@ -40,9 +40,29 @@ public class Geofences {
         public final float latitude;
         public final float longitude;
         public final int radiusMeters;
-        public final Map<String, Object> importValues;
+        public final int httpAuth;
+        public final String httpUsername;
+        public final String httpPassword;
+        public final int enterMethod;
+        public final String enterUrl;
+        public final int exitMethod;
+        public final String exitUrl;
 
-        public Geofence(String id, String title, String subtitle, int triggers, float latitude, float longitude, int radiusMeters) {
+        public Geofence(
+                String id,
+                String title,
+                String subtitle,
+                int triggers,
+                float latitude,
+                float longitude,
+                int radiusMeters,
+                int httpAuth,
+                String httpUsername,
+                String httpPassword,
+                int enterMethod,
+                String enterUrl,
+                int exitMethod,
+                String exitUrl) {
             this.id = id;
             this.title = title;
             this.subtitle = subtitle;
@@ -50,17 +70,38 @@ public class Geofences {
             this.latitude = latitude;
             this.longitude = longitude;
             this.radiusMeters = radiusMeters;
-            importValues = new HashMap<>();
+            this.httpAuth = httpAuth;
+            this.httpUsername = httpUsername;
+            this.httpPassword = httpPassword;
+            this.enterMethod = enterMethod;
+            this.enterUrl = enterUrl;
+            this.exitMethod = exitMethod;
+            this.exitUrl = exitUrl;
         }
 
         public Geofence setId(String id) {
-            return new Geofence(id, title, subtitle, triggers, latitude, longitude, radiusMeters);
+            return new Geofence(
+                    id, title, subtitle, triggers, latitude, longitude, radiusMeters, httpAuth,
+                    httpUsername, httpPassword, enterMethod, enterUrl, exitMethod, exitUrl
+            );
         }
 
+        public boolean hasAuthentication() {
+            if (this.httpUsername == null || this.httpPassword == null) {
+                return false;
+            }
+            return this.httpAuth == 1 && (this.httpUsername.length() > 0 && this.httpPassword.length() > 0);
+        }
 
         @Override
         public String toString() {
-            return title;
+            if (title != null && title.length() > 0) {
+                return title;
+            }
+            if (subtitle != null && subtitle.length() > 0) {
+                return subtitle;
+            }
+            return id;
         }
 
         public com.google.android.gms.location.Geofence toGeofence() {

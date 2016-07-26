@@ -23,6 +23,7 @@
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/background"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <LinearLayout
@@ -116,7 +117,7 @@
                 android:background="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                app:cardElevation="4dp">
+                app:cardElevation="4dp" >
 
                 <LinearLayout
 
@@ -125,7 +126,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginBottom="10dp"
-                    android:orientation="vertical">
+                    android:orientation="vertical" >
 
                     <TextView
                         android:layout_width="match_parent"

@@ -8,10 +8,6 @@ import retrofit.http.POST;
 import retrofit.http.Path;
 import retrofit.http.Query;
 
-/**
- * Created by mkida on 16/08/2014.
- */
-
 public interface LocativeApiService {
 
     @GET("/api/session")

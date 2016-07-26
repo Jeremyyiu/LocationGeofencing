@@ -12,11 +12,8 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.locative.app.network.LocativeNetworkModule;
+import io.locative.app.notification.NotificationManager;
 import io.locative.app.view.UIModule;
-
-/**
- * Created by chris on 08.12.15.
- */
 
 @Module(
         includes = {
@@ -55,6 +52,12 @@ public class LocativeApplicationModule {
     @Provides
     public SharedPreferences providePreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    @SuppressWarnings("unused")
+    @Provides
+    public NotificationManager provideNotificationManager(Context context) {
+        return new NotificationManager(context);
     }
 
     @SuppressWarnings("unused")

@@ -1,15 +1,12 @@
 package io.locative.app.network;
 
 import android.app.IntentService;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
@@ -22,9 +19,10 @@ import javax.inject.Inject;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
-import io.locative.app.model.Fencelog;
+import io.locative.app.model.Geofences;
+import io.locative.app.notification.NotificationManager;
 import io.locative.app.persistent.GeofenceProvider;
-import io.locative.app.view.GeofencesActivity;
+import io.locative.app.utils.Preferences;
 
 public class ReceiveTransitionsIntentService extends IntentService {
 
@@ -38,6 +36,15 @@ public class ReceiveTransitionsIntentService extends IntentService {
     @Inject
     SessionManager mSessionManager;
 
+    @Inject
+    RequestManager mRequestManager;
+
+    @Inject
+    SharedPreferences mPreferences;
+
+    @Inject
+    NotificationManager mNotificationManager;
+
     public ReceiveTransitionsIntentService() {
         super(TRANSITION_INTENT_SERVICE);
     }
@@ -50,11 +57,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        Log.d(TAG, "Geofencing event occured");
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
-//            String errorMessage = GeofenceErrorMessages.getErrorString(this,
-//                    geofencingEvent.getErrorCode());
-//            Log.e(TAG, errorMessage);
             Log.e(TAG, "Location Services error: " + geofencingEvent.getErrorCode());
             return;
         }
@@ -62,17 +67,11 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
         int transitionType = geofencingEvent.getGeofenceTransition();
         List<Geofence> triggeredGeofences = geofencingEvent.getTriggeringGeofences();
-        //List<String> triggeredIds = new ArrayList<String>();
 
         for (Geofence geofence : triggeredGeofences) {
             Log.d(TAG, "onHandle:" + geofence.getRequestId());
             processGeofence(geofence, transitionType);
-            //triggeredIds.add(geofence.getRequestId());
         }
-
-//        if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
-//            removeGeofences(triggeredIds);
-//        }
     }
 
     private void processGeofence(Geofence geofence, int transitionType) {
@@ -80,84 +79,30 @@ public class ReceiveTransitionsIntentService extends IntentService {
         ContentResolver resolver = this.getContentResolver();
         Cursor cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{geofence.getRequestId()}, null);
         if (cursor == null || cursor.getCount() == 0) {
-            return;
+            return; // TODO: Handle errors here
         }
+
         cursor.moveToFirst();
-
-        String customId = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_CUSTOMID));
-        float latitude = cursor.getFloat(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LATITUDE));
-        float longitude = cursor.getFloat(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_LONGITUDE));
-        String locationName = cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_NAME));
-        if (customId.length() == 0 && locationName.length() > 0) {
-            customId = locationName;
-        } else if (locationName.length() == 0) {
-            customId = "Unknown Location";
-        }
-
+        Geofences.Geofence fence = GeofenceProvider.fromCursor(cursor);
         cursor.close();
 
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(getApplicationContext());
-        Intent intent = new Intent(this, GeofencesActivity.class);
-        intent.putExtra(GeofencesActivity.NOTIFICATION_CLICK, true);
-        PendingIntent openActivityIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        int id = Integer.parseInt(geofence.getRequestId());
-
-        notificationBuilder
-             //   .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher))
-                .setSmallIcon(R.drawable.ic_notification)
-                .setColor(0x29aae1)
-//                .setContentTitle("Geofence id: " + id)
-                .setContentTitle(customId)
-                .setContentText("Has been " + getTransitionTypeString(transitionType))
-                .setVibrate(new long[]{500, 500})
-                .setContentIntent(openActivityIntent)
-                .setAutoCancel(true);
-
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        nm.cancelAll();
-        nm.notify(transitionType * 100 + id, notificationBuilder.build());
-
-        Log.d(TAG, "notification built:" + id);
-        reportFenceLogToApi(customId, latitude, longitude, getEventType(transitionType));
-        Log.d(TAG, "fence logged:" + customId);
-
-    }
-
-    private void reportFenceLogToApi(String customId, float latitude, float longitude, @Nullable EventType eventType) {
-        String sessionId = mSessionManager.getSessionId();
-        if (sessionId != null && eventType != null) {
-            Fencelog fencelog = new Fencelog();
-            fencelog.locationId = customId;
-            fencelog.latitude = latitude;
-            fencelog.longitude = longitude;
-            fencelog.eventType = eventType;
-            fencelog.origin = Build.MODEL;
-            mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, new LocativeNetworkingAdapter() {
-                @Override
-                public void onDispatchFencelogFinished(boolean success) {
-                    // nothing to do here
-                }
-            });
+        if (mPreferences.getString(Preferences.HTTP_URL, "").length() == 0) {
+            // not global url is set, bail out and show classic notification
+            Log.d(TAG, "Presenting classic notification for " + fence.subtitle);
+            mNotificationManager.showNotification(
+                    fence.toString(),
+                    Integer.parseInt(geofence.getRequestId()),
+                    transitionType
+            );
+            return;
         }
+
+        Log.d(TAG, "Dispatching Request for " + fence.subtitle);
+        mRequestManager.dispatch(fence, getEventType(transitionType));
     }
 
     private LocativeApplication getApp() {
         return (LocativeApplication) getApplication();
-    }
-
-
-    private String getTransitionTypeString(int transitionType) {
-        switch (transitionType) {
-            case Geofence.GEOFENCE_TRANSITION_ENTER:
-                return "entered";
-            case Geofence.GEOFENCE_TRANSITION_EXIT:
-                return "left";
-            case Geofence.GEOFENCE_TRANSITION_DWELL:
-                return "dwelled";
-            default:
-                return "happened an unknown event.";
-        }
     }
 
     @Nullable

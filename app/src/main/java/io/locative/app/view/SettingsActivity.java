@@ -26,17 +26,9 @@ import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkingAdapter;
 import io.locative.app.network.LocativeNetworkingCallback;
 import io.locative.app.utils.Constants;
+import io.locative.app.utils.Preferences;
 
 public class SettingsActivity extends BaseActivity {
-
-    private static String HTTP_URL = "httpUrl";
-    private static String HTTP_METHOD = "httpMethod";
-    private static String HTTP_AUTH = "httpAuth";
-    private static String HTTP_USERNAME = "httpUsername";
-    private static String HTTP_PASSWORD = "httpPassword";
-    private static String NOTIFICATION_SUCCESS = "notificationSuccess";
-    private static String NOTIFICATION_FAIL = "notificationFailure";
-    private static String NOTIFICATION_SOUND = "notificationSound";
 
     private Constants.HttpMethod mHttpMethod = Constants.HttpMethod.POST;
 
@@ -95,21 +87,21 @@ public class SettingsActivity extends BaseActivity {
 
         adjustUiToLoginState();
 
-        mUrlText.setText(mPrefs.getString(HTTP_URL, null));
+        mUrlText.setText(mPrefs.getString(Preferences.HTTP_URL, null));
         mGlobalHttpMethodButton.setText(
-                mPrefs.getInt(HTTP_METHOD, 0) == 0 ? "POST" : "GET"
+                mPrefs.getInt(Preferences.HTTP_METHOD, 0) == 0 ? "POST" : "GET"
         );
         mGlobalHttpAuthSwitch.setChecked(
-                mPrefs.getBoolean(HTTP_AUTH, false)
+                mPrefs.getBoolean(Preferences.HTTP_AUTH, false)
         );
         switchHttpAuth();
 
-        mGlobalHttpAuthUsername.setText(mPrefs.getString(HTTP_USERNAME, null));
-        mGlobalHttpAuthPassword.setText(mPrefs.getString(HTTP_PASSWORD, null));
-        mNotificationSuccessSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SUCCESS, false));
-        mNotificationFailSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_FAIL, false));
-        mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(NOTIFICATION_SOUND, false));
-        mHttpMethod = (Constants.HttpMethod.POST.ordinal() == mPrefs.getInt(HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
+        mGlobalHttpAuthUsername.setText(mPrefs.getString(Preferences.HTTP_USERNAME, null));
+        mGlobalHttpAuthPassword.setText(mPrefs.getString(Preferences.HTTP_PASSWORD, null));
+        mNotificationSuccessSwitch.setChecked(mPrefs.getBoolean(Preferences.NOTIFICATION_SUCCESS, false));
+        mNotificationFailSwitch.setChecked(mPrefs.getBoolean(Preferences.NOTIFICATION_FAIL, false));
+        mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(Preferences.NOTIFICATION_SOUND, false));
+        mHttpMethod = (Constants.HttpMethod.POST.ordinal() == mPrefs.getInt(Preferences.HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
 
         mNetworkingCallback = new LocativeNetworkingAdapter() {
             @Override
@@ -268,14 +260,14 @@ public class SettingsActivity extends BaseActivity {
 
     private void save(boolean finish) {
         SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putString(HTTP_URL, mUrlText.getText().toString());
-        editor.putInt(HTTP_METHOD, mHttpMethod.ordinal());
-        editor.putBoolean(HTTP_AUTH, mGlobalHttpAuthSwitch.isChecked());
-        editor.putString(HTTP_USERNAME, mGlobalHttpAuthUsername.getText().toString());
-        editor.putString(HTTP_PASSWORD, mGlobalHttpAuthPassword.getText().toString());
-        editor.putBoolean(NOTIFICATION_SUCCESS, mNotificationSuccessSwitch.isChecked());
-        editor.putBoolean(NOTIFICATION_FAIL, mNotificationFailSwitch.isChecked());
-        editor.putBoolean(NOTIFICATION_SOUND, mNotificationSoundSwitch.isChecked());
+        editor.putString(Preferences.HTTP_URL, mUrlText.getText().toString());
+        editor.putInt(Preferences.HTTP_METHOD, mHttpMethod.ordinal());
+        editor.putBoolean(Preferences.HTTP_AUTH, mGlobalHttpAuthSwitch.isChecked());
+        editor.putString(Preferences.HTTP_USERNAME, mGlobalHttpAuthUsername.getText().toString());
+        editor.putString(Preferences.HTTP_PASSWORD, mGlobalHttpAuthPassword.getText().toString());
+        editor.putBoolean(Preferences.NOTIFICATION_SUCCESS, mNotificationSuccessSwitch.isChecked());
+        editor.putBoolean(Preferences.NOTIFICATION_FAIL, mNotificationFailSwitch.isChecked());
+        editor.putBoolean(Preferences.NOTIFICATION_SOUND, mNotificationSoundSwitch.isChecked());
 
         editor.apply();
 

@@ -19,9 +19,6 @@ import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeService;
 import io.locative.app.persistent.GeofenceProvider;
 
-/**
- * Created by Jasper De Vrient on 19/05/2016.
- */
 public class StartupBroadCastReceiver extends BroadcastReceiver {
 
     public static final String TAG = "Locative";
@@ -38,14 +35,7 @@ public class StartupBroadCastReceiver extends BroadcastReceiver {
                 ArrayList<Geofences.Geofence> items = new ArrayList<>();
                 if (data != null) {
                     while (data.moveToNext()) {
-                        Geofences.Geofence item = new Geofences.Geofence(
-                                data.getString(data.getColumnIndex("_id")),
-                                data.getString(data.getColumnIndex("name")),
-                                data.getString(data.getColumnIndex("custom_id")),
-                                data.getInt(data.getColumnIndex("triggers")),
-                                data.getFloat(data.getColumnIndex("latitude")),
-                                data.getFloat(data.getColumnIndex("longitude")),
-                                data.getInt(data.getColumnIndex("radius")));
+                        Geofences.Geofence item = GeofenceProvider.fromCursor(data);
                         Log.i(TAG, "Found geofence " +item.title);
                         items.add(item);
                     }
