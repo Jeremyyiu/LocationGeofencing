@@ -169,7 +169,7 @@ public class RequestManager {
         String sessionId = mPreferences.getString(Preferences.SESSION_ID, null);
         if (sessionId != null && eventType != null) {
             Fencelog fencelog = new Fencelog();
-            fencelog.locationId = geofence.id;
+            fencelog.locationId = geofence.subtitle;
             fencelog.latitude = geofence.latitude;
             fencelog.longitude = geofence.longitude;
             fencelog.eventType = eventType;
