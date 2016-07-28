@@ -83,6 +83,8 @@ public class RequestManager {
                 + "&id=" + URLEncoder.encode(geofence.subtitle)
                 + "&device=" + URLEncoder.encode(Settings.Secure.getString(mContext.getContentResolver(),
                         Settings.Secure.ANDROID_ID))
+                + "&device_type=" + URLEncoder.encode("Android")
+                + "&device_model" + URLEncoder.encode(Build.MODEL)
                 + "&trigger=" + URLEncoder.encode(eventToString(eventType))
                 + "&timestamp=" + URLEncoder.encode(String.valueOf(new Timestamp(new Date().getTime())))
         );
@@ -116,6 +118,8 @@ public class RequestManager {
                 .add("id", geofence.subtitle)
                 .add("device", Settings.Secure.getString(mContext.getContentResolver(),
                         Settings.Secure.ANDROID_ID))
+                .add("device_type", "Android")
+                .add("device_model", Build.MODEL)
                 .add("trigger", eventToString(eventType))
                 .add("timestamp", String.valueOf(new Timestamp(new Date().getTime())))
                 .build();
