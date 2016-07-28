@@ -80,7 +80,7 @@ public class RequestManager {
         return url.concat(
                 "?latitude=" + URLEncoder.encode(Float.toString(geofence.latitude))
                 + "&longitude=" + URLEncoder.encode(Float.toString(geofence.longitude))
-                + "&id=" + URLEncoder.encode(geofence.id)
+                + "&id=" + URLEncoder.encode(geofence.subtitle)
                 + "&device=" + URLEncoder.encode(Settings.Secure.getString(mContext.getContentResolver(),
                         Settings.Secure.ANDROID_ID))
                 + "&trigger=" + URLEncoder.encode(eventToString(eventType))
@@ -113,7 +113,7 @@ public class RequestManager {
         final RequestBody body = new FormBody.Builder()
                 .add("latitude", String.valueOf(geofence.latitude))
                 .add("longitude", String.valueOf(geofence.longitude))
-                .add("id", geofence.id)
+                .add("id", geofence.subtitle)
                 .add("device", Settings.Secure.getString(mContext.getContentResolver(),
                         Settings.Secure.ANDROID_ID))
                 .add("trigger", eventToString(eventType))
