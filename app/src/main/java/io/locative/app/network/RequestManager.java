@@ -84,7 +84,7 @@ public class RequestManager {
                 + "&device=" + URLEncoder.encode(Settings.Secure.getString(mContext.getContentResolver(),
                         Settings.Secure.ANDROID_ID))
                 + "&device_type=" + URLEncoder.encode("Android")
-                + "&device_model" + URLEncoder.encode(Build.MODEL)
+                + "&device_model=" + URLEncoder.encode(Build.MODEL)
                 + "&trigger=" + URLEncoder.encode(eventToString(eventType))
                 + "&timestamp=" + URLEncoder.encode(String.valueOf(new Timestamp(new Date().getTime())))
         );
