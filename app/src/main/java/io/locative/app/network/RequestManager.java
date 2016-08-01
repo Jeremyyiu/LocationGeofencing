@@ -78,9 +78,9 @@ public class RequestManager {
         }
         
         // GET
-        url = url.contains("?") ? url + "&" : url + "?";
-        
-        return url.concat(
+        return url
+                .concat(url.contains("?") ? "&" : "?")
+                .concat(
                 "latitude=" + URLEncoder.encode(Float.toString(geofence.latitude))
                 + "&longitude=" + URLEncoder.encode(Float.toString(geofence.longitude))
                 + "&id=" + URLEncoder.encode(geofence.subtitle)
