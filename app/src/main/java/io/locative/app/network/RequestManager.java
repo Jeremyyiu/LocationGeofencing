@@ -167,7 +167,7 @@ public class RequestManager {
         return in.length() > 256 ? in.substring(0, 255) : in;
     }
 
-    private void dispatchFencelog(final Geofences.Geofence geofence,
+    void dispatchFencelog(final Geofences.Geofence geofence,
                                   final EventType eventType,
                                   final String httpUrl,
                                   final String httpMethod,

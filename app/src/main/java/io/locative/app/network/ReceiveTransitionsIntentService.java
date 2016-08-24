@@ -94,11 +94,19 @@ public class ReceiveTransitionsIntentService extends IntentService {
                     Integer.parseInt(geofence.getRequestId()),
                     transitionType
             );
-            return;
+            Log.d(TAG, "Dispatching Fencelog for " + fence.subtitle);
+            mRequestManager.dispatchFencelog(
+                    fence,
+                    getEventType(transitionType),
+                    null,
+                    null,
+                    0,
+                    "<No HTTP request has been performed>"
+            );
+        } else {
+            Log.d(TAG, "Dispatching Request for " + fence.subtitle);
+            mRequestManager.dispatch(fence, getEventType(transitionType));
         }
-
-        Log.d(TAG, "Dispatching Request for " + fence.subtitle);
-        mRequestManager.dispatch(fence, getEventType(transitionType));
     }
 
     private LocativeApplication getApp() {
