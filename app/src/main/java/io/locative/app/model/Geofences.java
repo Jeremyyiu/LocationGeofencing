@@ -128,6 +128,14 @@ public class Geofences {
                 return null;
             }
 
+            // Bail out if no radius is set, this does not solve the root casue but will at least fix
+            // https://fabric.io/locative/android/apps/io.locative.app/issues/57989893ffcdc042508b6137
+            // and
+            // https://fabric.io/locative/android/apps/io.locative.app/issues/578195cbffcdc04250759c47
+            if (radiusMeters == 0.0) {
+                return null;
+            }
+
             return new com.google.android.gms.location.Geofence.Builder()
                     .setRequestId(this.id)
                     .setTransitionTypes(transition)
