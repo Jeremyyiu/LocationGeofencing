@@ -117,7 +117,6 @@ public class LocativeApiWrapper {
                 fencelog.httpUrl,
                 fencelog.httpMethod,
                 fencelog.httpResponseCode,
-                fencelog.httpResponse,
                 fencelog.eventType.apiName,
                 fencelog.fenceType,
                 fencelog.origin,
@@ -239,7 +238,6 @@ public class LocativeApiWrapper {
             JSONKEY_CREATEDAT = "created_at",
             JSONKEY_TYPE = "fenceType",
             JSONKEY_EVENT = "eventType",
-            JSONKEY_HTTPRESPONSE = "httpResponse",
             JSONKEY_HTTPMETHOD = "httpMethod",
             JSONKEY_HTTPURL = "httpUrl",
             JSONKEY_LOCATIONID = "locationId";
@@ -263,7 +261,6 @@ public class LocativeApiWrapper {
             fence.httpMethod = fenceJson.get(JSONKEY_HTTPMETHOD).getAsString();
             fence.eventType = fenceJson.get(JSONKEY_EVENT).getAsString().equals(EventType.ENTER.apiName) ? EventType.ENTER : EventType.EXIT;
             fence.httpUrl = fenceJson.get(JSONKEY_HTTPURL).getAsString();
-            fence.httpResponse = fenceJson.get(JSONKEY_HTTPRESPONSE).getAsString();
             fence.fenceType = fenceJson.get(JSONKEY_TYPE).getAsString();
             try {
                 String dateString = fenceJson.get(JSONKEY_CREATEDAT).getAsString();

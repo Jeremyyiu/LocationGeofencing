@@ -41,7 +41,6 @@ public interface LocativeApiService {
             @Field("httpUrl") String httpUrl,
             @Field("httpMethod") String httpMethod,
             @Field("httpResponseCode") String httpResponseCode,
-            @Field("httpResponse") String httpResponse,
             @Field("eventType") String eventType,
             @Field("fenceType") String fenceType,
             @Field("origin") String origin,

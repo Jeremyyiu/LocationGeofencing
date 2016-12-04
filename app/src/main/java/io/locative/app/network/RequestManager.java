@@ -139,7 +139,7 @@ public class RequestManager {
                             "Error when sending HTTP request."
                     );
                 }
-                dispatchFencelog(geofence, eventType, relevantUrl(geofence, eventType), fromMethod(method), 0, null);
+                dispatchFencelog(geofence, eventType, relevantUrl(geofence, eventType), fromMethod(method), 0);
             }
 
             @Override
@@ -156,23 +156,17 @@ public class RequestManager {
                         eventType,
                         relevantUrl(geofence, eventType),
                         fromMethod(method),
-                        response.code(),
-                        constrainedString(response.body().string())
+                        response.code()
                 );
             }
         });
-    }
-
-    private String constrainedString(String in) {
-        return in.length() > 256 ? in.substring(0, 255) : in;
     }
 
     void dispatchFencelog(final Geofences.Geofence geofence,
                                   final EventType eventType,
                                   final String httpUrl,
                                   final String httpMethod,
-                                  final int httpResponseCode,
-                                  final String httpResponse) {
+                                  final int httpResponseCode) {
         String sessionId = mPreferences.getString(Preferences.SESSION_ID, null);
         if (sessionId != null && eventType != null) {
             Fencelog fencelog = new Fencelog();
@@ -184,7 +178,6 @@ public class RequestManager {
             fencelog.httpUrl = httpUrl;
             fencelog.httpMethod = httpMethod;
             fencelog.httpResponseCode = String.valueOf(httpResponseCode);
-            fencelog.httpResponse = httpResponse;
             mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, null);
         }
     }

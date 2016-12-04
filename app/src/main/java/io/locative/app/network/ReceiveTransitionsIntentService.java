@@ -100,8 +100,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                     getEventType(transitionType),
                     null,
                     null,
-                    0,
-                    "<No HTTP request has been performed>"
+                    0
             );
         } else {
             Log.d(TAG, "Dispatching Request for " + fence.subtitle);
