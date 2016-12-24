@@ -3,7 +3,7 @@
 [![Join the Slack group](https://slack.locative.io/badge.svg)](https://slack.locative.io/)
 [![Build Status](https://travis-ci.org/LocativeHQ/Locative-Android.svg?branch=master)](https://travis-ci.org/LocativeHQ/Locative-Android)
 
-[http://locative.io](http://locative.io)
+[http://www.locative.io](http://locative.io)
 
 This is the Locative app for Android, it's available in the [Google Play Store](https://play.google.com/store/apps/details?id=io.locative.app).
 
