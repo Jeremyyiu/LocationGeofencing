@@ -1,6 +1,6 @@
 ## Locative for Android
 
-[![Join the Slack group](https://slack.locative.io/badge.svg)](https://slack.locative.io/)
+[![Slack](http://slack.locative.io/badge.svg)](http://slack.locative.io/)
 [![Build Status](https://travis-ci.org/LocativeHQ/Locative-Android.svg?branch=master)](https://travis-ci.org/LocativeHQ/Locative-Android)
 
 [http://www.locative.io](http://locative.io)
