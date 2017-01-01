@@ -7,6 +7,8 @@ import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,6 +33,9 @@ public class NotificationsFragment extends Fragment {
     private ChatView getChatView () {
         return (ChatView) getView().findViewById(R.id.chat_view);
     }
+    private LinearLayout getProgressBar() {
+        return (LinearLayout) getView().findViewById(R.id.loader);
+    }
 
     public void refresh() {
         if (getActivity() != null) {
@@ -43,6 +48,7 @@ public class NotificationsFragment extends Fragment {
                 getChatView().addMessage(message);
             }
         }
+        getProgressBar().setVisibility(View.GONE);
     }
 
     @Nullable
@@ -57,6 +63,7 @@ public class NotificationsFragment extends Fragment {
 
         getChatView().findViewById(R.id.input_frame).setVisibility(View.INVISIBLE);
         getChatView().findViewById(R.id.sendButton).setVisibility(View.INVISIBLE);
+        getProgressBar().setVisibility(View.VISIBLE);
 
         GeofencesActivity ga = (GeofencesActivity)getActivity();
         ga.mFabButton.hide();
