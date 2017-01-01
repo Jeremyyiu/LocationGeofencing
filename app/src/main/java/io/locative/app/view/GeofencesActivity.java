@@ -110,7 +110,9 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 syncState();
-                mFabButton.show();
+                if (isFragmentVisible(GeofenceFragment.TAG)) {
+                    mFabButton.show();
+                }
             }
 
             public void onDrawerOpened(View drawerView) {
@@ -132,6 +134,11 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         ContentValues values = new ContentValues();
         values.put("custom_id", "123");
         resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);*/
+    }
+
+    private boolean isFragmentVisible(String tag) {
+        Fragment fragment = getFragmentManager().findFragmentByTag(tag);
+        return (fragment != null && fragment.isVisible());
     }
 
     @Override
