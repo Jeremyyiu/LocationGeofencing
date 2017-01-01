@@ -55,4 +55,9 @@ public interface LocativeApiService {
     void getFencelogs(
             @Path("session") String sessionId,
             Callback<String> callback);
+
+    @GET("/api/notifications")
+    void getNotifications(
+            @Query("sessionId") String sessionId,
+            Callback<String> callback);
 }

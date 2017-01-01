@@ -46,7 +46,10 @@
     <string name="need_login">To use this functionality you need to be logged in to my.locative.io</string>
     <string name="login">Login</string>
     <string name="cancel">Cancel</string>
-    
+
+    <string name="notifications">Notifications</string>
+
+
     <string name="http_settings">HTTP Settings</string>
     <string name="geofence_settings">Geofence Settings</string>
 </resources>

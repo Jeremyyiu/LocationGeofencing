@@ -18,8 +18,10 @@ import org.threeten.bp.format.DateTimeParseException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -27,6 +29,7 @@ import javax.inject.Singleton;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
+import io.locative.app.model.Notification;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.AeSimpleSHA1;
 import io.locative.app.utils.Constants;
@@ -44,6 +47,7 @@ public class LocativeApiWrapper {
     @Inject JsonParser mParser;
     private final GsonToGeofenceConverter GEOFENCE_CONVERTER = new GsonToGeofenceConverter();
     private final GsonToFencelogConverter FENCELOG_CONVERTER = new GsonToFencelogConverter();
+    private final GsonToNotificationConverter NOTIFICATION_CONVERTER = new GsonToNotificationConverter();
 
     public void doLogin(String username, String password, final LocativeNetworkingCallback callback) {
         mService.login(username, password, Constants.API_ORIGIN, new Callback<String>() {
@@ -147,6 +151,7 @@ public class LocativeApiWrapper {
 
             @Override
             public void failure(RetrofitError error) {
+                // TODO: Implement error handling here
             }
         });
     }
@@ -160,7 +165,21 @@ public class LocativeApiWrapper {
 
             @Override
             public void failure(RetrofitError error) {
+                // TODO: Implement error handling here
+            }
+        });
+    }
 
+    public void getNotifications(String sessionId, final LocativeNetworkingCallback callback) {
+        mService.getNotifications(sessionId, new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                callback.onGetNotificationsFinished(NOTIFICATION_CONVERTER.makeList(mParser.parse(s)));
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO: Implement error handling here
             }
         });
     }
@@ -271,6 +290,31 @@ public class LocativeApiWrapper {
                 Log.d(getClass().getName(), dtpe.getParsedString());
             }
             return fence;
+        }
+    }
+
+    private class GsonToNotificationConverter {
+        private static final String
+        JSONKEY_NOTIFICATIONS = "notifications",
+        JSONKEY_MESSAGE = "message",
+        JSONKEY_CREATEDAT = "created_at";
+
+        public List<Notification> makeList(JsonElement element) {
+            return this.getNotifications(element.getAsJsonObject().getAsJsonArray(JSONKEY_NOTIFICATIONS));
+        }
+
+        private List<Notification> getNotifications(JsonArray notificationJson) {
+            List<Notification> logs = new ArrayList<Notification>(notificationJson.size());
+            for (JsonElement notiJson: notificationJson)
+                logs.add(buildNotification(notiJson.getAsJsonObject()));
+            return logs;
+        }
+
+        private Notification buildNotification(JsonObject notificationJson) {
+            Notification notification = new Notification();
+            notification.message = notificationJson.get(JSONKEY_MESSAGE).getAsString();
+            notification.timestamp = Instant.parse(notificationJson.get(JSONKEY_CREATEDAT).getAsString()).toEpochMilli();
+            return notification;
         }
     }
 }

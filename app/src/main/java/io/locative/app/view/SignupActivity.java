@@ -20,6 +20,7 @@ import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
+import io.locative.app.model.Notification;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkingCallback;
 import io.locative.app.utils.Constants;
@@ -136,6 +137,11 @@ public class SignupActivity extends BaseActivity implements LocativeNetworkingCa
 
     @Override
     public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
+
+    }
+
+    @Override
+    public void onGetNotificationsFinished(List<Notification> notifications) {
 
     }
 }

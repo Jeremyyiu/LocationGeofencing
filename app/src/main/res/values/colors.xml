@@ -6,4 +6,5 @@
     <color name="background">#b6b6b6</color>
     <color name="white">#ffffff</color>
     <color name="button">#3986A7</color>
+    <color name="default_bubble_color_rcv">@color/primary</color>
 </resources>

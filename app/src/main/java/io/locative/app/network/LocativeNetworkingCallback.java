@@ -5,6 +5,7 @@ import java.util.List;
 
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
+import io.locative.app.model.Notification;
 
 // TODO clean this up, bad design
 
@@ -22,4 +23,5 @@ public interface LocativeNetworkingCallback {
 
     void onGetFencelogsFinished(List<Fencelog> fencelogs);
 
+    void onGetNotificationsFinished(List<Notification> notifications);
 }

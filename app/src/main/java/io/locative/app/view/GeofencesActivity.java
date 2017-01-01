@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -65,6 +66,8 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
     private GeofenceFragment mGeofenceFragment = null;
     private FencelogsFragment mFenceLogsFragment = null;
+    private NotificationsFragment mNotificationsFragment = null;
+
     private boolean firstResume = false;
 
     private String fragmentTag = GeofenceFragment.TAG;
@@ -170,6 +173,13 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 fragman.beginTransaction().replace(R.id.container, mFenceLogsFragment, FencelogsFragment.TAG).commit();
                 break;
             }
+            case NotificationsFragment.TAG: {
+                Fragment f = fragman.getFragment(new Bundle(), NotificationsFragment.TAG);
+                if (mNotificationsFragment == null)
+                    mNotificationsFragment = f != null ? (NotificationsFragment) f : new NotificationsFragment();
+                fragman.beginTransaction().replace(R.id.container, mNotificationsFragment, NotificationsFragment.TAG).commit();
+                break;
+            }
         }
     }
 
@@ -263,6 +273,34 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 }
                 fragment = mFenceLogsFragment;
                 fragmentTag = FencelogsFragment.TAG;
+                mFabButton.hide();
+                break;
+            case R.id.notifications:
+                if (!mSessionManager.hasSession()) {
+                    // don't try to show FencelogsFragment if user is not logged in
+                    // instead show AlertDialog and offer chance to log in / create account
+                    final GeofencesActivity self = this;
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.not_logged_in)
+                            .setMessage(R.string.need_login)
+                            .setPositiveButton(R.string.login, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    startActivity(new Intent(self, SettingsActivity.class));
+                                }
+                            })
+                            .setNegativeButton(R.string.cancel, null)
+                            .setCancelable(true)
+                            .create().show();
+                    cancelled = true;
+                    break;
+                }
+                // in case the user is logged in, just continue as usual
+                if (mNotificationsFragment == null) {
+                    mNotificationsFragment = new NotificationsFragment();
+                }
+                fragment = mNotificationsFragment;
+                fragmentTag = NotificationsFragment.TAG;
                 mFabButton.hide();
                 break;
             case R.id.settings:
