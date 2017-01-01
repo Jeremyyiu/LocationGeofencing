@@ -85,7 +85,7 @@ public class FencelogsFragment extends ListFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
+        setEmptyText(getString(R.string.fencelogs_empty));
         GeofencesActivity ga = (GeofencesActivity)getActivity();
         ga.mFabButton.hide();
         ga.mLocativeNetworkingWrapper.getFenceLogs(ga.mSessionManager.getSessionId(), new LocativeNetworkingAdapter() {

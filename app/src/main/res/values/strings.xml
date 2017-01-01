@@ -46,7 +46,7 @@
     <string name="need_login">To use this functionality you need to be logged in to my.locative.io</string>
     <string name="login">Login</string>
     <string name="cancel">Cancel</string>
-
+    <string name="fencelogs_empty">No Fencelogs available. Set up some Geofences to start logging.</string>
     <string name="notifications">Notifications</string>
 
 
