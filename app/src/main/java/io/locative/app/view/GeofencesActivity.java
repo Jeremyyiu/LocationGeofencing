@@ -37,7 +37,6 @@ import io.locative.app.R;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 import io.locative.app.model.Notification;
-import io.locative.app.network.FcmPayloadBuilder;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeConnect;
 import io.locative.app.network.LocativeNetworkingCallback;
@@ -201,7 +200,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         if (token == null) {
             return;
         }
-//        JsonObject payload = new FcmPayloadBuilder(token, false).build();
         connect.updateSession(mSessionManager.getSessionId(), token, false);
     }
 

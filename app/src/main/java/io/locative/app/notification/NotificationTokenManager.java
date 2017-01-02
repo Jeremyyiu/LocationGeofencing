@@ -7,7 +7,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.google.gson.JsonObject;
 
-import io.locative.app.network.FcmPayloadBuilder;
 import io.locative.app.network.LocativeApiService;
 import io.locative.app.network.LocativeConnect;
 import io.locative.app.utils.Constants;
