@@ -31,10 +31,18 @@ public class NotificationsFragment extends Fragment {
     private List<Notification> mNotifications;
 
     private ChatView getChatView () {
-        return (ChatView) getView().findViewById(R.id.chat_view);
+        View view = getView();
+        if (view == null) {
+            return null;
+        }
+        return (ChatView)view.findViewById(R.id.chat_view);
     }
     private LinearLayout getProgressBar() {
-        return (LinearLayout) getView().findViewById(R.id.loader);
+        View view = getView();
+        if (view == null) {
+            return null;
+        }
+        return (LinearLayout)view.findViewById(R.id.loader);
     }
 
     public void refresh() {
@@ -45,10 +53,17 @@ public class NotificationsFragment extends Fragment {
                         notification.timestamp,
                         ChatMessage.Type.RECEIVED
                 );
-                getChatView().addMessage(message);
+
+                final ChatView chatView = getChatView();
+                if (chatView != null) {
+                    chatView.addMessage(message);
+                }
             }
         }
-        getProgressBar().setVisibility(View.GONE);
+        final LinearLayout progressBar = getProgressBar();
+        if (progressBar != null) {
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     @Nullable
@@ -61,9 +76,16 @@ public class NotificationsFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        getChatView().findViewById(R.id.input_frame).setVisibility(View.INVISIBLE);
-        getChatView().findViewById(R.id.sendButton).setVisibility(View.INVISIBLE);
-        getProgressBar().setVisibility(View.VISIBLE);
+        final ChatView chatView = getChatView();
+        if (chatView != null) {
+            chatView.findViewById(R.id.input_frame).setVisibility(View.INVISIBLE);
+            chatView.findViewById(R.id.sendButton).setVisibility(View.INVISIBLE);
+        }
+
+        final LinearLayout progressBar = getProgressBar();
+        if (progressBar != null) {
+            progressBar.setVisibility(View.VISIBLE);
+        }
 
         GeofencesActivity ga = (GeofencesActivity)getActivity();
         ga.mFabButton.hide();
