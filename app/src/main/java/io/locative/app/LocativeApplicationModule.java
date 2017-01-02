@@ -13,6 +13,7 @@ import dagger.Module;
 import dagger.Provides;
 import io.locative.app.network.LocativeNetworkModule;
 import io.locative.app.notification.NotificationManager;
+import io.locative.app.notification.NotificationTokenManager;
 import io.locative.app.view.UIModule;
 
 @Module(

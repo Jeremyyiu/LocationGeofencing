@@ -184,6 +184,20 @@ public class LocativeApiWrapper {
         });
     }
 
+    public void updateSession(String sessionId, SessionUpdatePayload payload, final LocativeNetworkingCallback callback) {
+        mService.updateSession(sessionId, payload, new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                callback.onUpdateSessionFinished(true);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                // TODO: Implement error handling here
+            }
+        });
+    }
+
     private class GsonToGeofenceConverter {
         private static final String JSONKEY_ENABLED = "enabled",
                 JSONKEY_LOCATIONID = "locationId",

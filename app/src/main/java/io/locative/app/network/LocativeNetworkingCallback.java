@@ -24,4 +24,6 @@ public interface LocativeNetworkingCallback {
     void onGetFencelogsFinished(List<Fencelog> fencelogs);
 
     void onGetNotificationsFinished(List<Notification> notifications);
+
+    void onUpdateSessionFinished(boolean success);
 }

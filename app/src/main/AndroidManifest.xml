@@ -61,6 +61,18 @@
 
         <service android:name=".network.LocativeService" />
         <service android:name="io.locative.app.network.ReceiveTransitionsIntentService" />
+        <service
+            android:name=".notification.NotificationTokenManager">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+            android:name=".notification.NotificationMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
         <receiver android:name="io.locative.app.geo.StartupBroadCastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />

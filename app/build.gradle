@@ -88,34 +88,36 @@ def butterknifeVersion = '8.2.1'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:support-v4:23.3.0'
-    compile 'com.android.support:appcompat-v7:23.3.0'
 
-    compile 'com.android.support:recyclerview-v7:23.3.0'
-    compile 'com.android.support:cardview-v7:23.3.0'
-    compile 'com.android.support:support-v13:23.3.0'
-    compile 'com.android.support:design:23.3.0'
-    compile 'com.google.android.gms:play-services-location:8.4.0'
 
-    compile 'com.github.triplet.simpleprovider:simpleprovider:1.1.0'
 
     compile "com.jakewharton:butterknife:$butterknifeVersion"
     apt "com.jakewharton:butterknife-compiler:$butterknifeVersion"
 
-    compile 'com.jakewharton.threetenabp:threetenabp:1.0.3'
 
-    compile 'com.squareup.dagger:dagger:1.2.2'
-    provided 'com.squareup.dagger:dagger-compiler:1.2.2'
-    compile 'com.squareup:otto:1.3.8'
-    compile 'com.squareup.retrofit:retrofit:1.9.0'
-    compile 'com.squareup.okhttp3:okhttp:3.4.1'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;
     }
 
+    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.android.support:cardview-v7:23.4.0'
+    compile 'com.android.support:support-v13:23.4.0'
+    compile 'com.android.support:design:23.4.0'
+    compile 'com.google.android.gms:play-services-location:9.2.0'
+    compile 'com.github.triplet.simpleprovider:simpleprovider:1.1.0'
+    compile 'com.jakewharton.threetenabp:threetenabp:1.0.3'
+    compile 'com.squareup.dagger:dagger:1.2.2'
+    compile 'com.squareup:otto:1.3.8'
+    compile 'com.squareup.retrofit:retrofit:1.9.0'
+    compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'co.intentservice.android-chat-ui:chat-ui:0.1.1'
+    compile 'com.google.firebase:firebase-messaging:9.2.1'
+    testCompile 'junit:junit:4.12'
+    provided 'com.squareup.dagger:dagger-compiler:1.2.2'
+    compile 'com.google.android.gms:play-services-maps:9.2.0'
 }
 
 afterEvaluate {
@@ -132,3 +134,5 @@ def initFabricPropertiesIfNeeded() {
         }
     }
 }
+
+apply plugin: 'com.google.gms.google-services'

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "763243863584",
+    "firebase_url": "https://locative-a06da.firebaseio.com",
+    "project_id": "locative-a06da",
+    "storage_bucket": "locative-a06da.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:763243863584:android:50f89e6a488dac58",
+        "android_client_info": {
+          "package_name": "io.locative.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "763243863584-f53r1iuhjgj16dcu678qctr7v166oncd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.locative.app",
+            "certificate_hash": "0FA925B8CA1D80C1ADA1DAFA84FA0134503031F8"
+          }
+        },
+        {
+          "client_id": "763243863584-nhhkp8gso30om5i5f6lv0i5102pb4oc1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBglhFcpEWVCqJAGPNL5XcNeGEMQqVZTlg"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "763243863584-nhhkp8gso30om5i5f6lv0i5102pb4oc1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
