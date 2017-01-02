@@ -18,13 +18,15 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -32,8 +34,13 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
+import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
+import io.locative.app.model.Notification;
+import io.locative.app.network.FcmPayloadBuilder;
 import io.locative.app.network.LocativeApiWrapper;
+import io.locative.app.network.LocativeConnect;
+import io.locative.app.network.LocativeNetworkingCallback;
 import io.locative.app.network.LocativeService;
 import io.locative.app.network.SessionManager;
 import io.locative.app.persistent.GeofenceProvider;
@@ -43,6 +50,7 @@ import io.locative.app.utils.Constants;
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener, ImportGeofenceFragment.OnGeofenceSelection {
     public static final String NOTIFICATION_CLICK = "notification_click";
+    private final LocativeConnect connect = new LocativeConnect();
 
     @BindView(R.id.drawer)
     DrawerLayout mDrawerLayout;
@@ -154,6 +162,10 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Override
     protected void onStart() {
         super.onStart();
+
+        // FCM token
+        updateFcmToken();
+
         FragmentManager fragman = getFragmentManager();
         switch (fragmentTag) {
             case GeofenceFragment.TAG: {
@@ -181,6 +193,16 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 break;
             }
         }
+    }
+
+    private void updateFcmToken() {
+        String token = FirebaseInstanceId.getInstance().getToken();
+        Log.d(Constants.LOG, "FCM Token: " + token);
+        if (token == null) {
+            return;
+        }
+//        JsonObject payload = new FcmPayloadBuilder(token, false).build();
+        connect.updateSession(mSessionManager.getSessionId(), token, false);
     }
 
     public void load() {

@@ -15,6 +15,7 @@ import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeParseException;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -34,6 +35,11 @@ import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.AeSimpleSHA1;
 import io.locative.app.utils.Constants;
 import io.locative.app.view.AddEditGeofenceActivity;
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -175,20 +181,6 @@ public class LocativeApiWrapper {
             @Override
             public void success(String s, Response response) {
                 callback.onGetNotificationsFinished(NOTIFICATION_CONVERTER.makeList(mParser.parse(s)));
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                // TODO: Implement error handling here
-            }
-        });
-    }
-
-    public void updateSession(String sessionId, SessionUpdatePayload payload, final LocativeNetworkingCallback callback) {
-        mService.updateSession(sessionId, payload, new Callback<String>() {
-            @Override
-            public void success(String s, Response response) {
-                callback.onUpdateSessionFinished(true);
             }
 
             @Override

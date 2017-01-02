@@ -5,6 +5,7 @@ import dagger.Provides;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.StringConverter;
 import retrofit.RestAdapter;
+import retrofit.android.AndroidLog;
 
 @Module(library = true, complete = false,
 
