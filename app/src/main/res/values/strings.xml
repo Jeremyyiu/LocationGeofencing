@@ -52,4 +52,5 @@
 
     <string name="http_settings">HTTP Settings</string>
     <string name="geofence_settings">Geofence Settings</string>
+    <string name="no_notifications">You have no notifications.</string>
 </resources>

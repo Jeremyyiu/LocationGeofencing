@@ -47,10 +47,11 @@ public class NotificationsFragment extends Fragment {
 
     public void refresh() {
         if (getActivity() != null) {
-            for (Notification notification : mNotifications) {
+            if (mNotifications.isEmpty()) {
+                // No notications available, show placeholder notifications like on iOS
                 ChatMessage message = new ChatMessage(
-                        notification.message,
-                        notification.timestamp,
+                        getString(R.string.no_notifications),
+                        System.currentTimeMillis(),
                         ChatMessage.Type.RECEIVED
                 );
 
@@ -58,8 +59,24 @@ public class NotificationsFragment extends Fragment {
                 if (chatView != null) {
                     chatView.addMessage(message);
                 }
+            } else {
+                // Build notification history and present it
+                for (Notification notification : mNotifications) {
+                    ChatMessage message = new ChatMessage(
+                            notification.message,
+                            notification.timestamp,
+                            ChatMessage.Type.RECEIVED
+                    );
+
+                    final ChatView chatView = getChatView();
+                    if (chatView != null) {
+                        chatView.addMessage(message);
+                    }
+                }
             }
+
         }
+        // Remove placeholder view
         final LinearLayout progressBar = getProgressBar();
         if (progressBar != null) {
             progressBar.setVisibility(View.GONE);
