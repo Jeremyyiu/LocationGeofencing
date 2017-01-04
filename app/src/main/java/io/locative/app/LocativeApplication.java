@@ -9,19 +9,26 @@ import dagger.ObjectGraph;
 import io.fabric.sdk.android.Fabric;
 
 public class LocativeApplication extends Application {
-  private ObjectGraph objectGraph;
+    private ObjectGraph mObjectGraph;
+    private static LocativeApplication mInstance;
 
   @Override public void onCreate() {
-    super.onCreate();
-    if (BuildConfig.USE_CRASHLYTICS) {
-      Fabric.with(this, new Crashlytics());
+        super.onCreate();
+        mInstance = this;
+
+        if (BuildConfig.USE_CRASHLYTICS) {
+            Fabric.with(this, new Crashlytics());
+        }
+
+        mObjectGraph = ObjectGraph.create(new LocativeApplicationModule(this));
+        AndroidThreeTen.init(this);
+  }
+
+    public void inject(Object o) {
+    mObjectGraph.inject(o);
+  }
+
+    public static LocativeApplication getApplication() {
+        return mInstance;
     }
-
-    objectGraph = ObjectGraph.create(new LocativeApplicationModule(this));
-    AndroidThreeTen.init(this);
-  }
-
-  public void inject(Object o) {
-    objectGraph.inject(o);
-  }
 }

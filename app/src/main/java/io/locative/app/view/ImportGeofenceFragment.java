@@ -1,5 +1,6 @@
 package io.locative.app.view;
 
+import android.app.Activity;
 import android.app.ListFragment;
 import android.content.Context;
 import android.os.Bundle;
@@ -43,12 +44,15 @@ public class ImportGeofenceFragment extends ListFragment {
         for (Geofences.Geofence geofence : mFences) {
             HashMap<String, String> hm = new HashMap<>();
             hm.put(IMAGE_KEY, IMAGE_VAL_DEFAULT);
-            hm.put(TITLE_KEY, geofence.subtitle);
-            hm.put(SUBTITLE_KEY, geofence.longitude + ", " + geofence.latitude + (!geofence.title.equals(LocativeApiWrapper.UNNAMED_FENCE) ? (" - " + geofence.title): ""));
+            hm.put(TITLE_KEY, geofence.locationId);
+            hm.put(SUBTITLE_KEY, "UUID: " + geofence.uuid);
             aList.add(hm);
         }
-        GeofencesAdapter adapter = new GeofencesAdapter(getActivity().getBaseContext(), aList, R.layout.geofence_row, FROM, TO);
-        setListAdapter(adapter);
+        Activity activity = getActivity();
+        if (activity != null) {
+            GeofencesAdapter adapter = new GeofencesAdapter(activity.getBaseContext(), aList, R.layout.geofence_row, FROM, TO);
+            setListAdapter(adapter);
+        }
     }
 
     public void onAttach(Context context) {

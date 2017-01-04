@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.location.Address;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -34,6 +35,7 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
+import io.locative.app.geo.LocativeGeocoder;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 import io.locative.app.model.Notification;
@@ -172,8 +174,9 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 if (mGeofenceFragment == null)
                     mGeofenceFragment = f != null ? (GeofenceFragment) f : GeofenceFragment.newInstance("str1", "str2");
                 fragman.beginTransaction().replace(R.id.container, mGeofenceFragment, GeofenceFragment.TAG).commit();
-                if (Geofences.ITEMS.size() == 0)
+                if (Geofences.ITEMS.size() == 0) {
                     load();
+                }
                 mGeofenceFragment.setLoading(false);
                 break;
             }
@@ -433,6 +436,10 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     }
 
     public void onFragmentInteraction(Geofences.Geofence fence) {
+        Address address = new LocativeGeocoder().getFromLatLong(fence.latitude, fence.longitude, this);
+        if (address != null) {
+            fence.name = address.getAddressLine(0);
+        }
         fence = Storage.INSTANCE.insertOrUpdateFence(fence, this);
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();

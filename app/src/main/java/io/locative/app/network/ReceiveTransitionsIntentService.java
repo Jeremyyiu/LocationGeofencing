@@ -88,13 +88,13 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
         if (mPreferences.getString(Preferences.HTTP_URL, "").length() == 0) {
             // not global url is set, bail out and show classic notification
-            Log.d(TAG, "Presenting classic notification for " + fence.subtitle);
+            Log.d(TAG, "Presenting classic notification for " + fence.uuid);
             mNotificationManager.showNotification(
                     fence.toString(),
                     Integer.parseInt(geofence.getRequestId()),
                     transitionType
             );
-            Log.d(TAG, "Dispatching Fencelog for " + fence.subtitle);
+            Log.d(TAG, "Dispatching Fencelog for " + fence.uuid);
             mRequestManager.dispatchFencelog(
                     fence,
                     getEventType(transitionType),
@@ -103,7 +103,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                     0
             );
         } else {
-            Log.d(TAG, "Dispatching Request for " + fence.subtitle);
+            Log.d(TAG, "Dispatching Request for " + fence.uuid);
             mRequestManager.dispatch(fence, getEventType(transitionType));
         }
     }

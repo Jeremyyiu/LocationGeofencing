@@ -81,9 +81,9 @@ public class RequestManager {
         return url
                 .concat(url.contains("?") ? "&" : "?")
                 .concat(
-                "latitude=" + URLEncoder.encode(Float.toString(geofence.latitude))
-                + "&longitude=" + URLEncoder.encode(Float.toString(geofence.longitude))
-                + "&id=" + URLEncoder.encode(geofence.subtitle)
+                "latitude=" + URLEncoder.encode(Double.toString(geofence.latitude))
+                + "&longitude=" + URLEncoder.encode(Double.toString(geofence.longitude))
+                + "&id=" + URLEncoder.encode(geofence.getRelevantId())
                 + "&device=" + URLEncoder.encode(Settings.Secure.getString(mContext.getContentResolver(),
                         Settings.Secure.ANDROID_ID))
                 + "&device_type=" + URLEncoder.encode("Android")
@@ -118,7 +118,7 @@ public class RequestManager {
         final RequestBody body = new FormBody.Builder()
                 .add("latitude", String.valueOf(geofence.latitude))
                 .add("longitude", String.valueOf(geofence.longitude))
-                .add("id", geofence.subtitle)
+                .add("id", geofence.getRelevantId())
                 .add("device", Settings.Secure.getString(mContext.getContentResolver(),
                         Settings.Secure.ANDROID_ID))
                 .add("device_type", "Android")
@@ -135,7 +135,7 @@ public class RequestManager {
             public void onFailure(Call call, IOException e) {
                 if (mPreferences.getBoolean(Preferences.NOTIFICATION_FAIL, false)) {
                     mNotificationManager.showNotification(
-                            geofence.subtitle,
+                            geofence.getRelevantId(),
                             "Error when sending HTTP request."
                     );
                 }
@@ -147,7 +147,7 @@ public class RequestManager {
                 if (mPreferences.getBoolean(Preferences.NOTIFICATION_SUCCESS, false)) {
                     final String result = response.isSuccessful() ? "Success" : "Error";
                     mNotificationManager.showNotification(
-                            geofence.subtitle,
+                            geofence.getRelevantId(),
                             result + " in HTTP request (" + response.code() + ")"
                     );
                 }
@@ -170,7 +170,7 @@ public class RequestManager {
         String sessionId = mPreferences.getString(Preferences.SESSION_ID, null);
         if (sessionId != null && eventType != null) {
             Fencelog fencelog = new Fencelog();
-            fencelog.locationId = geofence.subtitle;
+            fencelog.locationId = geofence.getRelevantId();
             fencelog.latitude = geofence.latitude;
             fencelog.longitude = geofence.longitude;
             fencelog.eventType = eventType;

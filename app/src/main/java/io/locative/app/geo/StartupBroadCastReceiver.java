@@ -36,7 +36,7 @@ public class StartupBroadCastReceiver extends BroadcastReceiver {
                 if (data != null) {
                     while (data.moveToNext()) {
                         Geofences.Geofence item = GeofenceProvider.fromCursor(data);
-                        Log.i(TAG, "Found geofence " +item.title);
+                        Log.i(TAG, "Found geofence " +item.uuid);
                         items.add(item);
                     }
                 }

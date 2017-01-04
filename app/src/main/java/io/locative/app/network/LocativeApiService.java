@@ -42,8 +42,8 @@ public interface LocativeApiService {
     @POST("/api/fencelogs/{session}")
     void dispatchFencelog(
             @Path("session") String sessionId,
-            @Field("longitude") float longitude,
-            @Field("latitude") float latitude,
+            @Field("longitude") double longitude,
+            @Field("latitude") double latitude,
             @Field("locationId") String locationId,
             @Field("httpUrl") String httpUrl,
             @Field("httpMethod") String httpMethod,

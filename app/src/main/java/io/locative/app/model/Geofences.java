@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.Constants;
@@ -29,32 +30,39 @@ public class Geofences {
 
     public void addItem(Geofence item) {
         ITEMS.add(item);
-        ITEM_MAP.put(item.id, item);
+        ITEM_MAP.put(item.uuid, item);
     }
 
     public static class Geofence implements Serializable {
-        public final String id;
-        public final String title;
-        public final String subtitle;
-        public final int triggers;
-        public final float latitude;
-        public final float longitude;
-        public final int radiusMeters;
-        public final int httpAuth;
-        public final String httpUsername;
-        public final String httpPassword;
-        public final int enterMethod;
-        public final String enterUrl;
-        public final int exitMethod;
-        public final String exitUrl;
+        public String uuid;
+        public String locationId;
+        public String name;
+        public int triggers;
+        public double latitude;
+        public double longitude;
+        public int radiusMeters;
+        public int httpAuth;
+        public String httpUsername;
+        public String httpPassword;
+        public int enterMethod;
+        public String enterUrl;
+        public int exitMethod;
+        public String exitUrl;
+
+        public String getRelevantId() {
+            if (locationId != null && locationId.length() > 0) {
+               return locationId;
+            }
+            return uuid;
+        }
 
         public Geofence(
-                String id,
-                String title,
-                String subtitle,
+                String uuid,
+                String locationId,
+                String name,
                 int triggers,
-                float latitude,
-                float longitude,
+                double latitude,
+                double longitude,
                 int radiusMeters,
                 int httpAuth,
                 String httpUsername,
@@ -63,9 +71,9 @@ public class Geofences {
                 String enterUrl,
                 int exitMethod,
                 String exitUrl) {
-            this.id = id;
-            this.title = title;
-            this.subtitle = subtitle;
+            this.uuid = (uuid == null) ? UUID.randomUUID().toString() : uuid;
+            this.locationId = locationId;
+            this.name = name;
             this.triggers = triggers;
             this.latitude = latitude;
             this.longitude = longitude;
@@ -79,13 +87,6 @@ public class Geofences {
             this.exitUrl = exitUrl;
         }
 
-        public Geofence setId(String id) {
-            return new Geofence(
-                    id, title, subtitle, triggers, latitude, longitude, radiusMeters, httpAuth,
-                    httpUsername, httpPassword, enterMethod, enterUrl, exitMethod, exitUrl
-            );
-        }
-
         public boolean hasAuthentication() {
             if (this.httpUsername == null || this.httpPassword == null) {
                 return false;
@@ -95,13 +96,13 @@ public class Geofences {
 
         @Override
         public String toString() {
-            if (title != null && title.length() > 0) {
-                return title;
+            if (locationId != null && locationId.length() > 0) {
+                return locationId;
             }
-            if (subtitle != null && subtitle.length() > 0) {
-                return subtitle;
+            if (name != null && name.length() > 0) {
+                return name;
             }
-            return id;
+            return uuid;
         }
 
         public com.google.android.gms.location.Geofence toGeofence() {
@@ -112,14 +113,14 @@ public class Geofences {
                             ((triggers & GeofenceProvider.TRIGGER_ON_EXIT) == GeofenceProvider.TRIGGER_ON_EXIT)
             );
             if (both) {
-                Log.d(Constants.LOG, "ID: " + this.id + " trigger on BOTH");
+                Log.d(Constants.LOG, "ID: " + this.uuid + " trigger on BOTH");
                 transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_ENTER;
                 transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_EXIT;
             } else if (((triggers & GeofenceProvider.TRIGGER_ON_ENTER) == GeofenceProvider.TRIGGER_ON_ENTER)) {
-                Log.d(Constants.LOG, "ID: " + this.id + " trigger on ENTER");
+                Log.d(Constants.LOG, "ID: " + this.uuid + " trigger on ENTER");
                 transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_ENTER;
             } else if (((triggers & GeofenceProvider.TRIGGER_ON_EXIT) == GeofenceProvider.TRIGGER_ON_EXIT)) {
-                Log.d(Constants.LOG, "ID: " + this.id + " trigger on EXIT");
+                Log.d(Constants.LOG, "ID: " + this.uuid + " trigger on EXIT");
                 transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_EXIT;
             }
             Log.d(Constants.LOG, "Transition: " + transition);
@@ -137,7 +138,7 @@ public class Geofences {
             }
 
             return new com.google.android.gms.location.Geofence.Builder()
-                    .setRequestId(this.id)
+                    .setRequestId(this.uuid)
                     .setTransitionTypes(transition)
                     .setCircularRegion(
                             this.latitude,

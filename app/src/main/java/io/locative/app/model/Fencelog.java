@@ -8,8 +8,8 @@ import java.util.Date;
  * Created by mkida on 17/08/2014.
  */
 public class Fencelog {
-    public float longitude;
-    public float latitude;
+    public double longitude;
+    public double latitude;
     public String locationId;
     public String httpUrl;
     public String httpMethod;

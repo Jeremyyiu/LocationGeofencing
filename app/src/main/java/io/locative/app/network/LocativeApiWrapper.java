@@ -1,5 +1,7 @@
 package io.locative.app.network;
 
+import android.content.Context;
+import android.location.Address;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -27,6 +29,9 @@ import java.util.TimeZone;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.locative.app.LocativeApplication;
+import io.locative.app.R;
+import io.locative.app.geo.LocativeGeocoder;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
@@ -47,6 +52,7 @@ import retrofit.client.Response;
 @Singleton
 public class LocativeApiWrapper {
     public static final String UNNAMED_FENCE = "";
+    private Context mContext = LocativeApplication.getApplication().getApplicationContext();
 
     @Inject
     LocativeApiService mService;
@@ -219,20 +225,21 @@ public class LocativeApiWrapper {
         }
 
         private Geofences.Geofence makeGeofence(JsonObject geofenceJson) {
+            String locationUUID = geofenceJson.get(JSONKEY_UUID).getAsString();
             String locationId = geofenceJson.get(JSONKEY_LOCATIONID).getAsString();
-            String subtitle = geofenceJson.get(JSONKEY_UUID).getAsString();
             JsonObject location = geofenceJson.getAsJsonObject(JSONKEY_LOCATION);
             JsonObject basicAuth = geofenceJson.getAsJsonObject(JSONKEY_BASICAUTH);
             JsonObject triggerOnLeave = geofenceJson.getAsJsonObject(JSONKEY_TRIGGERONLEAVE);
             JsonObject triggerOnArrival = geofenceJson.getAsJsonObject(JSONKEY_TRIGGERONARRIVAL);
             int triggers = createTrigger(triggerOnLeave, triggerOnArrival);
-            float lat = location.get(JSONKEY_LAT).getAsFloat();
-            float lon = location.get(JSONKEY_LONG).getAsFloat();
+            double lat = location.get(JSONKEY_LAT).getAsDouble();
+            double lon = location.get(JSONKEY_LONG).getAsDouble();
             int radius = location.get(JSONKEY_RADIUS).getAsInt();
+            String addressLine = Double.toString(lat) + ", " + Double.toString(lon);
             return new Geofences.Geofence(
-                    "0",
-                    subtitle,
+                    locationUUID,
                     locationId,
+                    addressLine,
                     triggers,
                     lat,
                     lon,

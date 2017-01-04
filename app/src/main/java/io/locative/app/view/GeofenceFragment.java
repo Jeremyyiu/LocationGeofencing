@@ -75,8 +75,8 @@ public class GeofenceFragment extends ListFragment {
             HashMap<String, String> hm = new HashMap<String, String>();
             Geofences.Geofence geofence = Geofences.ITEMS.get(i);
             hm.put("image", "0");
-            hm.put("title", geofence.subtitle);
-            hm.put("subtitle", geofence.longitude + ", " + geofence.latitude + (!geofence.title.equals(LocativeApiWrapper.UNNAMED_FENCE) ? (" - " + geofence.title): ""));
+            hm.put("title", geofence.name);
+            hm.put("subtitle", "ID: " + geofence.getRelevantId());
             aList.add(hm);
         }
 
@@ -91,7 +91,7 @@ public class GeofenceFragment extends ListFragment {
         int[] to = {
                 R.id.image,
                 R.id.title,
-                 R.id.subtitle
+                R.id.subtitle
         };
 
         if (getActivity() != null) {
@@ -138,7 +138,7 @@ public class GeofenceFragment extends ListFragment {
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(Geofences.ITEMS.get(position).id);
+            mListener.onFragmentInteraction(Geofences.ITEMS.get(position).uuid);
         }
     }
 
@@ -166,10 +166,10 @@ public class GeofenceFragment extends ListFragment {
                                 ContentValues values = new ContentValues();
                                 Geofences.Geofence item = Geofences.ITEMS.get(pos);
 
-                                Log.i(Constants.LOG, "Deleting Item with pos: " + Long.toString(pos) + " _id: " + item.id);
+                                Log.i(Constants.LOG, "Deleting Item with pos: " + Long.toString(pos) + " _id: " + item.uuid);
                                 ContentResolver resolver = aView.getContext().getContentResolver();
 
-                                resolver.delete(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), "_id = ?", new String[]{item.id});
+                                resolver.delete(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), "_id = ?", new String[]{item.uuid});
                                 Geofences.ITEMS.remove(pos);
                                 refresh();
                             }
@@ -190,7 +190,7 @@ public class GeofenceFragment extends ListFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Geofences.Geofence item = Geofences.ITEMS.get(position);
                 Intent addEditGeofencesIntent = new Intent(getActivity(), AddEditGeofenceActivity.class);
-                addEditGeofencesIntent.putExtra("geofenceId", Integer.parseInt(item.id));
+                addEditGeofencesIntent.putExtra("geofenceId", Integer.parseInt(item.uuid));
                 getActivity().startActivity(addEditGeofencesIntent);
             }
         });

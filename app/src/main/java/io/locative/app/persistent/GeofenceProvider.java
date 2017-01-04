@@ -41,8 +41,8 @@ public class GeofenceProvider extends AbstractProvider {
     public static Geofences.Geofence fromCursor(Cursor cursor) {
         return new Geofences.Geofence(
                 cursor.getString(cursor.getColumnIndex(Geofence.KEY_ID)),
-                cursor.getString(cursor.getColumnIndex(Geofence.KEY_NAME)),
                 cursor.getString(cursor.getColumnIndex(Geofence.KEY_CUSTOMID)),
+                cursor.getString(cursor.getColumnIndex(Geofence.KEY_NAME)),
                 cursor.getInt(cursor.getColumnIndex(Geofence.KEY_TRIGGER)),
                 cursor.getFloat(cursor.getColumnIndex(Geofence.KEY_LATITUDE)),
                 cursor.getFloat(cursor.getColumnIndex(Geofence.KEY_LONGITUDE)),

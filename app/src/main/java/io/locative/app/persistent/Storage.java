@@ -18,8 +18,7 @@ public enum Storage {
 
     public Geofences.Geofence insertOrUpdateFence(Geofences.Geofence fence, Context context) {
         final String QUERY = GeofenceProvider.Geofence.KEY_CUSTOMID + " = ?";
-        final String[] PARAMETERS = new String[]{fence.subtitle};
-        Geofences.Geofence returnFence = fence;
+        final String[] PARAMETERS = new String[]{fence.uuid};
         final Uri URL = Uri.parse("content://" + context.getString(R.string.authority) + "/geofences");
         ContentResolver resolver = context.getContentResolver();
         Cursor existingCursor = resolver.query(URL, null, QUERY, PARAMETERS, null);
@@ -28,7 +27,7 @@ public enum Storage {
                 resolver.update(URL, makeContentValuesForGeofence(fence), QUERY, PARAMETERS);
             } else {
                 Uri result = resolver.insert(URL, makeContentValuesForGeofence(fence));
-                returnFence = fence.setId(result.getLastPathSegment());
+                fence.uuid = result.getLastPathSegment();
             }
         }finally {
             if (existingCursor != null) {
@@ -36,15 +35,16 @@ public enum Storage {
             }
         }
 
-        return returnFence;
+        return fence;
     }
 
     @NonNull
     private ContentValues makeContentValuesForGeofence(Geofences.Geofence fence) {
         ContentValues values = new ContentValues();
-        values.put(GeofenceProvider.Geofence.KEY_NAME, fence.title);
+        values.put(GeofenceProvider.Geofence.KEY_NAME, fence.name);
+        values.put(GeofenceProvider.Geofence.KEY_ID, fence.uuid);
         values.put(GeofenceProvider.Geofence.KEY_RADIUS, fence.radiusMeters);
-        values.put(GeofenceProvider.Geofence.KEY_CUSTOMID, fence.subtitle);
+        values.put(GeofenceProvider.Geofence.KEY_CUSTOMID, fence.locationId);
         values.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, fence.enterMethod);
         values.put(GeofenceProvider.Geofence.KEY_ENTER_URL, fence.enterUrl);
         values.put(GeofenceProvider.Geofence.KEY_TRIGGER, fence.triggers);
