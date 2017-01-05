@@ -41,9 +41,4 @@ public class LocativeNetworkingAdapter implements LocativeNetworkingCallback{
     public void onGetNotificationsFinished(List<Notification> notifications) {
 
     }
-
-    @Override
-    public void onUpdateSessionFinished(boolean success) {
-
-    }
 }

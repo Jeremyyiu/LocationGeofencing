@@ -22,7 +22,8 @@ public interface LocativeApiService {
             @Query("username") String username,
             @Query("password") String password,
             @Query("origin") String origin,
-            Callback<String> callback);
+            Callback<String> callback
+    );
 
     @FormUrlEncoded
     @POST("/api/signup")
@@ -31,12 +32,20 @@ public interface LocativeApiService {
             @Field("password") String password,
             @Field("email") String email,
             @Field("token") String token,
-            Callback<String> callback);
+            Callback<String> callback
+    );
 
     @GET("/api/session/{session}")
     void checkSession(
             @Path("session") String sessionId,
-            Callback<String> callback);
+            Callback<String> callback
+    );
+
+    @GET("/api/account")
+    void getAccount(
+            @Query("sessionId") String sessionId,
+            Callback<String> callback
+    );
 
     @FormUrlEncoded
     @POST("/api/fencelogs/{session}")
@@ -51,20 +60,24 @@ public interface LocativeApiService {
             @Field("eventType") String eventType,
             @Field("fenceType") String fenceType,
             @Field("origin") String origin,
-            Callback<String> callback);
+            Callback<String> callback
+    );
 
     @GET("/api/geofences")
     void getGeofences(
             @Query("sessionId") String sessionId,
-            Callback<String> callback);
+            Callback<String> callback
+    );
 
     @GET("/api/fencelogs/{session}")
     void getFencelogs(
             @Path("session") String sessionId,
-            Callback<String> callback);
+            Callback<String> callback
+    );
 
     @GET("/api/notifications")
     void getNotifications(
             @Query("sessionId") String sessionId,
-            Callback<String> callback);
+            Callback<String> callback
+    );
 }

@@ -36,6 +36,7 @@ import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 import io.locative.app.model.Notification;
+import io.locative.app.network.callback.GetAccountCallback;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.AeSimpleSHA1;
 import io.locative.app.utils.Constants;
@@ -120,6 +121,29 @@ public class LocativeApiWrapper {
             @Override
             public void failure(RetrofitError error) {
                 callback.onCheckSessionFinished(false);
+            }
+        });
+    }
+
+    public void doGetAccount(String sessionId, final GetAccountCallback callback) {
+        mService.getAccount(sessionId, new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                if (response.getStatus() != 200) {
+                    callback.onFailure();
+                    return;
+                }
+                JsonObject account = mParser.parse(s).getAsJsonObject();
+                callback.onSuccess(
+                        account.get("username").getAsString(),
+                        account.get("email").getAsString(),
+                        account.get("avatar").getAsString()
+                );
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.onFailure();
             }
         });
     }

@@ -144,9 +144,4 @@ public class SignupActivity extends BaseActivity implements LocativeNetworkingCa
     public void onGetNotificationsFinished(List<Notification> notifications) {
 
     }
-
-    @Override
-    public void onUpdateSessionFinished(boolean success) {
-
-    }
 }

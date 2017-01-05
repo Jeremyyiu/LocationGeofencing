@@ -7,29 +7,50 @@ import android.app.FragmentTransaction;
 import android.app.LoaderManager;
 import android.app.ProgressDialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.mikepenz.iconics.IconicsDrawable;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IProfile;
+import com.mikepenz.materialdrawer.util.AbstractDrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerImageLoader;
+import com.mikepenz.materialdrawer.util.DrawerUIUtils;
 
 import java.util.ArrayList;
 
@@ -45,21 +66,22 @@ import io.locative.app.model.Geofences;
 import io.locative.app.model.Notification;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeConnect;
-import io.locative.app.network.LocativeNetworkingCallback;
 import io.locative.app.network.LocativeService;
 import io.locative.app.network.SessionManager;
+import io.locative.app.network.callback.GetAccountCallback;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.persistent.Storage;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.Dialog;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
-        LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener, ImportGeofenceFragment.OnGeofenceSelection {
+        LoaderManager.LoaderCallbacks<Cursor>, ImportGeofenceFragment.OnGeofenceSelection {
     public static final String NOTIFICATION_CLICK = "notification_click";
     private final LocativeConnect connect = new LocativeConnect();
 
-    @BindView(R.id.drawer)
-    DrawerLayout mDrawerLayout;
+    private AccountHeader mHeader;
+
+    private Drawer mDrawer;
 
     @BindView(R.id.nav_view)
     NavigationView mNavigationView;
@@ -70,6 +92,9 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @BindView(R.id.add_geofence)
     FloatingActionButton mFabButton;
 
+    @BindView(R.id.toolbar_actionbar)
+    Toolbar mToolbar;
+
     @Inject
     LocativeApiWrapper mLocativeNetworkingWrapper;
 
@@ -78,8 +103,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
     @Inject
     Storage mStorage;
-
-    private ActionBarDrawerToggle mDrawerToogle;
 
     private GeofenceFragment mGeofenceFragment = null;
     private FencelogsFragment mFenceLogsFragment = null;
@@ -90,6 +113,243 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     private String fragmentTag = GeofenceFragment.TAG;
     private static final String FRAGMENTTAG = "current.fragment";
 
+    private ProfileDrawerItem getEmptyProfileDrawerItem() {
+        return new ProfileDrawerItem()
+                .withIdentifier(0)
+                .withName(getString(R.string.drawer_header_username_placeholder))
+                .withIcon(getResources().getDrawable(R.drawable.logo_round_512px));
+    }
+
+    private void updateDrawerHeader() {
+        if (!mSessionManager.hasSession()) {
+            mHeader.updateProfile(
+                    getEmptyProfileDrawerItem()
+            );
+        } else {
+            mLocativeNetworkingWrapper.doGetAccount(mSessionManager.getSessionId(), new GetAccountCallback() {
+                @Override
+                public void onSuccess(String username, String email, String avatarUrl) {
+                    mHeader.updateProfile(
+                            new ProfileDrawerItem().withIdentifier(0).withName(username).withIcon(avatarUrl)
+                    );
+                }
+
+                @Override
+                public void onFailure() {
+
+                }
+            });
+        }
+    }
+
+    private void setupDrawer() {
+        final GeofencesActivity self = this;
+
+        DrawerImageLoader.init(new AbstractDrawerImageLoader() {
+            @Override
+            public void set(ImageView imageView, Uri uri, Drawable placeholder) {
+                Glide.with(getApplicationContext()).load(uri).placeholder(placeholder).into(imageView);
+            }
+
+            @Override
+            public void cancel(ImageView imageView) {
+                Glide.clear(imageView);
+            }
+
+            @Override
+            public Drawable placeholder(Context ctx, String tag) {
+                //define different placeholders for different imageView targets
+                //default tags are accessible via the DrawerImageLoader.Tags
+                //custom ones can be checked via string. see the CustomUrlBasePrimaryDrawerItem LINE 111
+                if (DrawerImageLoader.Tags.PROFILE.name().equals(tag)) {
+                    return DrawerUIUtils.getPlaceHolder(ctx);
+                } else if (DrawerImageLoader.Tags.ACCOUNT_HEADER.name().equals(tag)) {
+                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(com.mikepenz.materialdrawer.R.color.primary).sizeDp(56);
+                } else if ("customUrlItem".equals(tag)) {
+                    return new IconicsDrawable(ctx).iconText(" ").backgroundColorRes(R.color.md_red_500).sizeDp(56);
+                }
+
+                //we use the default one for
+                //DrawerImageLoader.Tags.PROFILE_DRAWER_ITEM.name()
+
+                return super.placeholder(ctx, tag);
+            }
+        });
+
+        mHeader = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(new ColorDrawable(getResources().getColor(R.color.primary)))
+                .withSelectionListEnabledForSingleProfile(false)
+                .addProfiles(
+                        getEmptyProfileDrawerItem()
+                )
+                .withOnAccountHeaderProfileImageListener(new AccountHeader.OnAccountHeaderProfileImageListener() {
+                    @Override
+                    public boolean onProfileImageClick(View view, IProfile profile, boolean current) {
+                        startActivity(new Intent(self, SettingsActivity.class));
+                        mDrawer.closeDrawer();
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onProfileImageLongClick(View view, IProfile profile, boolean current) {
+                        return false;
+                    }
+                })
+                .withOnAccountHeaderSelectionViewClickListener(new AccountHeader.OnAccountHeaderSelectionViewClickListener() {
+                    @Override
+                    public boolean onClick(View view, IProfile profile) {
+                        startActivity(new Intent(self, SettingsActivity.class));
+                        mDrawer.closeDrawer();
+                        return true;
+                    }
+                })
+                .build();
+
+        updateDrawerHeader();
+
+        class DRAWER_ITEMS {
+            final static int GEOFENCES = 1;
+            final static int FENCELOGS = 2;
+            final static int NOTIFICATIONS = 3;
+            final static int SETTINGS = 4;
+            final static int SUPPORT = 5;
+
+        }
+
+        mDrawer = new DrawerBuilder()
+                .withActivity(this)
+                .withAccountHeader(mHeader)
+                .withToolbar(mToolbar)
+                .addDrawerItems(
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.title_geofences)),
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.fencelogs)),
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.notifications)),
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.title_settings)),
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.title_support))
+                        )
+                .withOnDrawerListener(new Drawer.OnDrawerListener() {
+                    @Override
+                    public void onDrawerOpened(View drawerView) {
+                        updateDrawerHeader();
+                    }
+
+                    @Override
+                    public void onDrawerClosed(View drawerView) {
+
+                    }
+
+                    @Override
+                    public void onDrawerSlide(View drawerView, float slideOffset) {
+
+                    }
+                })
+                .withFooter(R.layout.drawer_footer)
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+
+                        if (!(drawerItem instanceof PrimaryDrawerItem)) {
+                            return false;
+                        }
+
+                        Fragment fragment = null;
+
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction transaction = fragmentManager.beginTransaction();
+                        boolean cancelled = false;
+
+                        switch (position) {
+                            case DRAWER_ITEMS.GEOFENCES:
+                                if (mGeofenceFragment == null) {
+                                    mGeofenceFragment = GeofenceFragment.newInstance("str1", "str2");
+                                }
+                                fragment = mGeofenceFragment;
+                                fragmentTag = GeofenceFragment.TAG;
+                                mFabButton.show();
+                                break;
+                            case DRAWER_ITEMS.FENCELOGS:
+                                if (!mSessionManager.hasSession()) {
+                                    // don't try to show FencelogsFragment if user is not logged in
+                                    // instead show AlertDialog and offer chance to log in / create account
+                                    new AlertDialog.Builder(self)
+                                            .setTitle(R.string.not_logged_in)
+                                            .setMessage(R.string.need_login)
+                                            .setPositiveButton(R.string.login, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    startActivity(new Intent(self, SettingsActivity.class));
+                                                }
+                                            })
+                                            .setNegativeButton(R.string.cancel, null)
+                                            .setCancelable(true)
+                                            .create().show();
+                                    cancelled = true;
+                                    break;
+                                }
+                                // in case the user is logged in, just continue as usual
+                                if (mFenceLogsFragment == null) {
+                                    mFenceLogsFragment = new FencelogsFragment();
+                                }
+                                fragment = mFenceLogsFragment;
+                                fragmentTag = FencelogsFragment.TAG;
+                                mFabButton.hide();
+                                break;
+                            case DRAWER_ITEMS.NOTIFICATIONS:
+                                if (!mSessionManager.hasSession()) {
+                                    // don't try to show FencelogsFragment if user is not logged in
+                                    // instead show AlertDialog and offer chance to log in / create account
+                                    new AlertDialog.Builder(self)
+                                            .setTitle(R.string.not_logged_in)
+                                            .setMessage(R.string.need_login)
+                                            .setPositiveButton(R.string.login, new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    startActivity(new Intent(self, SettingsActivity.class));
+                                                }
+                                            })
+                                            .setNegativeButton(R.string.cancel, null)
+                                            .setCancelable(true)
+                                            .create().show();
+                                    cancelled = true;
+                                    break;
+                                }
+                                // in case the user is logged in, just continue as usual
+                                if (mNotificationsFragment == null) {
+                                    mNotificationsFragment = new NotificationsFragment();
+                                }
+                                fragment = mNotificationsFragment;
+                                fragmentTag = NotificationsFragment.TAG;
+                                mFabButton.hide();
+                                break;
+                            case DRAWER_ITEMS.SETTINGS:
+                                startActivity(new Intent(self, SettingsActivity.class));
+                                break;
+                            case DRAWER_ITEMS.SUPPORT:
+                                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.SUPPORT_URI)));
+                                mDrawer.closeDrawer();
+                                break;
+                            default:
+                                break;
+                        }
+                        if (fragment != null) {
+                            transaction.replace(R.id.container, fragment, fragmentTag).commit();
+                        }
+
+                        if (cancelled) {
+                            // operation has been cancelled because prerequisites have failed
+                            mDrawer.closeDrawer();
+                            return false;
+                        }
+
+                        setTitle(((PrimaryDrawerItem)drawerItem).getName().getText());
+                        mDrawer.closeDrawer();
+                        return true;
+                    }
+                })
+                .build();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
@@ -98,6 +358,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         }
         super.onCreate(savedInstanceState);
         ((LocativeApplication) getApplication()).inject(this);
+        setupDrawer();
 
         /* never open drawer initially
         if (savedInstanceState == null) {
@@ -121,45 +382,16 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
             mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    mDrawerLayout.openDrawer(GravityCompat.START);
+                    mDrawer.openDrawer();
                 }
             });
         }
 
-        // drawer toogle with listner
-        mDrawerToogle = new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.app_name, R.string.app_name) {
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                syncState();
-                if (isFragmentVisible(GeofenceFragment.TAG)) {
-                    mFabButton.show();
-                }
-            }
-
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                syncState();
-            }
-
-            public void onDrawerSlide(View drawerView, float slideOffset) {
-                super.onDrawerSlide(drawerView, slideOffset);
-                mFabButton.hide();
-            }
-        };
-        mDrawerToogle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToogle);
-        mNavigationView.setNavigationItemSelectedListener(this);
-
-        /*ContentResolver resolver = this.getContentResolver();
-
-        ContentValues values = new ContentValues();
-        values.put("custom_id", "123");
-        resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);*/
     }
 
-    private boolean isFragmentVisible(String tag) {
-        Fragment fragment = getFragmentManager().findFragmentByTag(tag);
-        return (fragment != null && fragment.isVisible());
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -231,8 +463,9 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         super.onResume();
         // first start of this activity , open drawer and hide FAB
         if (firstResume) {
-            mDrawerLayout.openDrawer(Gravity.LEFT);
-            mDrawerToogle.syncState();
+//            mDrawerLayout.openDrawer(Gravity.LEFT);
+            mDrawer.openDrawer();
+//            mDrawerToogle.syncState();
             mFabButton.hide();
         }
 
@@ -258,113 +491,8 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        mDrawerToogle.syncState();
+//        mDrawerToogle.syncState();
     }
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-
-        Fragment fragment = null;
-
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        boolean cancelled = false;
-
-        switch (item.getItemId()) {
-            case R.id.geofence:
-                if (mGeofenceFragment == null) {
-                    mGeofenceFragment = GeofenceFragment.newInstance("str1", "str2");
-                }
-                fragment = mGeofenceFragment;
-                fragmentTag = GeofenceFragment.TAG;
-                mFabButton.show();
-                break;
-            case R.id.fencelogs:
-                if (!mSessionManager.hasSession()) {
-                    // don't try to show FencelogsFragment if user is not logged in
-                    // instead show AlertDialog and offer chance to log in / create account
-                    final GeofencesActivity self = this;
-                    new AlertDialog.Builder(this)
-                            .setTitle(R.string.not_logged_in)
-                            .setMessage(R.string.need_login)
-                            .setPositiveButton(R.string.login, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    startActivity(new Intent(self, SettingsActivity.class));
-                                }
-                            })
-                            .setNegativeButton(R.string.cancel, null)
-                            .setCancelable(true)
-                            .create().show();
-                    cancelled = true;
-                    break;
-                }
-                // in case the user is logged in, just continue as usual
-                if (mFenceLogsFragment == null) {
-                    mFenceLogsFragment = new FencelogsFragment();
-                }
-                fragment = mFenceLogsFragment;
-                fragmentTag = FencelogsFragment.TAG;
-                mFabButton.hide();
-                break;
-            case R.id.notifications:
-                if (!mSessionManager.hasSession()) {
-                    // don't try to show FencelogsFragment if user is not logged in
-                    // instead show AlertDialog and offer chance to log in / create account
-                    final GeofencesActivity self = this;
-                    new AlertDialog.Builder(this)
-                            .setTitle(R.string.not_logged_in)
-                            .setMessage(R.string.need_login)
-                            .setPositiveButton(R.string.login, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    startActivity(new Intent(self, SettingsActivity.class));
-                                }
-                            })
-                            .setNegativeButton(R.string.cancel, null)
-                            .setCancelable(true)
-                            .create().show();
-                    cancelled = true;
-                    break;
-                }
-                // in case the user is logged in, just continue as usual
-                if (mNotificationsFragment == null) {
-                    mNotificationsFragment = new NotificationsFragment();
-                }
-                fragment = mNotificationsFragment;
-                fragmentTag = NotificationsFragment.TAG;
-                mFabButton.hide();
-                break;
-            case R.id.settings:
-                startActivity(new Intent(this, SettingsActivity.class));
-                break;
-            case R.id.feedback:
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.SUPPORT_URI)));
-                break;
-            case R.id.twitter:
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.TWITTER_URI)));
-                break;
-            case R.id.facebook:
-                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.FACEBOOK_URI)));
-                break;
-            default:
-                break;
-        }
-        if (fragment != null) {
-            transaction.replace(R.id.container, fragment, fragmentTag).commit();
-        }
-
-        if (cancelled) {
-            // operation has been cancelled because prerequisites have failed
-            mDrawerLayout.closeDrawer(GravityCompat.START);
-            return false;
-        }
-
-        setTitle(item.getTitle());
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
-
 
     @SuppressWarnings("unused")
     @OnClick(R.id.add_geofence)
