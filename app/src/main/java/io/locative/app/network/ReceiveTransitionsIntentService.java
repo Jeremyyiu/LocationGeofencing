@@ -12,7 +12,11 @@ import android.util.Log;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Random;
 
 import javax.inject.Inject;
 
@@ -77,7 +81,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
     private void processGeofence(Geofence geofence, int transitionType) {
 
         ContentResolver resolver = this.getContentResolver();
-        Cursor cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{geofence.getRequestId()}, null);
+        Cursor cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "custom_id = ?", new String[]{geofence.getRequestId()}, null);
         if (cursor == null || cursor.getCount() == 0) {
             return; // TODO: Handle errors here
         }
@@ -90,8 +94,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
             // not global url is set, bail out and show classic notification
             Log.d(TAG, "Presenting classic notification for " + fence.uuid);
             mNotificationManager.showNotification(
-                    fence.toString(),
-                    Integer.parseInt(geofence.getRequestId()),
+                    fence.getRelevantId(),
+                    new Random().nextInt(),
                     transitionType
             );
             Log.d(TAG, "Dispatching Fencelog for " + fence.uuid);

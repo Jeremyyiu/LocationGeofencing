@@ -12,7 +12,6 @@ import java.util.*;
 
 import io.locative.app.R;
 import io.locative.app.model.Geofences;
-import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkingAdapter;
 
 public class ImportGeofenceFragment extends ListFragment {
@@ -44,7 +43,7 @@ public class ImportGeofenceFragment extends ListFragment {
         for (Geofences.Geofence geofence : mFences) {
             HashMap<String, String> hm = new HashMap<>();
             hm.put(IMAGE_KEY, IMAGE_VAL_DEFAULT);
-            hm.put(TITLE_KEY, geofence.locationId);
+            hm.put(TITLE_KEY, geofence.customId);
             hm.put(SUBTITLE_KEY, "UUID: " + geofence.uuid);
             aList.add(hm);
         }
@@ -86,14 +85,14 @@ public class ImportGeofenceFragment extends ListFragment {
     }
 
     public interface OnGeofenceSelection {
-        void onFragmentInteraction(Geofences.Geofence fence);
+        void onGeofenceImportSelection(Geofences.Geofence fence);
     }
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         if (mListener != null) {
             Geofences.Geofence item = mFences.get(position);
-            mListener.onFragmentInteraction(item);
+            mListener.onGeofenceImportSelection(item);
         }
     }
 }

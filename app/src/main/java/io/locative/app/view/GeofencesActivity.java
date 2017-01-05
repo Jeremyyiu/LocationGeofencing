@@ -1,9 +1,12 @@
 package io.locative.app.view;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.LoaderManager;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +15,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.location.Address;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -47,6 +51,7 @@ import io.locative.app.network.SessionManager;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.persistent.Storage;
 import io.locative.app.utils.Constants;
+import io.locative.app.utils.Dialog;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor>, NavigationView.OnNavigationItemSelectedListener, ImportGeofenceFragment.OnGeofenceSelection {
@@ -71,13 +76,16 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Inject
     SessionManager mSessionManager;
 
+    @Inject
+    Storage mStorage;
+
     private ActionBarDrawerToggle mDrawerToogle;
 
     private GeofenceFragment mGeofenceFragment = null;
     private FencelogsFragment mFenceLogsFragment = null;
     private NotificationsFragment mNotificationsFragment = null;
 
-    private boolean firstResume = false;
+    private boolean firstResume = false; // never open drawer initially
 
     private String fragmentTag = GeofenceFragment.TAG;
     private static final String FRAGMENTTAG = "current.fragment";
@@ -91,9 +99,10 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         super.onCreate(savedInstanceState);
         ((LocativeApplication) getApplication()).inject(this);
 
+        /* never open drawer initially
         if (savedInstanceState == null) {
             firstResume = true;
-        }
+        }*/
 
         if (getIntent() != null) {
             Intent intent = getIntent();
@@ -404,7 +413,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mGeofenceFragment.geofences.clear();
-        ArrayList<Geofences.Geofence> items = new ArrayList<Geofences.Geofence>();
+        ArrayList<Geofences.Geofence> items = new ArrayList<>();
         while (data.moveToNext()) {
             Geofences.Geofence item = GeofenceProvider.fromCursor(data);
             mGeofenceFragment.geofences.addItem(item);
@@ -435,19 +444,59 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         return (LocativeApplication) getApplication();
     }
 
-    public void onFragmentInteraction(Geofences.Geofence fence) {
-        Address address = new LocativeGeocoder().getFromLatLong(fence.latitude, fence.longitude, this);
-        if (address != null) {
-            fence.name = address.getAddressLine(0);
+    public void onGeofenceImportSelection(final Geofences.Geofence fence) {
+        if (!mStorage.fenceExistsWithCustomId(fence)) {
+            insertGeofence(fence);
+            return;
         }
-        fence = Storage.INSTANCE.insertOrUpdateFence(fence, this);
-        FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        Geofences.ITEMS.add(fence);
-        mGeofenceFragment.setLoading(false);
-        transaction.replace(R.id.container, mGeofenceFragment, GeofenceFragment.TAG).commit();
-        setTitle(R.string.title_geofences);
-        mFabButton.show();
+
+        new AlertDialog.Builder(this)
+                .setMessage("A Geofence with the same custom ID already exists. Would you like to overwrite the existing Geofence?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        insertGeofence(fence);
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .show();
+    }
+
+    private void insertGeofence(final Geofences.Geofence fence) {
+        final Activity self = this;
+        final ProgressDialog dialog = Dialog.getIndeterminateProgressDialog(this, "Importing Geofence…");
+        dialog.show();
+
+        new Thread(new Runnable() {
+           @Override
+           public void run() {
+               Address address = new LocativeGeocoder().getFromLatLong(fence.latitude, fence.longitude, self);
+               if (address != null) {
+                   fence.name = address.getAddressLine(0);
+               }
+               mStorage.insertOrUpdateFence(fence);
+               final FragmentManager fragmentManager = getFragmentManager();
+               runOnUiThread(new Runnable() {
+                   @Override
+                   public void run() {
+                       dialog.dismiss();
+                       FragmentTransaction transaction = fragmentManager.beginTransaction();
+                       Geofences.ITEMS.add(fence);
+                       mGeofenceFragment.setLoading(false);
+                       transaction.replace(R.id.container, mGeofenceFragment, GeofenceFragment.TAG).commit();
+                       setTitle(R.string.title_geofences);
+                       mFabButton.show();
+                   }
+               });
+           }
+       }).run();
+
     }
 
 }

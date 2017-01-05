@@ -166,10 +166,10 @@ public class GeofenceFragment extends ListFragment {
                                 ContentValues values = new ContentValues();
                                 Geofences.Geofence item = Geofences.ITEMS.get(pos);
 
-                                Log.i(Constants.LOG, "Deleting Item with pos: " + Long.toString(pos) + " _id: " + item.uuid);
+                                Log.i(Constants.LOG, "Deleting Item with pos: " + Long.toString(pos) + " custom_id: " + item.customId);
                                 ContentResolver resolver = aView.getContext().getContentResolver();
 
-                                resolver.delete(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), "_id = ?", new String[]{item.uuid});
+                                resolver.delete(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), "custom_id = ?", new String[]{item.customId});
                                 Geofences.ITEMS.remove(pos);
                                 refresh();
                             }
@@ -190,7 +190,7 @@ public class GeofenceFragment extends ListFragment {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Geofences.Geofence item = Geofences.ITEMS.get(position);
                 Intent addEditGeofencesIntent = new Intent(getActivity(), AddEditGeofenceActivity.class);
-                addEditGeofencesIntent.putExtra("geofenceId", Integer.parseInt(item.uuid));
+                addEditGeofencesIntent.putExtra("geofenceId", item.customId);
                 getActivity().startActivity(addEditGeofencesIntent);
             }
         });

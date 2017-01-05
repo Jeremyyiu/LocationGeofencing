@@ -35,7 +35,7 @@ public class Geofences {
 
     public static class Geofence implements Serializable {
         public String uuid;
-        public String locationId;
+        public String customId;
         public String name;
         public int triggers;
         public double latitude;
@@ -50,15 +50,18 @@ public class Geofences {
         public String exitUrl;
 
         public String getRelevantId() {
-            if (locationId != null && locationId.length() > 0) {
-               return locationId;
+            if (customId != null && customId.length() > 0) {
+               return customId;
+            }
+            if (name != null && name.length() > 0) {
+                return name;
             }
             return uuid;
         }
 
         public Geofence(
                 String uuid,
-                String locationId,
+                String customId,
                 String name,
                 int triggers,
                 double latitude,
@@ -72,7 +75,7 @@ public class Geofences {
                 int exitMethod,
                 String exitUrl) {
             this.uuid = (uuid == null) ? UUID.randomUUID().toString() : uuid;
-            this.locationId = locationId;
+            this.customId = customId;
             this.name = name;
             this.triggers = triggers;
             this.latitude = latitude;
@@ -96,13 +99,7 @@ public class Geofences {
 
         @Override
         public String toString() {
-            if (locationId != null && locationId.length() > 0) {
-                return locationId;
-            }
-            if (name != null && name.length() > 0) {
-                return name;
-            }
-            return uuid;
+            return getRelevantId();
         }
 
         public com.google.android.gms.location.Geofence toGeofence() {
@@ -138,7 +135,7 @@ public class Geofences {
             }
 
             return new com.google.android.gms.location.Geofence.Builder()
-                    .setRequestId(this.uuid)
+                    .setRequestId(this.customId)
                     .setTransitionTypes(transition)
                     .setCircularRegion(
                             this.latitude,

@@ -30,7 +30,6 @@ public class NotificationManager {
 
     private void notify(NotificationCompat.Builder builder, int id) {
         android.app.NotificationManager notificationManager = getDefaultNotificationManager();
-        notificationManager.cancelAll();
         notificationManager.notify(id, builder.build());
     }
 

@@ -101,7 +101,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     @BindView(R.id.basic_auth_password)
     EditText mBasicAuthPassword;
 
-    public int mEditGeofenceId = 0;
+    public String mEditGeofenceId;
     private boolean mIsEditingGeofence = false;
 
     private LocativeLocationManager mLocativeLocationManager = null;
@@ -136,9 +136,9 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         ((LocativeApplication) getApplication()).inject(this);
 
         // Already existing (editing) Geofence?
-        mEditGeofenceId = getIntent().getIntExtra("geofenceId", 0);
+        mEditGeofenceId = getIntent().getStringExtra("geofenceId");
         Log.d(Constants.LOG, "mEditGeofenceId: " + mEditGeofenceId);
-        if (mEditGeofenceId > 0) {
+        if (mEditGeofenceId != null) {
             mIsEditingGeofence = true;
         }
 
@@ -251,7 +251,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         Cursor cursor = null;
         if (mIsEditingGeofence) {
             ContentResolver resolver = this.getContentResolver();
-            cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{String.valueOf(mEditGeofenceId)}, null);
+            cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "custom_id = ?", new String[]{String.valueOf(mEditGeofenceId)}, null);
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 mLocationButton.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_NAME)));
@@ -349,7 +349,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         int id = item.getItemId();
         if (id == R.id.action_save) {
             // Save Geofence / Add new one
-            if (mAddressIsDirty == false) {
+            if (!mAddressIsDirty) {
                 this.save(true);
                 return true;
             }
@@ -376,7 +376,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
 
         Log.i(Constants.LOG, "Saved #1: " + mSaved);
 
-        if (mSaved == true) {
+        if (mSaved) {
             return;
         }
 
@@ -386,7 +386,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
 
         String custom_id = mCustomId.getText().toString();
         if (mIsEditingGeofence) {
-            Cursor existingCursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "_id = ?", new String[]{String.valueOf(mEditGeofenceId)}, null);
+            Cursor existingCursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "custom_id = ?", new String[]{String.valueOf(mEditGeofenceId)}, null);
             if (existingCursor != null && existingCursor.getCount() > 0) {
                 existingCursor.moveToFirst();
                 if (custom_id.length() == 0) {
@@ -424,7 +424,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         values.put(GeofenceProvider.Geofence.KEY_LONGITUDE, mCircle.getCenter().longitude);
 
         if (mIsEditingGeofence) {
-            resolver.update(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values, "_id = ?", new String[]{String.valueOf(mEditGeofenceId)});
+            resolver.update(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values, "custom_id = ?", new String[]{String.valueOf(mEditGeofenceId)});
         } else {
             resolver.insert(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), values);
         }

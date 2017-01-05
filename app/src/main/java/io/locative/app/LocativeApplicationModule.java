@@ -14,6 +14,7 @@ import dagger.Provides;
 import io.locative.app.network.LocativeNetworkModule;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.notification.NotificationTokenManager;
+import io.locative.app.persistent.Storage;
 import io.locative.app.view.UIModule;
 
 @Module(
@@ -59,6 +60,12 @@ public class LocativeApplicationModule {
     @Provides
     public NotificationManager provideNotificationManager(Context context) {
         return new NotificationManager(context);
+    }
+
+    @SuppressWarnings("unused")
+    @Provides
+    public Storage provideStorage(Context context) {
+        return new Storage(context);
     }
 
     @SuppressWarnings("unused")
