@@ -90,7 +90,17 @@ public class ReceiveTransitionsIntentService extends IntentService {
         Geofences.Geofence fence = GeofenceProvider.fromCursor(cursor);
         cursor.close();
 
-        if (mPreferences.getString(Preferences.HTTP_URL, "").length() == 0) {
+        boolean hasRelevantUrl = mPreferences.getString(Preferences.HTTP_URL, "").length() > 0;
+        if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER) {
+            if (fence.enterUrl != null && fence.enterUrl.length() > 0) {
+                hasRelevantUrl = true;
+            }
+        } else if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
+            if (fence.exitUrl != null && fence.exitUrl.length() > 0) {
+                hasRelevantUrl = true;
+            }
+        }
+        if (!hasRelevantUrl) {
             // not global url is set, bail out and show classic notification
             Log.d(TAG, "Presenting classic notification for " + fence.uuid);
             mNotificationManager.showNotification(
