@@ -8,16 +8,6 @@ import io.locative.app.model.Notification;
 
 public class LocativeNetworkingAdapter implements LocativeNetworkingCallback{
     @Override
-    public void onLoginFinished(boolean success, String sessionId) {
-
-    }
-
-    @Override
-    public void onSignupFinished(boolean success, boolean userAlreadyExisting) {
-
-    }
-
-    @Override
     public void onCheckSessionFinished(boolean sessionValid) {
 
     }

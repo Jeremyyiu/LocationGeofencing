@@ -54,7 +54,14 @@
 
         <activity
             android:name="io.locative.app.view.SettingsActivity"
-            android:label="@string/title_activity_settings" />
+            android:label="@string/title_activity_settings" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="locative"/>
+            </intent-filter>
+            </activity>
         <activity
             android:name="io.locative.app.view.SignupActivity"
             android:label="@string/title_activity_signup" />

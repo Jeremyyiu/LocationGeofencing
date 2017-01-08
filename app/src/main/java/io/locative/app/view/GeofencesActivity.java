@@ -130,7 +130,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 @Override
                 public void onSuccess(String username, String email, String avatarUrl) {
                     mHeader.updateProfile(
-                            new ProfileDrawerItem().withIdentifier(0).withName(username).withIcon(avatarUrl)
+                            new ProfileDrawerItem().withIdentifier(0).withName(username).withEmail(email).withIcon(avatarUrl)
                     );
                 }
 

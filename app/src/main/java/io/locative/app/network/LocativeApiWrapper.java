@@ -62,55 +62,6 @@ public class LocativeApiWrapper {
     private final GsonToFencelogConverter FENCELOG_CONVERTER = new GsonToFencelogConverter();
     private final GsonToNotificationConverter NOTIFICATION_CONVERTER = new GsonToNotificationConverter();
 
-    public void doLogin(String username, String password, final LocativeNetworkingCallback callback) {
-        mService.login(username, password, Constants.API_ORIGIN, new Callback<String>() {
-
-            @Override
-            public void success(String string, Response response) {
-                Log.d(Constants.LOG, "Login Success: " + string);
-                String sessionId = null;
-                try {
-                    JSONObject json = new JSONObject(string);
-                    sessionId = json.getString("success");
-                } catch (Exception e) {
-                    Log.e(Constants.LOG, e.getMessage(), e);
-                } finally {
-                    callback.onLoginFinished(sessionId != null && sessionId.length() > 0, sessionId);
-                }
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Log.d(Constants.LOG, "Login Error: " + error);
-                callback.onLoginFinished(false, null);
-            }
-        });
-    }
-
-    public void doSignup(String username, String password, String email, final LocativeNetworkingCallback callback) {
-        String token = null;
-        try {
-            token = AeSimpleSHA1.SHA1(username + ":" + password + "%" + email);
-            Log.d(Constants.LOG, "Token: " + token);
-        } catch (Exception e) {
-            Log.e(Constants.LOG, "Caught Exception: " + e);
-        }
-
-        mService.signup(username, password, email, token, new Callback<String>() {
-            @Override
-            public void success(String s, Response response) {
-                Log.d(Constants.LOG, "Signup Success: " + s);
-                callback.onSignupFinished(true, false);
-            }
-
-            @Override
-            public void failure(RetrofitError error) {
-                Log.d(Constants.LOG, "Signup Error: " + error);
-                callback.onSignupFinished(false, error.getResponse().getStatus() == 409);
-            }
-        });
-    }
-
     public void doCheckSession(String sessionId, final LocativeNetworkingCallback callback) {
         mService.checkSession(sessionId, new Callback<String>() {
             @Override

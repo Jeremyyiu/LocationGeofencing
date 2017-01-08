@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -13,6 +14,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Switch;
+
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import javax.inject.Inject;
 
@@ -62,12 +65,6 @@ public class SettingsActivity extends BaseActivity {
     @BindView(R.id.notification_sound_switch)
     Switch mNotificationSoundSwitch;
 
-    @BindView(R.id.account_username_text)
-    EditText mAccountUsernameText;
-
-    @BindView(R.id.account_password_text)
-    EditText mAccountPasswordText;
-
     @BindView(R.id.login_button)
     Button mLoginButton;
 
@@ -105,19 +102,6 @@ public class SettingsActivity extends BaseActivity {
 
         mNetworkingCallback = new LocativeNetworkingAdapter() {
             @Override
-            public void onLoginFinished(boolean success, String sessionId) {
-                mProgressDialog.dismiss();
-                if (!success) {
-                    simpleAlert("Username or Password incorrect. Please try again.");
-                    return;
-                }
-                simpleAlert("Login successful! Your Fencelogs will now be visible when you log in at https://my.locative.io");
-                Log.d(Constants.LOG, "Login success with SessionID: " + sessionId);
-                mSessionManager.setSessionId(sessionId);
-                adjustUiToLoginState();
-            }
-
-            @Override
             public void onCheckSessionFinished(boolean sessionValid) {
                 if (!sessionValid) {
                     mSessionManager.clearSession();
@@ -131,8 +115,11 @@ public class SettingsActivity extends BaseActivity {
                 simpleAlert(success ? "Your Fencelog was submitted successfully!" : "There was an error submitting your Fencelog.");
             }
         };
+    }
 
-
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
     }
 
     @Override
@@ -148,6 +135,18 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
+
+        if (getIntent() != null && getIntent().getData() != null && getIntent().getData().getHost().equals("login")) {
+            // Login intent via redirect
+            String sessionId = getIntent().getData().getQueryParameter("token");
+            if (sessionId != null && sessionId.length() > 0) {
+                // Let's login using our token then
+                Log.d(Constants.LOG, "Login success with SessionID: " + sessionId);
+                mSessionManager.setSessionId(sessionId);
+                adjustUiToLoginState();
+            }
+        }
+
         mLocativeNetworkingWrapper.doCheckSession(mSessionManager.getSessionId(), mNetworkingCallback);
     }
 
@@ -175,22 +174,38 @@ public class SettingsActivity extends BaseActivity {
 
     @OnClick(R.id.signup_button)
     public void signup() {
-        Intent intent = new Intent(this, SignupActivity.class);
-        this.startActivity(intent);
+        Intent browserIntent = new Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://my.locative.io/signup")
+        );
+        startActivity(browserIntent);
+        finish();
     }
 
     @OnClick(R.id.login_button)
     public void loginOrLogout() {
-        showProgressDialog("Please wait…");
         if (!mSessionManager.hasSession()) {
-            mLocativeNetworkingWrapper.doLogin(mAccountUsernameText.getText().toString(), mAccountPasswordText.getText().toString(), mNetworkingCallback);
+            Intent browserIntent = new Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://my.locative.io/mobile-login?origin=" + Constants.API_ORIGIN + "&sandbox=false&fcm=" + FirebaseInstanceId.getInstance().getToken())
+            );
+            startActivity(browserIntent);
+            finish();
         } else {
             // TODO: Implement Logout via API (needs to be implemented on Server-Side)
-            //mNetworking.doLogout()
             mSessionManager.clearSession();
             adjustUiToLoginState();
-            mProgressDialog.dismiss();
         }
+    }
+
+    @OnClick(R.id.lostpass_button)
+    public void lostPassword() {
+        Intent browserIntent = new Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("https://my.locative.io/lostpassword")
+        );
+        startActivity(browserIntent);
+        finish();
     }
 
     @OnClick(R.id.send_test_button)
@@ -244,8 +259,6 @@ public class SettingsActivity extends BaseActivity {
             visibility = LinearLayout.GONE;
         }
 
-        mAccountUsernameText.setVisibility(visibility);
-        mAccountPasswordText.setVisibility(visibility);
         mLoginButton.setText((visibility == LinearLayout.VISIBLE) ? "Login" : "Logout");
         mSignupButton.setVisibility(visibility);
         mLostpassButton.setVisibility(visibility);

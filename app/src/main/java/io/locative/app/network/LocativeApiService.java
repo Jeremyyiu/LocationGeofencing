@@ -17,24 +17,6 @@ import retrofit.http.Query;
 
 public interface LocativeApiService {
 
-    @GET("/api/session")
-    void login(
-            @Query("username") String username,
-            @Query("password") String password,
-            @Query("origin") String origin,
-            Callback<String> callback
-    );
-
-    @FormUrlEncoded
-    @POST("/api/signup")
-    void signup(
-            @Field("username") String username,
-            @Field("password") String password,
-            @Field("email") String email,
-            @Field("token") String token,
-            Callback<String> callback
-    );
-
     @GET("/api/session/{session}")
     void checkSession(
             @Path("session") String sessionId,

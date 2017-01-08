@@ -10,7 +10,6 @@ import dagger.Module;
         injects = {
                 BaseActivity.class,
                 SettingsActivity.class,
-                SignupActivity.class,
                 AddEditGeofenceActivity.class,
                 GeofencesActivity.class
         },

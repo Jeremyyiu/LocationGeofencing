@@ -10,11 +10,6 @@ import io.locative.app.model.Notification;
 // TODO clean this up, bad design
 
 public interface LocativeNetworkingCallback {
-
-    void onLoginFinished(boolean success, String sessionId);
-
-    void onSignupFinished(boolean success, boolean userAlreadyExisting);
-
     void onCheckSessionFinished(boolean sessionValid);
 
     void onDispatchFencelogFinished(boolean success);
