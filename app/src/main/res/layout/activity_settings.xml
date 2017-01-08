@@ -127,7 +127,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                app:cardElevation="4dp">
+                app:cardElevation="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -161,6 +161,14 @@
                         android:paddingBottom="5dp"
                         android:paddingTop="5dp"
                         android:text="Notification on Failure" />
+
+                    <Switch
+                        android:id="@+id/notification_only_latest_switch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:text="Only display latest Notification" />
 
                     <Switch
                         android:id="@+id/notification_sound_switch"

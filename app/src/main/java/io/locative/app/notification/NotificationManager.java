@@ -3,19 +3,24 @@ package io.locative.app.notification;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.android.gms.location.Geofence;
 
 import io.locative.app.R;
+import io.locative.app.utils.Preferences;
 import io.locative.app.view.GeofencesActivity;
 
 public class NotificationManager {
 
     private Context mContext;
+    private SharedPreferences mPrefs;
 
     public NotificationManager(Context context) {
         mContext = context;
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
     }
 
     public void showNotification(String title, String body) {
@@ -30,6 +35,9 @@ public class NotificationManager {
 
     private void notify(NotificationCompat.Builder builder, int id) {
         android.app.NotificationManager notificationManager = getDefaultNotificationManager();
+        if (mPrefs.getBoolean(Preferences.NOTIFICATION_SHOW_ONLY_LATEST, false)) {
+            notificationManager.cancelAll();
+        }
         notificationManager.notify(id, builder.build());
     }
 
