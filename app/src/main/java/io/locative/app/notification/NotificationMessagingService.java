@@ -13,8 +13,6 @@ import io.locative.app.utils.Constants;
 
 public class NotificationMessagingService extends FirebaseMessagingService {
 
-    final NotificationManager notificationManager = new NotificationManager(this);
-
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
         Log.d(Constants.LOG, "From: " + remoteMessage.getFrom());
