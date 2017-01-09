@@ -103,11 +103,13 @@ public class ReceiveTransitionsIntentService extends IntentService {
         if (!hasRelevantUrl) {
             // not global url is set, bail out and show classic notification
             Log.d(TAG, "Presenting classic notification for " + fence.uuid);
-            mNotificationManager.showNotification(
-                    fence.getRelevantId(),
-                    new Random().nextInt(),
-                    transitionType
-            );
+            if (mPreferences.getBoolean(Preferences.NOTIFICATION_SUCCESS, false)) {
+                mNotificationManager.showNotification(
+                        fence.getRelevantId(),
+                        new Random().nextInt(),
+                        transitionType
+                );
+            }
             Log.d(TAG, "Dispatching Fencelog for " + fence.uuid);
             mRequestManager.dispatchFencelog(
                     fence,
