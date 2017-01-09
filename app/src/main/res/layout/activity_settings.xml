@@ -42,7 +42,7 @@
                 android:background="@color/white"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                app:cardElevation="4dp">
+                app:cardElevation="@dimen/default_card_elevation">
 
                 <LinearLayout
 
@@ -127,7 +127,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                app:cardElevation="1dp">
+                app:cardElevation="@dimen/default_card_elevation">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -190,7 +190,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                app:cardElevation="4dp">
+                app:cardElevation="@dimen/default_card_elevation">
 
                 <LinearLayout
                     android:layout_width="match_parent"
