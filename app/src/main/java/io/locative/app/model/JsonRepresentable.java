@@ -1,6 +1,6 @@
 package io.locative.app.model;
 
-public interface JsonSerializable<T> {
+public interface JsonRepresentable<T> {
     String jsonRepresentation();
 
     T fromJsonRepresentation(String json);

@@ -4,7 +4,7 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 
-public class Account implements JsonSerializable<Account> {
+public class Account implements JsonRepresentable<Account> {
     private String mUsername;
     private String mEmail;
     private String mAvatarUrl;
