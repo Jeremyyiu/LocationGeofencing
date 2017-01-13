@@ -19,6 +19,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.annotation.NonNull;
+import android.support.v4.widget.NestedScrollView;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,6 +51,7 @@ import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.geo.LocativeGeocoder;
 import io.locative.app.geo.LocativeLocationManager;
+import io.locative.app.map.WorkaroundMapFragment;
 import io.locative.app.model.Geofences;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.Constants;
@@ -100,6 +102,9 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
 
     @BindView(R.id.basic_auth_password)
     EditText mBasicAuthPassword;
+
+    @BindView(R.id.scrollView)
+    NestedScrollView mScrollView;
 
     public String mEditGeofenceId;
     private boolean mIsEditingGeofence = false;
@@ -163,20 +168,15 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
             }
         });
 
-//        FragmentManager fm = getFragmentManager();
-//        mMapFragment = (MapFragment)fm.findFragmentById(R.id.map);
-//        mMapFragment.onResume();
-//        mMap = mMapFragment.getMap();
-//        mMap.setMyLocationEnabled(true);
-//        mMap.getUiSettings().setZoomControlsEnabled(false);
-////        mMap.getMap().setMapType(0);
-
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        WorkaroundMapFragment mapFragment = (WorkaroundMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
+        mapFragment.setListener(new WorkaroundMapFragment.OnTouchListener() {
+            @Override
+            public void onTouch() {
+                mScrollView.requestDisallowInterceptTouchEvent(true);
+            }
+        });
 
         mGeocoderHandler = new GeocodeHandler(this);
         updateRadius();
@@ -231,9 +231,10 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
         mMap.getUiSettings().setZoomControlsEnabled(false);
-        mMap.getUiSettings().setAllGesturesEnabled(false);
+        mMap.getUiSettings().setAllGesturesEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // TODO request permission if not given
@@ -621,7 +622,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     private void updateRadius() {
         int radiusMeters = mRadiusSlider.getProgress();
         mRadiusLabel.setText(String.format(getResources().getConfiguration().locale, "%d m", radiusMeters));
-        if(mCircle != null) {
+        if (mCircle != null) {
             mCircle.setRadius(radiusMeters);
         }
     }
