@@ -9,10 +9,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
-/**
- * Created by kida on 2/1/17.
- */
-
 public class LocativeConnect {
 
     public void updateSession(String sessionId, String token, boolean sandbox) {

@@ -5,14 +5,18 @@ import android.app.Application;
 import com.crashlytics.android.Crashlytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
-import dagger.ObjectGraph;
 import io.fabric.sdk.android.Fabric;
+import io.locative.app.modules.AppModule;
+import io.locative.app.modules.NetworkingModule;
+import io.locative.app.modules.PersistencyModule;
+import io.locative.app.network.ReceiveTransitionsIntentService;
 
 public class LocativeApplication extends Application {
-    private ObjectGraph mObjectGraph;
-    private static LocativeApplication mInstance;
 
-  @Override public void onCreate() {
+    private static LocativeApplication mInstance;
+    private LocativeComponent mComponent;
+
+    @Override public void onCreate() {
         super.onCreate();
         mInstance = this;
 
@@ -20,13 +24,21 @@ public class LocativeApplication extends Application {
             Fabric.with(this, new Crashlytics());
         }
 
-        mObjectGraph = ObjectGraph.create(new LocativeApplicationModule(this));
+        mComponent = DaggerLocativeComponent.builder()
+                .appModule(new AppModule(this))
+                .networkingModule(new NetworkingModule())
+                .persistencyModule(new PersistencyModule(this))
+                .build();
         AndroidThreeTen.init(this);
-  }
+    }
 
-    public void inject(Object o) {
-    mObjectGraph.inject(o);
-  }
+    public void inject(ReceiveTransitionsIntentService object) {
+        mComponent.inject(object);
+    }
+
+    public LocativeComponent getComponent() {
+        return mComponent;
+    }
 
     public static LocativeApplication getApplication() {
         return mInstance;

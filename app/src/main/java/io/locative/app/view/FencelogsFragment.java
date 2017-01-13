@@ -16,9 +16,6 @@ import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.network.LocativeNetworkingAdapter;
 
-/**
- * Created by Jasper De Vrient on 3/05/2016.
- */
 public class FencelogsFragment extends ListFragment {
     public static final String TAG = "fragment.fencelogs";
     private final DateTimeFormatter TODAYFORMATTER = DateTimeFormatter.ofPattern("HH:mm");

@@ -2,10 +2,6 @@ package io.locative.app.utils;
 
 import okhttp3.Request;
 
-/**
- * Created by kida on 13/1/17.
- */
-
 public class UrlValidator {
 
     private final String url;

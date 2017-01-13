@@ -42,7 +42,7 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     ButterKnife.bind(this);
 
-    ((LocativeApplication) getApplication()).inject(this);
+    ((LocativeApplication) getApplication()).getComponent().inject(this);
 
     if (mToolbar != null) {
       setSupportActionBar(mToolbar);

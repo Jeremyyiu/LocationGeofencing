@@ -4,9 +4,6 @@ import org.threeten.bp.LocalDateTime;
 
 import java.util.Date;
 
-/**
- * Created by mkida on 17/08/2014.
- */
 public class Fencelog {
     public double longitude;
     public double latitude;

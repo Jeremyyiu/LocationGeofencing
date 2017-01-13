@@ -10,9 +10,6 @@ import java.lang.ref.WeakReference;
 import io.locative.app.R;
 import io.locative.app.view.AddEditGeofenceActivity;
 
-/**
- * Created by mkida on 3/08/2014.
- */
 public class GeocodeHandler extends Handler {
     public static final int UPDATE_ADDRESS = 1;
     public static final int SAVE_AND_FINISH = 2;

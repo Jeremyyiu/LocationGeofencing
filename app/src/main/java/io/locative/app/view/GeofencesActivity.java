@@ -357,7 +357,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 fragmentTag = savedInstanceState.getString(FRAGMENTTAG);
         }
         super.onCreate(savedInstanceState);
-        ((LocativeApplication) getApplication()).inject(this);
+        ((LocativeApplication) getApplication()).getComponent().inject(this);
         setupDrawer();
 
         /* never open drawer initially

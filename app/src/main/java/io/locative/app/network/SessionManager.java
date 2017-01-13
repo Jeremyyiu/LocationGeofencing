@@ -7,11 +7,8 @@ import android.support.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import io.locative.app.LocativeComponent;
 import io.locative.app.utils.Preferences;
-
-/**
- * Created by chris on 08.12.15.
- */
 
 @Singleton
 public class SessionManager {
@@ -19,6 +16,9 @@ public class SessionManager {
     @Inject
     SharedPreferences mPrefs;
 
+    public SessionManager(LocativeComponent component) {
+        component.inject(this);
+    }
 
     public boolean hasSession() {
         return mPrefs.contains(Preferences.SESSION_ID);

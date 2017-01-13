@@ -5,9 +5,6 @@ import de.triplet.simpleprovider.Column;
 import de.triplet.simpleprovider.Table;
 import io.locative.app.R;
 
-/**
- * Created by mkida on 29/12/14.
- */
 public class FencelogProvider extends AbstractProvider {
 
     private static int SCHEMA_VERSION = 1;
