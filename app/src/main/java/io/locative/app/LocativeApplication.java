@@ -6,7 +6,9 @@ import com.crashlytics.android.Crashlytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import io.fabric.sdk.android.Fabric;
-import io.locative.app.network.LocativeNetworkModule;
+import io.locative.app.modules.AppModule;
+import io.locative.app.modules.NetworkingModule;
+import io.locative.app.modules.PersistencyModule;
 import io.locative.app.network.ReceiveTransitionsIntentService;
 
 public class LocativeApplication extends Application {
@@ -23,8 +25,9 @@ public class LocativeApplication extends Application {
         }
 
         mComponent = DaggerLocativeComponent.builder()
-                .locativeApplicationModule(new LocativeApplicationModule(this))
-                .locativeNetworkModule(new LocativeNetworkModule())
+                .appModule(new AppModule(this))
+                .networkingModule(new NetworkingModule())
+                .persistencyModule(new PersistencyModule(this))
                 .build();
         AndroidThreeTen.init(this);
     }

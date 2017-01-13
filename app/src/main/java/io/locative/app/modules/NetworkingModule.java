@@ -1,14 +1,14 @@
-package io.locative.app.network;
+package io.locative.app.modules;
 
 import dagger.Module;
 import dagger.Provides;
+import io.locative.app.network.LocativeApiService;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.StringConverter;
 import retrofit.RestAdapter;
-import retrofit.android.AndroidLog;
 
 @Module
-public class LocativeNetworkModule {
+public class NetworkingModule {
 
     @SuppressWarnings("unused")
     @Provides

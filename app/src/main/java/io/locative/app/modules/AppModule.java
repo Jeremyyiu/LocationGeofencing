@@ -1,28 +1,23 @@
-package io.locative.app;
+package io.locative.app.modules;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 
 import com.google.gson.JsonParser;
 import com.squareup.otto.Bus;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.locative.app.network.SessionManager;
+import io.locative.app.LocativeApplication;
 import io.locative.app.notification.NotificationManager;
-import io.locative.app.persistent.Storage;
 
 @Module
-public class LocativeApplicationModule {
-
+public class AppModule {
 
     private final LocativeApplication mApp;
 
-    public LocativeApplicationModule(LocativeApplication application) {
+    public AppModule(LocativeApplication application) {
         mApp = application;
     }
 
@@ -39,18 +34,6 @@ public class LocativeApplicationModule {
         return mApp;
     }
 
-    @Provides
-    @Singleton
-    SessionManager provideSessionManager() {
-        return new SessionManager(mApp.getComponent());
-    }
-
-    @SuppressWarnings("unused")
-    @Provides
-    SharedPreferences providePreferences(Context context) {
-        return PreferenceManager.getDefaultSharedPreferences(context);
-    }
-
     @SuppressWarnings("unused")
     @Provides
     NotificationManager provideNotificationManager(Context context) {
@@ -59,16 +42,8 @@ public class LocativeApplicationModule {
 
     @SuppressWarnings("unused")
     @Provides
-    Storage provideStorage(Context context) {
-        return new Storage(context);
-    }
-
-    @SuppressWarnings("unused")
-    @Provides
     @Singleton
     Bus provideBus() {
         return new Bus();
     }
-
-
 }
