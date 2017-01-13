@@ -20,7 +20,7 @@ public class GeocodeHandler extends Handler {
     private final WeakReference<AddEditGeofenceActivity> mTarget;
 
     public GeocodeHandler(AddEditGeofenceActivity target) {
-        mTarget = new WeakReference<AddEditGeofenceActivity>(target);
+        mTarget = new WeakReference<>(target);
     }
 
     @Override

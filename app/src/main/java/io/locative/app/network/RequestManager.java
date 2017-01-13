@@ -12,6 +12,7 @@ import java.util.Date;
 
 import javax.inject.Inject;
 
+import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
@@ -126,31 +127,26 @@ public class RequestManager {
                 .add("trigger", eventToString(eventType))
                 .add("timestamp", String.valueOf(new Timestamp(new Date().getTime())))
                 .build();
-        final Request request = new Request.Builder()
-                .url(urlIncludingQuery(geofence, eventType))
-                .method(fromMethod(method), method == 0 ? body : null)
-                .build();
+        Request request;
+        try {
+            request = new Request.Builder()
+                    .url(urlIncludingQuery(geofence, eventType))
+                    .method(fromMethod(method), method == 0 ? body : null)
+                    .build();
+        } catch (Exception ex) {
+            conditionallyShowFailureNotification(geofence, mContext.getString(R.string.trigger_error_invalid_url_notification));
+            return;
+        }
         mClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (mPreferences.getBoolean(Preferences.NOTIFICATION_FAIL, false)) {
-                    mNotificationManager.showNotification(
-                            geofence.getRelevantId(),
-                            "Error when sending HTTP request."
-                    );
-                }
+                conditionallyShowFailureNotification(geofence, "Error when sending HTTP request.");
                 dispatchFencelog(geofence, eventType, relevantUrl(geofence, eventType), fromMethod(method), 0);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (mPreferences.getBoolean(Preferences.NOTIFICATION_SUCCESS, false)) {
-                    final String result = response.isSuccessful() ? "Success" : "Error";
-                    mNotificationManager.showNotification(
-                            geofence.getRelevantId(),
-                            result + " in HTTP request (" + response.code() + ")"
-                    );
-                }
+                conditionallyShowSuccessNotification(geofence, response);
                 dispatchFencelog(
                         geofence,
                         eventType,
@@ -160,6 +156,24 @@ public class RequestManager {
                 );
             }
         });
+    }
+
+    private void conditionallyShowFailureNotification(final Geofences.Geofence geofence, final String message) {
+        if (!mPreferences.getBoolean(Preferences.NOTIFICATION_FAIL, false)) {
+            return;
+        }
+        mNotificationManager.showNotification(geofence.getRelevantId(), message);
+    }
+
+    private void conditionallyShowSuccessNotification(final Geofences.Geofence geofence, final Response response) {
+        if (!mPreferences.getBoolean(Preferences.NOTIFICATION_SUCCESS, false)) {
+            return;
+        }
+        final String result = response.isSuccessful() ? "Success" : "Error";
+        mNotificationManager.showNotification(
+                geofence.getRelevantId(),
+                result + " in HTTP request (" + response.code() + ")"
+        );
     }
 
     void dispatchFencelog(final Geofences.Geofence geofence,

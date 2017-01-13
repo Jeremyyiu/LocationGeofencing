@@ -56,6 +56,8 @@ import io.locative.app.model.Geofences;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.GeocodeHandler;
+import io.locative.app.utils.UrlValidator;
+import okhttp3.Request;
 
 public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyCallback {
 
@@ -310,11 +312,6 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         }
 
         updateRadius();
-
-//        // Add a marker in Sydney and move the camera
-//        LatLng sydney = new LatLng(-34, 151);
-//        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
@@ -349,6 +346,12 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_save) {
+
+            // Bail out ealy if webhook urls are borked
+            if (!validateUrls()) {
+                return false;
+            }
+
             // Save Geofence / Add new one
             if (!mAddressIsDirty) {
                 this.save(true);
@@ -373,7 +376,36 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         return super.onOptionsItemSelected(item);
     }
 
+    private boolean validateUrls() {
+        // Check for valid 'Enter' URL, or bail out.
+        if (mEnterUrl.getText().length() > 0 &&
+                !new UrlValidator(mEnterUrl.getText().toString()).validate()) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.save_error_title)
+                    .setMessage(R.string.save_error_invalid_enter_url)
+                    .setNeutralButton(R.string.ok, null)
+                    .show();
+            return false;
+        }
+
+        // Check for valid 'Exit' URL, or bail out.
+        if (mExitUrl.getText().length() > 0 &&
+                !new UrlValidator(mExitUrl.getText().toString()).validate()) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.save_error_title)
+                    .setMessage(R.string.save_error_invalid_exit_url)
+                    .setNeutralButton(R.string.ok, null)
+                    .show();
+            return false;
+        }
+        return true;
+    }
+
     public void save(boolean finish) {
+
+        if (!validateUrls()) {
+            return;
+        }
 
         Log.i(Constants.LOG, "Saved #1: " + mSaved);
 

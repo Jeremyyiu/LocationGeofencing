@@ -17,7 +17,7 @@
     <string name="geocoding_progress_message">Determining Location and saving…</string>
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_signup">SignupActivity</string>
-
+    <string name="ok">Ok</string>
     <!-- Error strings -->
     <string name="geofence_not_available">Geofence service is not available now</string>
     <string name="geofence_too_many_geofences">Your app has registered too many geofences</string>
@@ -48,7 +48,9 @@
     <string name="cancel">Cancel</string>
     <string name="fencelogs_empty">No Fencelogs available. Set up some Geofences to start logging.</string>
     <string name="notifications">Notifications</string>
-
+    <string name="save_error_title">Save error</string>
+    <string name="save_error_invalid_enter_url">Could not save Location. Enter URL is invalid. The URL has to start with \'http\' or \'https\'.</string>
+    <string name="save_error_invalid_exit_url">Could not save Location. Exit URL is invalid. The URL has to start with \'http\' or \'https\'.</string>
 
     <string name="http_settings">HTTP Settings</string>
     <string name="geofence_settings">Geofence Settings</string>
@@ -56,4 +58,7 @@
 
     <!-- Drawer -->
     <string name="drawer_header_username_placeholder">Click here to log in</string>
+
+    <!-- Trigger Errors -->
+    <string name="trigger_error_invalid_url_notification">Webhook could not be sent. Invalid URL.</string>
 </resources>
