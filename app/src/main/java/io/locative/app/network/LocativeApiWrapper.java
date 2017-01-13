@@ -9,6 +9,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.squareup.otto.Produce;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,6 +30,8 @@ import java.util.TimeZone;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import dagger.Module;
+import dagger.Provides;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.geo.LocativeGeocoder;
@@ -51,6 +54,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 @Singleton
+@Module
 public class LocativeApiWrapper {
     public static final String UNNAMED_FENCE = "";
     private Context mContext = LocativeApplication.getApplication().getApplicationContext();

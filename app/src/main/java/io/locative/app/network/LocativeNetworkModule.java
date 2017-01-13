@@ -7,14 +7,7 @@ import io.locative.app.utils.StringConverter;
 import retrofit.RestAdapter;
 import retrofit.android.AndroidLog;
 
-@Module(library = true, complete = false,
-
-        injects = {
-                LocativeApiWrapper.class,
-                ReceiveTransitionsIntentService.class,
-        }
-
-)
+@Module
 public class LocativeNetworkModule {
 
     @SuppressWarnings("unused")
@@ -26,6 +19,4 @@ public class LocativeNetworkModule {
                 .build()
                 .create(LocativeApiService.class);
     }
-
-
 }

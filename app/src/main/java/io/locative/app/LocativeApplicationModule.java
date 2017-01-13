@@ -7,26 +7,19 @@ import android.preference.PreferenceManager;
 import com.google.gson.JsonParser;
 import com.squareup.otto.Bus;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
 import io.locative.app.network.LocativeNetworkModule;
+import io.locative.app.network.SessionManager;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.notification.NotificationTokenManager;
 import io.locative.app.persistent.Storage;
 import io.locative.app.view.UIModule;
 
-@Module(
-        includes = {
-                LocativeNetworkModule.class,
-                UIModule.class
-        },
-        injects = {
-                LocativeApplication.class
-        },
-        library = true
-)
+@Module
 public class LocativeApplicationModule {
 
 
@@ -45,9 +38,14 @@ public class LocativeApplicationModule {
 
     @SuppressWarnings("unused")
     @Provides
-    @Singleton
     public Context getApplicationContext() {
         return mApp;
+    }
+
+    @Provides
+    @Singleton
+    public SessionManager provideSessionManager() {
+        return new SessionManager();
     }
 
     @SuppressWarnings("unused")
