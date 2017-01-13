@@ -10,8 +10,6 @@ import io.locative.app.model.Notification;
 // TODO clean this up, bad design
 
 public interface LocativeNetworkingCallback {
-    void onCheckSessionFinished(boolean sessionValid);
-
     void onDispatchFencelogFinished(boolean success);
 
     void onGetGeoFencesFinished(List<Geofences.Geofence> fences);

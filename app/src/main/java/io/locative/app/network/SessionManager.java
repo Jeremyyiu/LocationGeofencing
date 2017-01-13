@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.locative.app.LocativeComponent;
+import io.locative.app.model.Account;
 import io.locative.app.utils.Preferences;
 
 @Singleton
@@ -37,7 +38,23 @@ public class SessionManager {
     public void clearSession() {
         // async
         mPrefs.edit().remove(Preferences.SESSION_ID).apply();
+        mPrefs.edit().remove(Preferences.ACCOUNT).apply();
     }
 
+    @Nullable
+    public Account getAccount() {
+        String accountJson = mPrefs.getString(Preferences.ACCOUNT, null);
+        if (accountJson != null) {
+            return new Account().fromJsonRepresentation(accountJson);
+        }
+        return null;
+    }
 
+    public void setAccount(@NonNull Account account) {
+        mPrefs.edit().putString(Preferences.ACCOUNT, account.jsonRepresentation()).apply();
+    }
+
+    public void clearAccount() {
+        mPrefs.edit().remove(Preferences.ACCOUNT).apply();
+    }
 }

@@ -20,6 +20,7 @@ import android.location.Address;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
@@ -61,6 +62,7 @@ import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.geo.LocativeGeocoder;
+import io.locative.app.model.Account;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 import io.locative.app.model.Notification;
@@ -68,11 +70,13 @@ import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeConnect;
 import io.locative.app.network.LocativeService;
 import io.locative.app.network.SessionManager;
+import io.locative.app.network.callback.CheckSessionCallback;
 import io.locative.app.network.callback.GetAccountCallback;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.persistent.Storage;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.Dialog;
+import io.locative.app.utils.Preferences;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
         LoaderManager.LoaderCallbacks<Cursor>, ImportGeofenceFragment.OnGeofenceSelection {
@@ -120,25 +124,57 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 .withIcon(getResources().getDrawable(R.drawable.logo_round_512px));
     }
 
-    private void updateDrawerHeader() {
-        if (!mSessionManager.hasSession()) {
+    private void updateHeaderWithAccount(@Nullable Account account) {
+        if (account == null) {
             mHeader.updateProfile(
                     getEmptyProfileDrawerItem()
             );
+            return;
+        }
+        mHeader.updateProfile(
+                new ProfileDrawerItem()
+                        .withIdentifier(0)
+                        .withName(account.getUsername())
+                        .withEmail(account.getEmail())
+                        .withIcon(account.getAvatarUrl())
+        );
+    }
+
+    private void updateDrawerHeader() {
+        if (!mSessionManager.hasSession()) {
+            // remove eventually stored session
+            mPrefs.edit().remove(Preferences.ACCOUNT).apply();
+            // update header in drawer
+            updateHeaderWithAccount(null);
         } else {
-            mLocativeNetworkingWrapper.doGetAccount(mSessionManager.getSessionId(), new GetAccountCallback() {
+            updateHeaderWithAccount(mSessionManager.getAccount());
+            mLocativeNetworkingWrapper.doCheckSession(mSessionManager.getSessionId(), new CheckSessionCallback() {
                 @Override
-                public void onSuccess(String username, String email, String avatarUrl) {
-                    mHeader.updateProfile(
-                            new ProfileDrawerItem().withIdentifier(0).withName(username).withEmail(email).withIcon(avatarUrl)
-                    );
-                }
+                public void onFinished(boolean isValid) {
+                    if (!isValid) {
+                        mSessionManager.clearSession();
+                        return;
+                    }
+                    mLocativeNetworkingWrapper.doGetAccount(mSessionManager.getSessionId(), new GetAccountCallback() {
+                        @Override
+                        public void onSuccess(Account account) {
+                            // Store account object so we don't show an empty / logged out state
+                            // when e.g. rotating the device
+                            mSessionManager.setAccount(account);
+                            // apply profile to drawer
+                            updateHeaderWithAccount(account);
+                        }
 
-                @Override
-                public void onFailure() {
-
+                        @Override
+                        public void onFailure() {
+                            // ignore errors for now
+                            // todo: we should probably propagate a reason here
+                            // in case the session is invalid we should remove the stored account
+                        }
+                    });
                 }
             });
+
         }
     }
 

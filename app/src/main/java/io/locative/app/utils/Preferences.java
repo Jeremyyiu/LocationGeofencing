@@ -11,4 +11,5 @@ public class Preferences {
     public static String NOTIFICATION_SOUND = "notificationSound";
     public static String NOTIFICATION_SHOW_ONLY_LATEST = "showOnlyLastNotification";
     public static String SESSION_ID = "sessionId";
+    public static String ACCOUNT = "account";
 }

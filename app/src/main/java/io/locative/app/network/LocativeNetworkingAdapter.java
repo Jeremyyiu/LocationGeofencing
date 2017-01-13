@@ -8,11 +8,6 @@ import io.locative.app.model.Notification;
 
 public class LocativeNetworkingAdapter implements LocativeNetworkingCallback{
     @Override
-    public void onCheckSessionFinished(boolean sessionValid) {
-
-    }
-
-    @Override
     public void onDispatchFencelogFinished(boolean success) {
 
     }

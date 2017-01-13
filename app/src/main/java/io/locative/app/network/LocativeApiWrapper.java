@@ -35,10 +35,12 @@ import dagger.Provides;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.geo.LocativeGeocoder;
+import io.locative.app.model.Account;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
 import io.locative.app.model.Notification;
+import io.locative.app.network.callback.CheckSessionCallback;
 import io.locative.app.network.callback.GetAccountCallback;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.AeSimpleSHA1;
@@ -60,26 +62,30 @@ public class LocativeApiWrapper {
 
     @Inject
     LocativeApiWrapper() {
-
     }
 
     @Inject
     LocativeApiService mService;
-    @Inject JsonParser mParser;
+
+    @Inject
+    JsonParser mParser;
+
     private final GsonToGeofenceConverter GEOFENCE_CONVERTER = new GsonToGeofenceConverter();
     private final GsonToFencelogConverter FENCELOG_CONVERTER = new GsonToFencelogConverter();
     private final GsonToNotificationConverter NOTIFICATION_CONVERTER = new GsonToNotificationConverter();
 
-    public void doCheckSession(String sessionId, final LocativeNetworkingCallback callback) {
+    public void doCheckSession(String sessionId, final CheckSessionCallback callback) {
         mService.checkSession(sessionId, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
-                callback.onCheckSessionFinished(true);
+                callback.onFinished(
+                        (response.getStatus() == 200)
+                );
             }
 
             @Override
             public void failure(RetrofitError error) {
-                callback.onCheckSessionFinished(false);
+                callback.onFinished(false);
             }
         });
     }
@@ -94,9 +100,11 @@ public class LocativeApiWrapper {
                 }
                 JsonObject account = mParser.parse(s).getAsJsonObject();
                 callback.onSuccess(
-                        account.get("username").getAsString(),
-                        account.get("email").getAsString(),
-                        account.get("avatar").getAsString()
+                        new Account(
+                                account.get("username").getAsString(),
+                                account.get("email").getAsString(),
+                                account.get("avatar").getAsString()
+                        )
                 );
             }
 
@@ -197,8 +205,9 @@ public class LocativeApiWrapper {
                 JSONKEY_GEOFENCES = "geofences";
 
         public List<Geofences.Geofence> makeList(JsonElement json) {
-           return this.getGeofences(json.getAsJsonObject().getAsJsonArray(JSONKEY_GEOFENCES));
+            return this.getGeofences(json.getAsJsonObject().getAsJsonArray(JSONKEY_GEOFENCES));
         }
+
         @NonNull
         private List<Geofences.Geofence> getGeofences(JsonArray geofencesJson) {
             List<Geofences.Geofence> geofences = new ArrayList<>(geofencesJson.size());
@@ -249,13 +258,13 @@ public class LocativeApiWrapper {
 
     private class GsonToFencelogConverter {
         private static final String JSONKEY_FENCELOGS = "fencelogs",
-            JSONKEY_ORIGIN = "origin",
-            JSONKEY_CREATEDAT = "created_at",
-            JSONKEY_TYPE = "fenceType",
-            JSONKEY_EVENT = "eventType",
-            JSONKEY_HTTPMETHOD = "httpMethod",
-            JSONKEY_HTTPURL = "httpUrl",
-            JSONKEY_LOCATIONID = "locationId";
+                JSONKEY_ORIGIN = "origin",
+                JSONKEY_CREATEDAT = "created_at",
+                JSONKEY_TYPE = "fenceType",
+                JSONKEY_EVENT = "eventType",
+                JSONKEY_HTTPMETHOD = "httpMethod",
+                JSONKEY_HTTPURL = "httpUrl",
+                JSONKEY_LOCATIONID = "locationId";
         private final SimpleDateFormat FORMATTER = new SimpleDateFormat();
 
         public List<Fencelog> makeList(JsonElement element) {
@@ -264,7 +273,7 @@ public class LocativeApiWrapper {
 
         private List<Fencelog> getFencelogs(JsonArray logsJson) {
             List<Fencelog> logs = new ArrayList<Fencelog>(logsJson.size());
-            for (JsonElement logJson: logsJson)
+            for (JsonElement logJson : logsJson)
                 logs.add(buildFenceLog(logJson.getAsJsonObject()));
             return logs;
         }
@@ -279,10 +288,10 @@ public class LocativeApiWrapper {
             fence.fenceType = fenceJson.get(JSONKEY_TYPE).getAsString();
             try {
                 String dateString = fenceJson.get(JSONKEY_CREATEDAT).getAsString();
-                ZonedDateTime zdt =  ZonedDateTime.parse(dateString);
+                ZonedDateTime zdt = ZonedDateTime.parse(dateString);
                 zdt = zdt.withZoneSameInstant(ZonedDateTime.now().getZone());
                 fence.createdAt = zdt.toLocalDateTime();
-            } catch(DateTimeParseException dtpe) {
+            } catch (DateTimeParseException dtpe) {
                 Log.d(getClass().getName(), dtpe.getParsedString());
             }
             return fence;
@@ -291,9 +300,9 @@ public class LocativeApiWrapper {
 
     private class GsonToNotificationConverter {
         private static final String
-        JSONKEY_NOTIFICATIONS = "notifications",
-        JSONKEY_MESSAGE = "message",
-        JSONKEY_CREATEDAT = "created_at";
+                JSONKEY_NOTIFICATIONS = "notifications",
+                JSONKEY_MESSAGE = "message",
+                JSONKEY_CREATEDAT = "created_at";
 
         public List<Notification> makeList(JsonElement element) {
             return this.getNotifications(element.getAsJsonObject().getAsJsonArray(JSONKEY_NOTIFICATIONS));
@@ -301,7 +310,7 @@ public class LocativeApiWrapper {
 
         private List<Notification> getNotifications(JsonArray notificationJson) {
             List<Notification> logs = new ArrayList<Notification>(notificationJson.size());
-            for (JsonElement notiJson: notificationJson)
+            for (JsonElement notiJson : notificationJson)
                 logs.add(buildNotification(notiJson.getAsJsonObject()));
             return logs;
         }

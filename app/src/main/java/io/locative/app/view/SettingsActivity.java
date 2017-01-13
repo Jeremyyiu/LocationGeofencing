@@ -23,11 +23,14 @@ import butterknife.BindView;
 import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
+import io.locative.app.model.Account;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkingAdapter;
 import io.locative.app.network.LocativeNetworkingCallback;
+import io.locative.app.network.callback.CheckSessionCallback;
+import io.locative.app.network.callback.GetAccountCallback;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.Preferences;
 
@@ -106,14 +109,6 @@ public class SettingsActivity extends BaseActivity {
 
         mNetworkingCallback = new LocativeNetworkingAdapter() {
             @Override
-            public void onCheckSessionFinished(boolean sessionValid) {
-                if (!sessionValid) {
-                    mSessionManager.clearSession();
-                    adjustUiToLoginState();
-                }
-            }
-
-            @Override
             public void onDispatchFencelogFinished(boolean success) {
                 mProgressDialog.dismiss();
                 simpleAlert(success ? "Your Fencelog was submitted successfully!" : "There was an error submitting your Fencelog.");
@@ -148,10 +143,29 @@ public class SettingsActivity extends BaseActivity {
                 Log.d(Constants.LOG, "Login success with SessionID: " + sessionId);
                 mSessionManager.setSessionId(sessionId);
                 adjustUiToLoginState();
+                mLocativeNetworkingWrapper.doGetAccount(sessionId, new GetAccountCallback() {
+                    @Override
+                    public void onSuccess(Account account) {
+                        mSessionManager.setAccount(account);
+                    }
+
+                    @Override
+                    public void onFailure() {
+
+                    }
+                });
             }
         }
 
-        mLocativeNetworkingWrapper.doCheckSession(mSessionManager.getSessionId(), mNetworkingCallback);
+        mLocativeNetworkingWrapper.doCheckSession(mSessionManager.getSessionId(), new CheckSessionCallback() {
+            @Override
+            public void onFinished(boolean isValid) {
+                if (!isValid) {
+                    mSessionManager.clearSession();
+                    adjustUiToLoginState();
+                }
+            }
+        });
     }
 
 
