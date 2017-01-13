@@ -1,6 +1,6 @@
 package io.locative.app.utils;
 
-import okhttp3.Request;
+import okhttp3.HttpUrl;
 
 public class UrlValidator {
 
@@ -11,11 +11,6 @@ public class UrlValidator {
     }
 
     public boolean validate() {
-        try {
-            new Request.Builder().url(url).build();
-        } catch (Exception ex) {
-            return false;
-        }
-        return true;
+        return HttpUrl.parse(this.url) != null;
     }
 }
