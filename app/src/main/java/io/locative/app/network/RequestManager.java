@@ -41,6 +41,10 @@ public class RequestManager {
     @Inject
     NotificationManager mNotificationManager;
 
+    @Inject
+    RequestManager() {
+    }
+
     private final OkHttpClient.Builder mClientBuilder = new OkHttpClient.Builder();
 
     private String relevantUrl(final Geofences.Geofence geofence, final EventType eventType) {
@@ -77,21 +81,21 @@ public class RequestManager {
         if (method == 0) { // POST
             return url;
         }
-        
+
         // GET
         return url
                 .concat(url.contains("?") ? "&" : "?")
                 .concat(
-                "latitude=" + URLEncoder.encode(Double.toString(geofence.latitude))
-                + "&longitude=" + URLEncoder.encode(Double.toString(geofence.longitude))
-                + "&id=" + URLEncoder.encode(geofence.getRelevantId())
-                + "&device=" + URLEncoder.encode(Settings.Secure.getString(mContext.getContentResolver(),
-                        Settings.Secure.ANDROID_ID))
-                + "&device_type=" + URLEncoder.encode("Android")
-                + "&device_model=" + URLEncoder.encode(Build.MODEL)
-                + "&trigger=" + URLEncoder.encode(eventToString(eventType))
-                + "&timestamp=" + URLEncoder.encode(String.valueOf(new Timestamp(new Date().getTime())))
-        );
+                        "latitude=" + URLEncoder.encode(Double.toString(geofence.latitude))
+                                + "&longitude=" + URLEncoder.encode(Double.toString(geofence.longitude))
+                                + "&id=" + URLEncoder.encode(geofence.getRelevantId())
+                                + "&device=" + URLEncoder.encode(Settings.Secure.getString(mContext.getContentResolver(),
+                                Settings.Secure.ANDROID_ID))
+                                + "&device_type=" + URLEncoder.encode("Android")
+                                + "&device_model=" + URLEncoder.encode(Build.MODEL)
+                                + "&trigger=" + URLEncoder.encode(eventToString(eventType))
+                                + "&timestamp=" + URLEncoder.encode(String.valueOf(new Timestamp(new Date().getTime())))
+                );
     }
 
     public void dispatch(final Geofences.Geofence geofence, final EventType eventType) {
@@ -177,10 +181,10 @@ public class RequestManager {
     }
 
     void dispatchFencelog(final Geofences.Geofence geofence,
-                                  final EventType eventType,
-                                  final String httpUrl,
-                                  final String httpMethod,
-                                  final int httpResponseCode) {
+                          final EventType eventType,
+                          final String httpUrl,
+                          final String httpMethod,
+                          final int httpResponseCode) {
         String sessionId = mPreferences.getString(Preferences.SESSION_ID, null);
         if (sessionId != null && eventType != null) {
             Fencelog fencelog = new Fencelog();

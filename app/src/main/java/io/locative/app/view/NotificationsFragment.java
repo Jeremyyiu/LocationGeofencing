@@ -1,6 +1,5 @@
 package io.locative.app.view;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,22 +7,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
-import butterknife.BindView;
 import co.intentservice.chatui.ChatView;
 import co.intentservice.chatui.models.ChatMessage;
 import io.locative.app.R;
 import io.locative.app.model.Notification;
 import io.locative.app.network.LocativeNetworkingAdapter;
-
-/**
- * Created by kida on 1/1/17.
- */
 
 public class NotificationsFragment extends Fragment {
     public static final String TAG = "fragment.notifications";

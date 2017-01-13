@@ -9,9 +9,6 @@ import android.os.Bundle;
 
 import io.locative.app.R;
 
-/**
- * Created by Jasper De Vrient on 2/05/2016.
- */
 public class AddGeofenceDialogFragment extends DialogFragment implements AddGeofenceDialog {
     private AddGeofenceResultListener mLocallyListener;
     private AddGeofenceResultListener mImportListener;

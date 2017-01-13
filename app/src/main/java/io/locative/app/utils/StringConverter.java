@@ -11,9 +11,6 @@ import retrofit.converter.Converter;
 import retrofit.mime.TypedInput;
 import retrofit.mime.TypedOutput;
 
-/**
- * Created by mkida on 17/08/2014.
- */
 public class StringConverter implements Converter {
 
     @Override

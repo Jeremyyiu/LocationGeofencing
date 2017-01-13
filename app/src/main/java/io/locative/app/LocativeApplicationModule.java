@@ -12,12 +12,9 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
-import io.locative.app.network.LocativeNetworkModule;
 import io.locative.app.network.SessionManager;
 import io.locative.app.notification.NotificationManager;
-import io.locative.app.notification.NotificationTokenManager;
 import io.locative.app.persistent.Storage;
-import io.locative.app.view.UIModule;
 
 @Module
 public class LocativeApplicationModule {
@@ -32,37 +29,37 @@ public class LocativeApplicationModule {
     @SuppressWarnings("unused")
     @Provides
     @Singleton
-    public JsonParser getJsonParser() {
+    JsonParser getJsonParser() {
         return new JsonParser();
     }
 
     @SuppressWarnings("unused")
     @Provides
-    public Context getApplicationContext() {
+    Context getApplicationContext() {
         return mApp;
     }
 
     @Provides
     @Singleton
-    public SessionManager provideSessionManager() {
-        return new SessionManager();
+    SessionManager provideSessionManager() {
+        return new SessionManager(mApp.getComponent());
     }
 
     @SuppressWarnings("unused")
     @Provides
-    public SharedPreferences providePreferences(Context context) {
+    SharedPreferences providePreferences(Context context) {
         return PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @SuppressWarnings("unused")
     @Provides
-    public NotificationManager provideNotificationManager(Context context) {
+    NotificationManager provideNotificationManager(Context context) {
         return new NotificationManager(context);
     }
 
     @SuppressWarnings("unused")
     @Provides
-    public Storage provideStorage(Context context) {
+    Storage provideStorage(Context context) {
         return new Storage(context);
     }
 

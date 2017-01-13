@@ -7,10 +7,6 @@ import com.google.firebase.messaging.RemoteMessage;
 
 import io.locative.app.utils.Constants;
 
-/**
- * Created by kida on 1/1/17.
- */
-
 public class NotificationMessagingService extends FirebaseMessagingService {
 
     @Override

@@ -6,7 +6,6 @@ import com.crashlytics.android.Crashlytics;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import io.fabric.sdk.android.Fabric;
-import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkModule;
 import io.locative.app.network.ReceiveTransitionsIntentService;
 
@@ -28,10 +27,6 @@ public class LocativeApplication extends Application {
                 .locativeNetworkModule(new LocativeNetworkModule())
                 .build();
         AndroidThreeTen.init(this);
-    }
-
-    public void inject(LocativeApiWrapper object) {
-        mComponent.inject(object);
     }
 
     public void inject(ReceiveTransitionsIntentService object) {

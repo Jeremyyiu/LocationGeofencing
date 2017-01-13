@@ -54,10 +54,14 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 @Singleton
-@Module
 public class LocativeApiWrapper {
     public static final String UNNAMED_FENCE = "";
     private Context mContext = LocativeApplication.getApplication().getApplicationContext();
+
+    @Inject
+    LocativeApiWrapper() {
+
+    }
 
     @Inject
     LocativeApiService mService;

@@ -32,7 +32,6 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.schuetz.mapareas.MapAreaManager;
 import com.schuetz.mapareas.MapAreaManager.CircleManagerListener;
@@ -52,12 +51,10 @@ import io.locative.app.R;
 import io.locative.app.geo.LocativeGeocoder;
 import io.locative.app.geo.LocativeLocationManager;
 import io.locative.app.map.WorkaroundMapFragment;
-import io.locative.app.model.Geofences;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.GeocodeHandler;
 import io.locative.app.utils.UrlValidator;
-import okhttp3.Request;
 
 public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyCallback {
 
@@ -140,7 +137,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ((LocativeApplication) getApplication()).inject(this);
+        ((LocativeApplication) getApplication()).getComponent().inject(this);
 
         // Already existing (editing) Geofence?
         mEditGeofenceId = getIntent().getStringExtra("geofenceId");
