@@ -18,6 +18,10 @@
     <string name="title_activity_settings">Settings</string>
     <string name="title_activity_signup">SignupActivity</string>
     <string name="ok">Ok</string>
+    <string name="note">Note</string>
+    <string name="please_wait">"Please wait…"</string>
+    <string name="please_login_to_test_request">You haven\'t specified a URL for the global HTTP request, so we\'ll only be sending a Fencelog. You need to signup and login for Fencelogs to work.</string>
+    <string name="test_request_sent_message">Your Test-Request has been sent. If you\'ve enabled Notifications you\'ll get a confirmation of success.</string>
     <!-- Error strings -->
     <string name="geofence_not_available">Geofence service is not available now</string>
     <string name="geofence_too_many_geofences">Your app has registered too many geofences</string>

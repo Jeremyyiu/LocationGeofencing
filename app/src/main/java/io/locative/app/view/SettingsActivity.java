@@ -17,6 +17,8 @@ import android.widget.Switch;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
+import java.util.UUID;
+
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -26,9 +28,11 @@ import io.locative.app.R;
 import io.locative.app.model.Account;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
+import io.locative.app.model.Geofences;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.LocativeNetworkingAdapter;
 import io.locative.app.network.LocativeNetworkingCallback;
+import io.locative.app.network.RequestManager;
 import io.locative.app.network.callback.CheckSessionCallback;
 import io.locative.app.network.callback.GetAccountCallback;
 import io.locative.app.utils.Constants;
@@ -82,6 +86,9 @@ public class SettingsActivity extends BaseActivity {
 
     @Inject
     LocativeApiWrapper mLocativeNetworkingWrapper;
+
+    @Inject
+    RequestManager mRequestManager;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -227,15 +234,53 @@ public class SettingsActivity extends BaseActivity {
     }
 
     @OnClick(R.id.send_test_button)
-    public void sendTestFencelog() {
-        Fencelog fencelog = new Fencelog();
-        fencelog.locationId = "test";
-        fencelog.eventType = EventType.ENTER;
-        showProgressDialog("Please wait…");
-        String sessionId = mSessionManager.getSessionId();
-        if (sessionId != null) {
+    public void sendTestRequest() {
+
+        final String locationId = "test";
+        final String sessionId = mSessionManager.getSessionId();
+
+        if (mUrlText.getText().length() == 0) {
+            if (sessionId == null) {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.note)
+                        .setMessage(R.string.please_login_to_test_request)
+                        .setNeutralButton(R.string.ok, null)
+                        .show();
+                return;
+            }
+            Fencelog fencelog = new Fencelog();
+            fencelog.locationId = locationId;
+            fencelog.eventType = EventType.ENTER;
+            showProgressDialog(getResources().getString(R.string.please_wait));
             mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
+
+            return;
         }
+
+        Geofences.Geofence geofence = new Geofences.Geofence(
+                UUID.randomUUID().toString(), // ID
+                locationId, // Custom ID
+                "Test Location", // Name
+                0, // Triggers
+                0.00f, // Lat
+                0.00f, // Lng
+                50, // Radius
+                0, // Auth
+                null, // Auth User
+                null, // Auth Passwd
+                0, // Enter Method
+                null, // Enter Url
+                0, // Exit Method
+                null // Exit Url
+        );
+
+        mRequestManager.dispatch(geofence, EventType.ENTER);
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.note)
+                .setMessage(R.string.test_request_sent_message)
+                .setNeutralButton(R.string.ok, null)
+                .show();
     }
 
     @OnClick(R.id.global_http_method_button)

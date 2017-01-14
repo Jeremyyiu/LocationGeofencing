@@ -34,10 +34,13 @@ public class RequestManager {
 
     @Inject
     SharedPreferences mPreferences;
+
     @Inject
     LocativeApiWrapper mLocativeNetworkingWrapper;
+
     @Inject
     Context mContext;
+
     @Inject
     NotificationManager mNotificationManager;
 
@@ -93,7 +96,7 @@ public class RequestManager {
                                 Settings.Secure.ANDROID_ID))
                                 + "&device_type=" + UrlEncoder.encode("Android")
                                 + "&device_model=" + UrlEncoder.encode(Build.MODEL)
-                                + "&trigger=" + UrlEncoder.encode(eventToString(eventType))
+                                + "&trigger=" + UrlEncoder.encode(eventType.getEventName())
                                 + "&timestamp=" + UrlEncoder.encode(String.valueOf(new Timestamp(new Date().getTime())))
                 );
     }
@@ -128,7 +131,7 @@ public class RequestManager {
                         Settings.Secure.ANDROID_ID))
                 .add("device_type", "Android")
                 .add("device_model", Build.MODEL)
-                .add("trigger", eventToString(eventType))
+                .add("trigger", eventType.getEventName())
                 .add("timestamp", String.valueOf(new Timestamp(new Date().getTime())))
                 .build();
         Request request;
@@ -206,10 +209,6 @@ public class RequestManager {
 
     private String fromMethod(int method) {
         return method == Constants.HttpMethod.POST.ordinal() ? "POST" : "GET";
-    }
-
-    private String eventToString(EventType eventType) {
-        return eventType == EventType.ENTER ? "enter" : "exit";
     }
 
 }
