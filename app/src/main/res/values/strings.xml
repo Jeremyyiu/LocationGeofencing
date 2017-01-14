@@ -32,6 +32,13 @@
 
     <string name="trigger_on_enter">Trigger on enter</string>
     <string name="trigger_on_exit">Trigger on exit</string>
+    <string name="entering">entering</string>
+    <string name="exiting">leaving</string>
+    <string name="error_http_request">Error when sending HTTP request while %1$s</string>
+    <!-- 1. Success / Error, 2. Entering / Exiting, 3. HTTP Status Code -->
+    <string name="success_http_request">%1$s for HTTP request (%3$d) after %2$s location.</string>
+    <string name="success">Success</string>
+    <string name="error">Error</string>
 
     <string name="error_permission_refused">Location permission is needed to use the app!</string>
 

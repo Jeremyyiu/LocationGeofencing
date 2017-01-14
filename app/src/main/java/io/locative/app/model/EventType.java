@@ -1,14 +1,25 @@
 package io.locative.app.model;
 
-
 public enum EventType {
 
     ENTER("enter"),
     EXIT("exit");
 
-    public final String apiName;
+    private final String mEventName;
 
     EventType(String apiName) {
-        this.apiName = apiName;
+        mEventName = apiName;
+    }
+
+    public String getEventName() {
+        return mEventName;
+    }
+
+    public boolean isEnter() {
+        return this == ENTER;
+    }
+
+    public boolean isExit() {
+        return this == EXIT;
     }
 }

@@ -144,13 +144,13 @@ public class RequestManager {
         mClient.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                conditionallyShowFailureNotification(geofence, "Error when sending HTTP request.");
+                conditionallyShowFailureNotification(geofence, mContext.getString(R.string.error_http_request, mContext.getString((eventType == EventType.ENTER ? R.string.entering : R.string.exiting))));
                 dispatchFencelog(geofence, eventType, relevantUrl(geofence, eventType), fromMethod(method), 0);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                conditionallyShowSuccessNotification(geofence, response);
+                conditionallyShowSuccessNotification(geofence, eventType, response);
                 dispatchFencelog(
                         geofence,
                         eventType,
@@ -169,14 +169,18 @@ public class RequestManager {
         mNotificationManager.showNotification(geofence.getRelevantId(), message);
     }
 
-    private void conditionallyShowSuccessNotification(final Geofences.Geofence geofence, final Response response) {
+    private void conditionallyShowSuccessNotification(final Geofences.Geofence geofence, final EventType eventType, final Response response) {
         if (!mPreferences.getBoolean(Preferences.NOTIFICATION_SUCCESS, false)) {
             return;
         }
-        final String result = response.isSuccessful() ? "Success" : "Error";
         mNotificationManager.showNotification(
                 geofence.getRelevantId(),
-                result + " in HTTP request (" + response.code() + ")"
+                mContext.getString(
+                        R.string.success_http_request,
+                        response.isSuccessful() ? mContext.getString(R.string.success) : mContext.getString(R.string.error),
+                        eventType.isEnter() ? mContext.getString(R.string.entering) : mContext.getString(R.string.exiting),
+                        response.code()
+                )
         );
     }
 
