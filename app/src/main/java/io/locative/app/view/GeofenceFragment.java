@@ -64,6 +64,7 @@ public class GeofenceFragment extends ListFragment {
      * fragment (e.g. upon screen orientation changes).
      */
     public GeofenceFragment() {
+
     }
 
     public void refresh() {
@@ -139,6 +140,15 @@ public class GeofenceFragment extends ListFragment {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
             mListener.onFragmentInteraction(Geofences.ITEMS.get(position).uuid);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (!mLoading) {
+            setListShown(true);
+            refresh();
         }
     }
 
