@@ -2,6 +2,7 @@ package io.locative.app.map;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.widget.FrameLayout;
 
 import android.view.LayoutInflater;
@@ -24,7 +25,7 @@ public class WorkaroundMapFragment extends SupportMapFragment {
 
         TouchableWrapper frameLayout = new TouchableWrapper(getActivity());
 
-        frameLayout.setBackgroundColor(getResources().getColor(android.R.color.transparent));
+        frameLayout.setBackgroundColor(ContextCompat.getColor(getActivity(), android.R.color.transparent));
 
         ((ViewGroup) layout).addView(frameLayout,
                 new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));

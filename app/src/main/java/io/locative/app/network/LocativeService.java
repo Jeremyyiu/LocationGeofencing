@@ -50,6 +50,7 @@ public class LocativeService extends Service implements
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public int onStartCommand(Intent intent, int flags, int startId) {
 
         if (intent == null) {

@@ -6,7 +6,6 @@ import android.os.Build;
 import android.provider.Settings;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -19,6 +18,7 @@ import io.locative.app.model.Geofences;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.Preferences;
+import io.locative.app.utils.UrlEncoder;
 import okhttp3.Authenticator;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -86,15 +86,15 @@ public class RequestManager {
         return url
                 .concat(url.contains("?") ? "&" : "?")
                 .concat(
-                        "latitude=" + URLEncoder.encode(Double.toString(geofence.latitude))
-                                + "&longitude=" + URLEncoder.encode(Double.toString(geofence.longitude))
-                                + "&id=" + URLEncoder.encode(geofence.getRelevantId())
-                                + "&device=" + URLEncoder.encode(Settings.Secure.getString(mContext.getContentResolver(),
+                        "latitude=" + UrlEncoder.encode(Double.toString(geofence.latitude))
+                                + "&longitude=" + UrlEncoder.encode(Double.toString(geofence.longitude))
+                                + "&id=" + UrlEncoder.encode(geofence.getRelevantId())
+                                + "&device=" + UrlEncoder.encode(Settings.Secure.getString(mContext.getContentResolver(),
                                 Settings.Secure.ANDROID_ID))
-                                + "&device_type=" + URLEncoder.encode("Android")
-                                + "&device_model=" + URLEncoder.encode(Build.MODEL)
-                                + "&trigger=" + URLEncoder.encode(eventToString(eventType))
-                                + "&timestamp=" + URLEncoder.encode(String.valueOf(new Timestamp(new Date().getTime())))
+                                + "&device_type=" + UrlEncoder.encode("Android")
+                                + "&device_model=" + UrlEncoder.encode(Build.MODEL)
+                                + "&trigger=" + UrlEncoder.encode(eventToString(eventType))
+                                + "&timestamp=" + UrlEncoder.encode(String.valueOf(new Timestamp(new Date().getTime())))
                 );
     }
 

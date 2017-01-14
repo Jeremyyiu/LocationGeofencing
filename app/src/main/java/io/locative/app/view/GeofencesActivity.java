@@ -121,7 +121,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         return new ProfileDrawerItem()
                 .withIdentifier(0)
                 .withName(getString(R.string.drawer_header_username_placeholder))
-                .withIcon(getResources().getDrawable(R.drawable.logo_round_512px));
+                .withIcon(ContextCompat.getDrawable(this, R.drawable.logo_round_512px));
     }
 
     private void updateHeaderWithAccount(@Nullable Account account) {
@@ -214,7 +214,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
         mHeader = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(new ColorDrawable(getResources().getColor(R.color.primary)))
+                .withHeaderBackground(new ColorDrawable(ContextCompat.getColor(this, R.color.primary)))
                 .withSelectionListEnabledForSingleProfile(false)
                 .addProfiles(
                         getEmptyProfileDrawerItem()
