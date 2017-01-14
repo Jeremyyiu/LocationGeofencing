@@ -3,24 +3,22 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="5dip" >
+    android:padding="5dp" >
 
-    <!--  ListRow Left sied Thumbnail image -->
     <LinearLayout android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="3dip"
+        android:padding="3dp"
         android:layout_alignParentLeft="true"
-        android:layout_marginRight="5dip">
+        android:layout_marginRight="5dp">
 
         <ImageView
             android:id="@+id/image"
-            android:layout_width="50dip"
-            android:layout_height="50dip" />
+            android:layout_width="50dp"
+            android:layout_height="50dp" />
 
     </LinearLayout>
 
-    <!-- Title Of Song-->
     <TextView
         android:id="@+id/title"
         android:layout_width="wrap_content"
@@ -30,18 +28,17 @@
         android:text="2 Roslyn St, Potts Point, Sydney 2011"
         android:textColor="#ff040404"
         android:typeface="sans"
-        android:textSize="15dip"
+        android:textSize="15dp"
         android:textStyle="bold"/>
 
-    <!-- Artist Name -->
     <TextView
         android:id="@+id/subtitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/title"
         android:textColor="#ff343434"
-        android:textSize="10dip"
-        android:layout_marginTop="1dip"
+        android:textSize="10dp"
+        android:layout_marginTop="1dp"
         android:layout_toRightOf="@+id/thumbnail"
         android:text="http://myserver.com/geo/checkin" />
 
