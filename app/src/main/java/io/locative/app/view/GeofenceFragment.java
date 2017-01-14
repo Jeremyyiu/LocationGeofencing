@@ -45,8 +45,6 @@ public class GeofenceFragment extends ListFragment {
     private String mParam1;
     private String mParam2;
 
-    private boolean mLoading = true;
-
     private OnFragmentInteractionListener mListener;
 
     // TODO: Rename and change types of parameters
@@ -111,10 +109,6 @@ public class GeofenceFragment extends ListFragment {
         }
     }
 
-    public void setLoading(boolean loading) {
-        mLoading = loading;
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -146,20 +140,16 @@ public class GeofenceFragment extends ListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (!mLoading) {
-            setListShown(true);
-            refresh();
-        }
+        setListShown(true);
+        refresh();
     }
 
     @Override
     public void onActivityCreated(Bundle savedState) {
         super.onActivityCreated(savedState);
 
-        if (!mLoading) {
-            setListShown(true);
-            refresh();
-        }
+        setListShown(true);
+        refresh();
 
         setEmptyText(getString(R.string.geofences_empty));
         getListView().setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {

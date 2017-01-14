@@ -20,6 +20,7 @@ import android.location.Address;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -116,6 +117,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
     private String fragmentTag = GeofenceFragment.TAG;
     private static final String FRAGMENTTAG = "current.fragment";
+    private static final String BUNDLE_DRAWER_STATE = "bundleDrawerState";
 
     private ProfileDrawerItem getEmptyProfileDrawerItem() {
         return new ProfileDrawerItem()
@@ -391,8 +393,14 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            if (savedInstanceState.containsKey(FRAGMENTTAG))
+            if (savedInstanceState.containsKey(FRAGMENTTAG)) {
                 fragmentTag = savedInstanceState.getString(FRAGMENTTAG);
+            }
+            if (savedInstanceState.containsKey(BUNDLE_DRAWER_STATE)) {
+               if (mDrawer != null) {
+                   mDrawer.setSelectionAtPosition(savedInstanceState.getInt(BUNDLE_DRAWER_STATE));
+               }
+            }
         }
         super.onCreate(savedInstanceState);
         ((LocativeApplication) getApplication()).getComponent().inject(this);
@@ -435,8 +443,8 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
         outState.putString(FRAGMENTTAG, fragmentTag);
+        outState.putInt(BUNDLE_DRAWER_STATE, mDrawer.getCurrentSelectedPosition());
     }
 
     @Override
@@ -456,7 +464,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 if (Geofences.ITEMS.size() == 0) {
                     load();
                 }
-                mGeofenceFragment.setLoading(false);
                 break;
             }
             case FencelogsFragment.TAG: {
@@ -497,18 +504,26 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     }
 
     @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        if (savedInstanceState.containsKey(BUNDLE_DRAWER_STATE)) {
+            if (mDrawer != null) {
+                mDrawer.setSelectionAtPosition(savedInstanceState.getInt(BUNDLE_DRAWER_STATE));
+            }
+        }
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
         // first start of this activity , open drawer and hide FAB
         if (firstResume) {
-//            mDrawerLayout.openDrawer(Gravity.LEFT);
             mDrawer.openDrawer();
-//            mDrawerToogle.syncState();
             mFabButton.hide();
         }
 
         firstResume = false;
-
     }
 
     @Override
@@ -654,7 +669,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                        dialog.dismiss();
                        FragmentTransaction transaction = fragmentManager.beginTransaction();
                        Geofences.ITEMS.add(fence);
-                       mGeofenceFragment.setLoading(false);
                        transaction.replace(R.id.container, mGeofenceFragment, GeofenceFragment.TAG).commit();
                        setTitle(R.string.title_geofences);
                        mFabButton.show();
