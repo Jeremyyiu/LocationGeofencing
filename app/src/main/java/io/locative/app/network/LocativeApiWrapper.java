@@ -159,8 +159,8 @@ public class LocativeApiWrapper {
         });
     }
 
-    public void getFenceLogs(String sessionId, final LocativeNetworkingCallback callback) {
-        mService.getFencelogs(sessionId, new Callback<String>() {
+    public void getFenceLogs(String sessionId, int limit, final LocativeNetworkingCallback callback) {
+        mService.getFencelogs(sessionId, limit, new Callback<String>() {
             @Override
             public void success(String s, Response response) {
                 callback.onGetFencelogsFinished(FENCELOG_CONVERTER.makeList(mParser.parse(s)));

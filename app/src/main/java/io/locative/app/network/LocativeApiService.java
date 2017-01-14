@@ -54,6 +54,7 @@ public interface LocativeApiService {
     @GET("/api/fencelogs/{session}")
     void getFencelogs(
             @Path("session") String sessionId,
+            @Query("limit") int limit,
             Callback<String> callback
     );
 

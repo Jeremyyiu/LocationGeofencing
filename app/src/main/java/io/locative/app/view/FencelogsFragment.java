@@ -15,6 +15,7 @@ import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.network.LocativeNetworkingAdapter;
+import io.locative.app.utils.Constants;
 
 public class FencelogsFragment extends ListFragment {
     public static final String TAG = "fragment.fencelogs";
@@ -85,7 +86,7 @@ public class FencelogsFragment extends ListFragment {
         setEmptyText(getString(R.string.fencelogs_empty));
         GeofencesActivity ga = (GeofencesActivity)getActivity();
         ga.mFabButton.hide();
-        ga.mLocativeNetworkingWrapper.getFenceLogs(ga.mSessionManager.getSessionId(), new LocativeNetworkingAdapter() {
+        ga.mLocativeNetworkingWrapper.getFenceLogs(ga.mSessionManager.getSessionId(), Constants.FENCELOG_LIMIT, new LocativeNetworkingAdapter() {
             @Override
             public void onGetFencelogsFinished(List<Fencelog> fencelogs) {
                 mFences = fencelogs;
