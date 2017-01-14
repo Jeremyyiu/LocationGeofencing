@@ -1,7 +1,5 @@
 package io.locative.app.network;
 
-import android.content.Context;
-import android.location.Address;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -9,32 +7,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.squareup.otto.Produce;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.threeten.bp.Instant;
-import org.threeten.bp.LocalDateTime;
 import org.threeten.bp.ZonedDateTime;
 import org.threeten.bp.format.DateTimeParseException;
 
-import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import dagger.Module;
-import dagger.Provides;
-import io.locative.app.LocativeApplication;
-import io.locative.app.R;
-import io.locative.app.geo.LocativeGeocoder;
 import io.locative.app.model.Account;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
@@ -43,22 +27,14 @@ import io.locative.app.model.Notification;
 import io.locative.app.network.callback.CheckSessionCallback;
 import io.locative.app.network.callback.GetAccountCallback;
 import io.locative.app.persistent.GeofenceProvider;
-import io.locative.app.utils.AeSimpleSHA1;
-import io.locative.app.utils.Constants;
-import io.locative.app.view.AddEditGeofenceActivity;
-import okhttp3.Call;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
 @Singleton
 public class LocativeApiWrapper {
-    public static final String UNNAMED_FENCE = "";
-    private Context mContext = LocativeApplication.getApplication().getApplicationContext();
+    private static final String TIMEOUT = "timeout";
+    private static final String CONNECT_TIMED_OUT = "connect timed out";
 
     @Inject
     LocativeApiWrapper() {
@@ -85,6 +61,14 @@ public class LocativeApiWrapper {
 
             @Override
             public void failure(RetrofitError error) {
+                if (error.getCause().getMessage().equals(TIMEOUT) ||
+                        error.getCause().getMessage().equals(CONNECT_TIMED_OUT)) {
+                    // we've timed out, so we assume the session is still valid and will
+                    // retry again later, bailing out here would lead to terrible UX
+                    // as users would get logged it without no good reason
+                    callback.onFinished(true);
+                    return;
+                }
                 callback.onFinished(false);
             }
         });
