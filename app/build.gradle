@@ -58,11 +58,6 @@ android {
         }
     }
 
-
-    lintOptions {
-        abortOnError false
-    }
-
     signingConfigs {
     }
 
