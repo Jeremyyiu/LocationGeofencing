@@ -261,8 +261,8 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                         new PrimaryDrawerItem().withName(getResources().getString(R.string.title_geofences)),
                         new PrimaryDrawerItem().withName(getResources().getString(R.string.fencelogs)),
                         new PrimaryDrawerItem().withName(getResources().getString(R.string.notifications)),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.title_settings)),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.title_support))
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.title_settings)).withSelectable(false),
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.title_support)).withSelectable(false)
                         )
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
                     @Override
@@ -303,6 +303,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                                 fragment = mGeofenceFragment;
                                 fragmentTag = GeofenceFragment.TAG;
                                 mFabButton.show();
+                                setTitle(getResources().getString(R.string.app_name));
                                 break;
                             case DRAWER_ITEMS.FENCELOGS:
                                 if (!mSessionManager.hasSession()) {
@@ -330,6 +331,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                                 fragment = mFenceLogsFragment;
                                 fragmentTag = FencelogsFragment.TAG;
                                 mFabButton.hide();
+                                setTitle(((PrimaryDrawerItem)drawerItem).getName().getText());
                                 break;
                             case DRAWER_ITEMS.NOTIFICATIONS:
                                 if (!mSessionManager.hasSession()) {
@@ -357,6 +359,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                                 fragment = mNotificationsFragment;
                                 fragmentTag = NotificationsFragment.TAG;
                                 mFabButton.hide();
+                                setTitle(((PrimaryDrawerItem)drawerItem).getName().getText());
                                 break;
                             case DRAWER_ITEMS.SETTINGS:
                                 startActivity(new Intent(self, SettingsActivity.class));
@@ -378,7 +381,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                             return false;
                         }
 
-                        setTitle(((PrimaryDrawerItem)drawerItem).getName().getText());
                         mDrawer.closeDrawer();
                         return true;
                     }
