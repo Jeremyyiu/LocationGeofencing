@@ -1,10 +1,13 @@
 package io.locative.app.network;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -21,8 +24,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.locative.app.R;
 import io.locative.app.geo.GeofenceErrorMessages;
 import io.locative.app.model.Geofences;
+import io.locative.app.notification.NotificationManager;
 import io.locative.app.utils.Constants;
 
 public class LocativeService extends Service implements
@@ -99,6 +104,10 @@ public class LocativeService extends Service implements
                 Log.d(TAG, "Location client adds geofence");
                 if (mGeofenceListsToAdd.size() > 0) {
                     GeofencingRequest request = getGeofencingRequest(mGeofenceListsToAdd);
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        new NotificationManager(this).showNotification(getResources().getString(R.string.app_name), getResources().getString( R.string.error_permission_refused));
+                        return;
+                    }
                     PendingResult<Status> result = LocationServices.GeofencingApi.addGeofences(mGoogleApiClient, request, getGeofencePendingIntent());
                     result.setResultCallback(new ResultCallback<Status>() {
                         @Override
