@@ -11,9 +11,12 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 
@@ -84,11 +87,58 @@ public class SettingsActivity extends BaseActivity {
     @BindView(R.id.lostpass_button)
     Button mLostpassButton;
 
+    @BindView(R.id.trigger_threshold_enabled_switch)
+    Switch mTriggerThresholdEnabled;
+
+    @BindView(R.id.trigger_threshold_seekbar)
+    SeekBar mTriggerThresholdSeekBar;
+
+    @BindView(R.id.trigger_threshold_notice)
+    TextView mTriggerThresholdNotice;
+
     @Inject
     LocativeApiWrapper mLocativeNetworkingWrapper;
 
     @Inject
     RequestManager mRequestManager;
+
+    private void updateThresholdNotice() {
+        if (mTriggerThresholdEnabled.isChecked()) {
+            mTriggerThresholdNotice.setText(getString(R.string.trigger_threshold_notice, mTriggerThresholdSeekBar.getProgress()));
+            return;
+        }
+        mTriggerThresholdNotice.setText(getString(R.string.trigger_threshold_notice_disabled));
+    }
+
+    private void setupThreshold() {
+        mTriggerThresholdEnabled.setChecked(mPrefs.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false));
+        mTriggerThresholdSeekBar.setEnabled(mTriggerThresholdEnabled.isChecked());
+        mTriggerThresholdSeekBar.setProgress(mPrefs.getInt(Preferences.TRIGGER_THRESHOLD_VALUE, Preferences.TRIGGER_THRESHOLD_VALUE_DEFAULT) / 1000);
+        mTriggerThresholdSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                updateThresholdNotice();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+        mTriggerThresholdEnabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                mTriggerThresholdSeekBar.setEnabled(b);
+                updateThresholdNotice();
+            }
+        });
+        updateThresholdNotice();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -121,6 +171,7 @@ public class SettingsActivity extends BaseActivity {
                 simpleAlert(success ? "Your Fencelog was submitted successfully!" : "There was an error submitting your Fencelog.");
             }
         };
+
     }
 
     @Override
@@ -136,6 +187,12 @@ public class SettingsActivity extends BaseActivity {
                 return true;
         }
         return false;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        setupThreshold();
     }
 
     @Override
@@ -345,7 +402,8 @@ public class SettingsActivity extends BaseActivity {
         editor.putBoolean(Preferences.NOTIFICATION_FAIL, mNotificationFailSwitch.isChecked());
         editor.putBoolean(Preferences.NOTIFICATION_SHOW_ONLY_LATEST, mNotificationOnlyLatestSwitch.isChecked());
         editor.putBoolean(Preferences.NOTIFICATION_SOUND, mNotificationSoundSwitch.isChecked());
-
+        editor.putBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, mTriggerThresholdEnabled.isChecked());
+        editor.putInt(Preferences.TRIGGER_THRESHOLD_VALUE, mTriggerThresholdSeekBar.getProgress() * 1000);
         editor.apply();
 
         if (finish) {

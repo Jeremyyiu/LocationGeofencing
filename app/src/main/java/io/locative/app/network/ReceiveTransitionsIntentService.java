@@ -67,6 +67,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
         Log.i(TAG, "Location Services geofencingEvent: " + geofencingEvent);
 
         int transitionType = geofencingEvent.getGeofenceTransition();
+
         List<Geofence> triggeredGeofences = geofencingEvent.getTriggeringGeofences();
 
         for (Geofence geofence : triggeredGeofences) {

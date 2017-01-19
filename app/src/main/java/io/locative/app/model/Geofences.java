@@ -1,6 +1,10 @@
 package io.locative.app.model;
 
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
+
+import com.google.android.gms.location.Geofence;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -9,8 +13,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
+import io.locative.app.LocativeApplication;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.Constants;
+import io.locative.app.utils.Preferences;
 
 public class Geofences {
 
@@ -113,12 +121,15 @@ public class Geofences {
                 Log.d(Constants.LOG, "ID: " + this.uuid + " trigger on BOTH");
                 transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_ENTER;
                 transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_EXIT;
+                transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_DWELL;
             } else if (((triggers & GeofenceProvider.TRIGGER_ON_ENTER) == GeofenceProvider.TRIGGER_ON_ENTER)) {
                 Log.d(Constants.LOG, "ID: " + this.uuid + " trigger on ENTER");
                 transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_ENTER;
+                transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_DWELL;
             } else if (((triggers & GeofenceProvider.TRIGGER_ON_EXIT) == GeofenceProvider.TRIGGER_ON_EXIT)) {
                 Log.d(Constants.LOG, "ID: " + this.uuid + " trigger on EXIT");
                 transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_EXIT;
+                transition |= com.google.android.gms.location.Geofence.GEOFENCE_TRANSITION_DWELL;
             }
             Log.d(Constants.LOG, "Transition: " + transition);
 
@@ -134,15 +145,26 @@ public class Geofences {
                 return null;
             }
 
-            return new com.google.android.gms.location.Geofence.Builder()
+
+            com.google.android.gms.location.Geofence.Builder builder =
+                    new com.google.android.gms.location.Geofence.Builder()
                     .setRequestId(this.customId)
                     .setTransitionTypes(transition)
                     .setCircularRegion(
                             this.latitude,
                             this.longitude,
                             this.radiusMeters)
-                    .setExpirationDuration(com.google.android.gms.location.Geofence.NEVER_EXPIRE)
-                    .build();
+                    .setExpirationDuration(com.google.android.gms.location.Geofence.NEVER_EXPIRE);
+
+            SharedPreferences preferences =
+                    PreferenceManager.getDefaultSharedPreferences(LocativeApplication.getApplication().getApplicationContext());
+
+            int loiteringDelay = preferences.getInt(Preferences.TRIGGER_THRESHOLD_VALUE, Preferences.TRIGGER_THRESHOLD_VALUE_DEFAULT);
+            if (preferences.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false)) {
+                builder.setLoiteringDelay(loiteringDelay);
+            }
+
+            return builder.build();
         }
     }
 }
