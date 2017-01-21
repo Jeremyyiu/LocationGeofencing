@@ -10,6 +10,8 @@ import io.locative.app.modules.AppModule;
 import io.locative.app.modules.NetworkingModule;
 import io.locative.app.modules.PersistencyModule;
 import io.locative.app.network.ReceiveTransitionsIntentService;
+import io.locative.app.network.TransitionService;
+import io.locative.app.network.TriggerManager;
 
 public class LocativeApplication extends Application {
 
@@ -33,6 +35,14 @@ public class LocativeApplication extends Application {
     }
 
     public void inject(ReceiveTransitionsIntentService object) {
+        mComponent.inject(object);
+    }
+
+    public void inject(TriggerManager object) {
+        mComponent.inject(object);
+    }
+
+    public void inject(TransitionService object) {
         mComponent.inject(object);
     }
 

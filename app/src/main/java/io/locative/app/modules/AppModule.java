@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.locative.app.LocativeApplication;
+import io.locative.app.network.TriggerManager;
 import io.locative.app.notification.NotificationManager;
 
 @Module
@@ -38,6 +39,12 @@ public class AppModule {
     @Provides
     NotificationManager provideNotificationManager(Context context) {
         return new NotificationManager(context);
+    }
+
+    @SuppressWarnings("unused")
+    @Provides
+    TriggerManager provideTriggerManager() {
+        return new TriggerManager();
     }
 
     @SuppressWarnings("unused")

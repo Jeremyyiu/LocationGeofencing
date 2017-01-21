@@ -74,6 +74,7 @@ public class Storage {
         values.put(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD, fence.httpPassword);
         values.put(GeofenceProvider.Geofence.KEY_LATITUDE, fence.latitude);
         values.put(GeofenceProvider.Geofence.KEY_LONGITUDE, fence.longitude);
+        values.put(GeofenceProvider.Geofence.KEY_CURRENTLY_ENTERED, fence.currentlyEntered);
         return values;
     }
 }

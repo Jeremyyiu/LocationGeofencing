@@ -16,5 +16,5 @@ public class Preferences {
     public static String TRIGGER_THRESHOLD_VALUE = "triggerThresholdValue";
 
     // Default Value
-    public static final int TRIGGER_THRESHOLD_VALUE_DEFAULT = 3000;
+    public static final int TRIGGER_THRESHOLD_VALUE_DEFAULT = 8000;
 }

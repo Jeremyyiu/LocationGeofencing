@@ -23,6 +23,7 @@ import io.locative.app.model.EventType;
 import io.locative.app.model.Geofences;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.persistent.GeofenceProvider;
+import io.locative.app.persistent.Storage;
 import io.locative.app.utils.Preferences;
 
 public class ReceiveTransitionsIntentService extends IntentService {
@@ -45,6 +46,12 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
     @Inject
     NotificationManager mNotificationManager;
+
+    @Inject
+    TriggerManager mTriggerManager;
+
+    @Inject
+    Storage mStorage;
 
     public ReceiveTransitionsIntentService() {
         super(TRANSITION_INTENT_SERVICE);
@@ -76,10 +83,14 @@ public class ReceiveTransitionsIntentService extends IntentService {
         }
     }
 
-    private void processGeofence(Geofence geofence, int transitionType) {
+    private void processGeofence(final Geofence geofence, final int transitionType) {
 
         ContentResolver resolver = this.getContentResolver();
-        Cursor cursor = resolver.query(Uri.parse("content://" + getString(R.string.authority) + "/geofences"), null, "custom_id = ?", new String[]{geofence.getRequestId()}, null);
+        Uri uri = Uri.parse("content://" + getString(R.string.authority) + "/geofences");
+        String query =  "custom_id = ?";
+        String[] params = new String[]{geofence.getRequestId()};
+
+        Cursor cursor = resolver.query(uri, null, query, params, null);
         if (cursor == null || cursor.getCount() == 0) {
             return; // TODO: Handle errors here
         }
@@ -89,56 +100,56 @@ public class ReceiveTransitionsIntentService extends IntentService {
         cursor.close();
 
         boolean hasRelevantUrl = mPreferences.getString(Preferences.HTTP_URL, "").length() > 0;
-        if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER) {
+        if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER ||
+                transitionType == Geofence.GEOFENCE_TRANSITION_DWELL) {
+
+            // If trigger threshold and we're not dwelling: bail out
+            if (mPreferences.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false)) {
+                if (transitionType != Geofence.GEOFENCE_TRANSITION_DWELL) {
+                    return;
+                }
+            }
+
+            fence.currentlyEntered = 1;
+            mStorage.insertOrUpdateFence(fence);
+
             if (fence.enterUrl != null && fence.enterUrl.length() > 0) {
                 hasRelevantUrl = true;
             }
+
+            this.stopService(new Intent(this, TransitionService.class));
+
+            mTriggerManager.triggerTransition(fence, transitionType, hasRelevantUrl);
+
         } else if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
+
+            // If trigger threshold and we haven't entered the location yet: bail out
+            if (mPreferences.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false)) {
+                if (fence.currentlyEntered != 1) {
+                    return;
+                }
+                // Start exit service
+                Intent service = new Intent(this, TransitionService.class);
+                service.putExtra(TransitionService.EXTRA_GEOFENCE, fence);
+                service.putExtra(TransitionService.EXTRA_TRANSITION_TYPE, transitionType);
+                service.putExtra(TransitionService.EXTRA_HAS_RELEVANT_URL, hasRelevantUrl);
+                this.startService(service);
+                return;
+            }
+
+            fence.currentlyEntered = 0;
+            mStorage.insertOrUpdateFence(fence);
+
             if (fence.exitUrl != null && fence.exitUrl.length() > 0) {
                 hasRelevantUrl = true;
             }
-        }
-        if (!hasRelevantUrl) {
-            // not global url is set, bail out and show classic notification
-            Log.d(TAG, "Presenting classic notification for " + fence.uuid);
-            if (mPreferences.getBoolean(Preferences.NOTIFICATION_SUCCESS, false)) {
-                mNotificationManager.showNotification(
-                        fence.getRelevantId(),
-                        new Random().nextInt(),
-                        transitionType
-                );
-            }
-            Log.d(TAG, "Dispatching Fencelog for " + fence.uuid);
-            mRequestManager.dispatchFencelog(
-                    fence,
-                    getEventType(transitionType),
-                    null,
-                    null,
-                    0
-            );
-        } else {
-            Log.d(TAG, "Dispatching Request for " + fence.uuid);
-            mRequestManager.dispatch(fence, getEventType(transitionType));
+
+            mTriggerManager.triggerTransition(fence, transitionType, hasRelevantUrl);
         }
     }
 
     private LocativeApplication getApp() {
         return (LocativeApplication) getApplication();
-    }
-
-    @Nullable
-    private EventType getEventType(int transitionType) {
-        switch (transitionType) {
-            case Geofence.GEOFENCE_TRANSITION_ENTER:
-                return EventType.ENTER;
-            case Geofence.GEOFENCE_TRANSITION_EXIT:
-                return EventType.EXIT;
-            case Geofence.GEOFENCE_TRANSITION_DWELL:
-                return null;
-            default:
-                return null;
-        }
-
     }
 
     private void removeGeofences(List<String> requestIds) {

@@ -66,11 +66,8 @@
                 <data android:scheme="locative"/>
             </intent-filter>
             </activity>
-        <activity
-            android:name="io.locative.app.view.SignupActivity"
-            android:label="@string/title_activity_signup" />
-
         <service android:name=".network.LocativeService" />
+        <service android:name=".network.TransitionService" />
         <service android:name="io.locative.app.network.ReceiveTransitionsIntentService" />
         <service
             android:name=".notification.NotificationTokenManager">

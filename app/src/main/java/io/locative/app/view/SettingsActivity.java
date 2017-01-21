@@ -328,7 +328,8 @@ public class SettingsActivity extends BaseActivity {
                 0, // Enter Method
                 null, // Enter Url
                 0, // Exit Method
-                null // Exit Url
+                null, // Exit Url
+                0 // Currently Entered
         );
 
         mRequestManager.dispatch(geofence, EventType.ENTER);

@@ -56,6 +56,7 @@ public class Geofences {
         public String enterUrl;
         public int exitMethod;
         public String exitUrl;
+        public int currentlyEntered;
 
         public String getRelevantId() {
             if (customId != null && customId.length() > 0) {
@@ -81,7 +82,9 @@ public class Geofences {
                 int enterMethod,
                 String enterUrl,
                 int exitMethod,
-                String exitUrl) {
+                String exitUrl,
+                int currentlyEntered
+        ) {
             this.uuid = (uuid == null) ? UUID.randomUUID().toString() : uuid;
             this.customId = customId;
             this.name = name;
@@ -96,6 +99,7 @@ public class Geofences {
             this.enterUrl = enterUrl;
             this.exitMethod = exitMethod;
             this.exitUrl = exitUrl;
+            this.currentlyEntered = currentlyEntered;
         }
 
         public boolean hasAuthentication() {
@@ -145,26 +149,22 @@ public class Geofences {
                 return null;
             }
 
+            SharedPreferences preferences =
+                    PreferenceManager.getDefaultSharedPreferences(LocativeApplication.getApplication().getApplicationContext());
 
-            com.google.android.gms.location.Geofence.Builder builder =
-                    new com.google.android.gms.location.Geofence.Builder()
+            return new com.google.android.gms.location.Geofence.Builder()
                     .setRequestId(this.customId)
                     .setTransitionTypes(transition)
                     .setCircularRegion(
                             this.latitude,
                             this.longitude,
                             this.radiusMeters)
-                    .setExpirationDuration(com.google.android.gms.location.Geofence.NEVER_EXPIRE);
-
-            SharedPreferences preferences =
-                    PreferenceManager.getDefaultSharedPreferences(LocativeApplication.getApplication().getApplicationContext());
-
-            int loiteringDelay = preferences.getInt(Preferences.TRIGGER_THRESHOLD_VALUE, Preferences.TRIGGER_THRESHOLD_VALUE_DEFAULT);
-            if (preferences.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false)) {
-                builder.setLoiteringDelay(loiteringDelay);
-            }
-
-            return builder.build();
+                    .setExpirationDuration(com.google.android.gms.location.Geofence.NEVER_EXPIRE)
+                    .setLoiteringDelay(
+                    preferences.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false) ?
+                            preferences.getInt(Preferences.TRIGGER_THRESHOLD_VALUE, Preferences.TRIGGER_THRESHOLD_VALUE_DEFAULT) :
+                            0
+                    ).build();
         }
     }
 }

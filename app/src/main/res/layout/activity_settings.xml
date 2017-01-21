@@ -281,7 +281,7 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/trigger_threshold_seekbar"
                         android:enabled="false"
-                        android:max="10"/>
+                        android:max="300"/>
 
                 </LinearLayout>
 

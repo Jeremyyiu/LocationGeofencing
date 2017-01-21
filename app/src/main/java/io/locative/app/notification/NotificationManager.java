@@ -65,13 +65,13 @@ public class NotificationManager {
     private String getTransitionTypeString(int transitionType) {
         switch (transitionType) {
             case Geofence.GEOFENCE_TRANSITION_ENTER:
-                return "entered";
+                return mContext.getString(R.string.entered);
             case Geofence.GEOFENCE_TRANSITION_EXIT:
-                return "left";
+                return mContext.getString(R.string.left);
             case Geofence.GEOFENCE_TRANSITION_DWELL:
-                return "dwelled";
+                return mContext.getString(R.string.entered);
             default:
-                return "happened an unknown event.";
+                return mContext.getString(R.string.visited);
         }
     }
 }

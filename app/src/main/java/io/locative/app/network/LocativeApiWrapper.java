@@ -226,7 +226,8 @@ public class LocativeApiWrapper {
                     triggerOnArrival.get(JSONKEY_METHOD).getAsInt(),
                     triggerOnArrival.get(JSONKEY_URL).getAsString(),
                     triggerOnLeave.get(JSONKEY_METHOD).getAsInt(),
-                    triggerOnLeave.get(JSONKEY_URL).getAsString()
+                    triggerOnLeave.get(JSONKEY_URL).getAsString(),
+                    0
             );
         }
 

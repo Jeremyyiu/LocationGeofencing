@@ -9,6 +9,8 @@ import io.locative.app.modules.PersistencyModule;
 import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.ReceiveTransitionsIntentService;
 import io.locative.app.network.SessionManager;
+import io.locative.app.network.TransitionService;
+import io.locative.app.network.TriggerManager;
 import io.locative.app.view.AddEditGeofenceActivity;
 import io.locative.app.view.BaseActivity;
 import io.locative.app.view.GeofencesActivity;
@@ -24,4 +26,6 @@ public interface LocativeComponent {
     void inject(BaseActivity object);
     void inject(AddEditGeofenceActivity object);
     void inject(SessionManager object);
+    void inject(TriggerManager object);
+    void inject(TransitionService object);
 }

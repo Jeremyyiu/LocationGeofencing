@@ -71,6 +71,10 @@
     <string name="trigger_threshold_notice_disabled">Geofencing events will be triggered immediately.</string>
     <string name="trigger_threshold_notice">Geofencing events will be triggered if location has been visited for %1$d seconds.</string>
 
+    <string name="entered">entered</string>
+    <string name="left">left</string>
+    <string name="visited">visited</string>
+
     <!-- Drawer -->
     <string name="drawer_header_username_placeholder">Click here to log in</string>
 
