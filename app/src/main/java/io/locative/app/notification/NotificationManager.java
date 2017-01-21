@@ -7,20 +7,33 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 
+import com.bumptech.glide.load.engine.Resource;
 import com.google.android.gms.location.Geofence;
 
+import javax.inject.Inject;
+
+import io.locative.app.LocativeApplication;
 import io.locative.app.R;
+import io.locative.app.model.Notification;
 import io.locative.app.utils.Preferences;
+import io.locative.app.utils.ResourceUtils;
 import io.locative.app.view.GeofencesActivity;
+
+import static io.locative.app.LocativeApplication.getApplication;
 
 public class NotificationManager {
 
     private Context mContext;
-    private SharedPreferences mPrefs;
+
+    @Inject
+    SharedPreferences mPrefs;
+
+    @Inject
+    ResourceUtils mResourceUtils;
 
     public NotificationManager(Context context) {
+        ((LocativeApplication) getApplication()).inject(this);
         mContext = context;
-        mPrefs = PreferenceManager.getDefaultSharedPreferences(mContext);
     }
 
     public void showNotification(String title, String body) {
@@ -42,13 +55,19 @@ public class NotificationManager {
     }
 
     private NotificationCompat.Builder getDefaultBuilder(String title) {
-        return new NotificationCompat.Builder(mContext)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setColor(0x29aae1)
                 .setContentTitle(title)
                 .setVibrate(new long[]{500, 500})
                 .setContentIntent(getActivityIntent())
                 .setAutoCancel(true);
+
+        if (mPrefs.getBoolean(Preferences.NOTIFICATION_SOUND, false)) {
+            builder.setSound(mResourceUtils.rawResourceUri(R.raw.notification));
+        }
+
+        return builder;
     }
 
     private android.app.NotificationManager getDefaultNotificationManager() {

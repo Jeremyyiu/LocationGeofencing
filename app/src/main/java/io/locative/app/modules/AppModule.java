@@ -12,6 +12,7 @@ import dagger.Provides;
 import io.locative.app.LocativeApplication;
 import io.locative.app.service.TriggerManager;
 import io.locative.app.notification.NotificationManager;
+import io.locative.app.utils.ResourceUtils;
 
 @Module
 public class AppModule {
@@ -22,35 +23,35 @@ public class AppModule {
         mApp = application;
     }
 
-    @SuppressWarnings("unused")
     @Provides
     @Singleton
     JsonParser getJsonParser() {
         return new JsonParser();
     }
 
-    @SuppressWarnings("unused")
     @Provides
     Context getApplicationContext() {
         return mApp;
     }
 
-    @SuppressWarnings("unused")
     @Provides
     NotificationManager provideNotificationManager(Context context) {
         return new NotificationManager(context);
     }
 
-    @SuppressWarnings("unused")
     @Provides
     TriggerManager provideTriggerManager() {
         return new TriggerManager();
     }
 
-    @SuppressWarnings("unused")
     @Provides
     @Singleton
     Bus provideBus() {
         return new Bus();
+    }
+
+    @Provides
+    ResourceUtils provideResourceUtils() {
+        return new ResourceUtils(mApp);
     }
 }

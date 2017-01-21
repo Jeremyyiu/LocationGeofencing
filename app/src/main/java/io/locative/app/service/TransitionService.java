@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
 
@@ -14,6 +15,7 @@ import javax.inject.Inject;
 import io.locative.app.LocativeApplication;
 import io.locative.app.model.Geofences;
 import io.locative.app.persistent.Storage;
+import io.locative.app.utils.Constants;
 import io.locative.app.utils.Preferences;
 
 public class TransitionService extends Service {
@@ -55,6 +57,10 @@ public class TransitionService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent == null || intent.getExtras() == null) {
+            Log.e(Constants.LOG, "Error getting intent or extras in TransitionService!!");
+            return super.onStartCommand(intent, flags, startId);
+        }
         mGeofence = (Geofences.Geofence)intent.getExtras().get(EXTRA_GEOFENCE);
         mTransitionType = intent.getIntExtra(EXTRA_TRANSITION_TYPE, 0);
         mHasRelevantUrl = intent.getBooleanExtra(EXTRA_HAS_RELEVANT_URL, false);
