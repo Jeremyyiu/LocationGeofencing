@@ -5,18 +5,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import io.locative.app.R;
 import io.locative.app.model.Geofences;
-import io.locative.app.network.LocativeService;
+import io.locative.app.service.LocativeService;
 import io.locative.app.persistent.GeofenceProvider;
 
 public class StartupBroadCastReceiver extends BroadcastReceiver {

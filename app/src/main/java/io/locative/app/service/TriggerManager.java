@@ -1,4 +1,4 @@
-package io.locative.app.network;
+package io.locative.app.service;
 
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import io.locative.app.LocativeApplication;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Geofences;
+import io.locative.app.network.RequestManager;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.Preferences;
@@ -34,7 +35,7 @@ public class TriggerManager {
         ((LocativeApplication) getApplication()).inject(this);
     }
 
-    void triggerTransition(Geofences.Geofence fence, int transitionType, boolean hasRelevantUrl) {
+    public void triggerTransition(Geofences.Geofence fence, int transitionType, boolean hasRelevantUrl) {
         if (!hasRelevantUrl) {
             // not global url is set, bail out and show classic notification
             Log.d(Constants.LOG, "Presenting classic notification for " + fence.uuid);

@@ -9,9 +9,9 @@ import io.fabric.sdk.android.Fabric;
 import io.locative.app.modules.AppModule;
 import io.locative.app.modules.NetworkingModule;
 import io.locative.app.modules.PersistencyModule;
-import io.locative.app.network.ReceiveTransitionsIntentService;
-import io.locative.app.network.TransitionService;
-import io.locative.app.network.TriggerManager;
+import io.locative.app.service.ReceiveTransitionsIntentService;
+import io.locative.app.service.TransitionService;
+import io.locative.app.service.TriggerManager;
 
 public class LocativeApplication extends Application {
 

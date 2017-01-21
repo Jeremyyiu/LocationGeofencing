@@ -1,4 +1,4 @@
-package io.locative.app.network;
+package io.locative.app.service;
 
 import android.app.IntentService;
 import android.content.ContentResolver;
@@ -6,21 +6,21 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
 
 import java.util.List;
-import java.util.Random;
 
 import javax.inject.Inject;
 
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
-import io.locative.app.model.EventType;
 import io.locative.app.model.Geofences;
+import io.locative.app.network.LocativeApiWrapper;
+import io.locative.app.network.RequestManager;
+import io.locative.app.network.SessionManager;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.persistent.Storage;

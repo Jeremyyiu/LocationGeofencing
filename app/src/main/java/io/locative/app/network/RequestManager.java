@@ -187,7 +187,7 @@ public class RequestManager {
         );
     }
 
-    void dispatchFencelog(final Geofences.Geofence geofence,
+    public void dispatchFencelog(final Geofences.Geofence geofence,
                           final EventType eventType,
                           final String httpUrl,
                           final String httpMethod,

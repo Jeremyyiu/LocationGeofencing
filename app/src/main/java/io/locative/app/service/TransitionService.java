@@ -1,4 +1,4 @@
-package io.locative.app.network;
+package io.locative.app.service;
 
 import android.app.Service;
 import android.content.Intent;

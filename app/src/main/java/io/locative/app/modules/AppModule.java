@@ -10,7 +10,7 @@ import javax.inject.Singleton;
 import dagger.Module;
 import dagger.Provides;
 import io.locative.app.LocativeApplication;
-import io.locative.app.network.TriggerManager;
+import io.locative.app.service.TriggerManager;
 import io.locative.app.notification.NotificationManager;
 
 @Module
