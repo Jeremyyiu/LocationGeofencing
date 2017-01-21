@@ -103,6 +103,10 @@ public class ReceiveTransitionsIntentService extends IntentService {
         if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER ||
                 transitionType == Geofence.GEOFENCE_TRANSITION_DWELL) {
 
+            if (fence.enterUrl != null && fence.enterUrl.length() > 0) {
+                hasRelevantUrl = true;
+            }
+
             // If trigger threshold and we're not dwelling: bail out
             if (mPreferences.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false)) {
                 if (transitionType != Geofence.GEOFENCE_TRANSITION_DWELL) {
@@ -119,15 +123,15 @@ public class ReceiveTransitionsIntentService extends IntentService {
             fence.currentlyEntered = 1;
             mStorage.insertOrUpdateFence(fence);
 
-            if (fence.enterUrl != null && fence.enterUrl.length() > 0) {
-                hasRelevantUrl = true;
-            }
-
             this.stopService(new Intent(this, TransitionService.class));
 
             mTriggerManager.triggerTransition(fence, transitionType, hasRelevantUrl);
 
         } else if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
+
+            if (fence.exitUrl != null && fence.exitUrl.length() > 0) {
+                hasRelevantUrl = true;
+            }
 
             // If trigger threshold and we haven't entered the location yet: bail out
             if (mPreferences.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false)) {
@@ -145,10 +149,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
             fence.currentlyEntered = 0;
             mStorage.insertOrUpdateFence(fence);
-
-            if (fence.exitUrl != null && fence.exitUrl.length() > 0) {
-                hasRelevantUrl = true;
-            }
 
             mTriggerManager.triggerTransition(fence, transitionType, hasRelevantUrl);
         }
