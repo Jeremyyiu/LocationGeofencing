@@ -106,8 +106,14 @@ public class ReceiveTransitionsIntentService extends IntentService {
             // If trigger threshold and we're not dwelling: bail out
             if (mPreferences.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false)) {
                 if (transitionType != Geofence.GEOFENCE_TRANSITION_DWELL) {
+                    this.stopService(new Intent(this, TransitionService.class));
                     return;
                 }
+            }
+
+            if (fence.currentlyEntered == 1) {
+                this.stopService(new Intent(this, TransitionService.class));
+                return;
             }
 
             fence.currentlyEntered = 1;
