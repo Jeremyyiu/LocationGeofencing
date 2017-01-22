@@ -112,6 +112,7 @@ public class RequestManager {
     }
 
     public void dispatch(final Geofences.Geofence geofence, final EventType eventType) {
+        final OkHttpClient.Builder clientBuilder = getClientBuilder();
 
         final String httpUsername = geofence.hasAuthentication() ?
                 geofence.httpUsername :
@@ -122,7 +123,7 @@ public class RequestManager {
                 mPreferences.getString(Preferences.HTTP_PASSWORD, "");
 
         if (httpUsername.length() > 0 && httpPassword.length() > 0) {
-            getClientBuilder().authenticator(new Authenticator() {
+            clientBuilder.authenticator(new Authenticator() {
                 @Override
                 public Request authenticate(Route route, Response response) throws IOException {
                     final String basicAuth = Credentials.basic(httpUsername, httpPassword);
@@ -131,7 +132,7 @@ public class RequestManager {
             });
         }
 
-        OkHttpClient mClient = getClientBuilder().build();
+        final OkHttpClient mClient = clientBuilder.build();
         final int method = relevantMethod(geofence, eventType);
         final RequestBody body = new FormBody.Builder()
                 .add("latitude", String.valueOf(geofence.latitude))
