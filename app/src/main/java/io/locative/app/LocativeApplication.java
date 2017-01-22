@@ -3,6 +3,7 @@ package io.locative.app;
 import android.app.Application;
 
 import com.crashlytics.android.Crashlytics;
+import com.facebook.stetho.Stetho;
 import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import io.fabric.sdk.android.Fabric;
@@ -25,6 +26,10 @@ public class LocativeApplication extends Application {
 
         if (BuildConfig.USE_CRASHLYTICS) {
             Fabric.with(this, new Crashlytics());
+        }
+
+        if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
         }
 
         mComponent = DaggerLocativeComponent.builder()

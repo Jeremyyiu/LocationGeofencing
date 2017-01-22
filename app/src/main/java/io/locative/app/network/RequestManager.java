@@ -5,12 +5,15 @@ import android.content.SharedPreferences;
 import android.os.Build;
 import android.provider.Settings;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Date;
 
 import javax.inject.Inject;
 
+import io.locative.app.BuildConfig;
 import io.locative.app.R;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
@@ -48,7 +51,14 @@ public class RequestManager {
     RequestManager() {
     }
 
-    private final OkHttpClient.Builder mClientBuilder = new OkHttpClient.Builder();
+
+    private OkHttpClient.Builder getClientBuilder() {
+        final OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        if (BuildConfig.DEBUG) {
+            clientBuilder.addNetworkInterceptor(new StethoInterceptor());
+        }
+        return clientBuilder;
+    }
 
     private String relevantUrl(final Geofences.Geofence geofence, final EventType eventType) {
         if (eventType == EventType.ENTER) {
@@ -112,7 +122,7 @@ public class RequestManager {
                 mPreferences.getString(Preferences.HTTP_PASSWORD, "");
 
         if (httpUsername.length() > 0 && httpPassword.length() > 0) {
-            mClientBuilder.authenticator(new Authenticator() {
+            getClientBuilder().authenticator(new Authenticator() {
                 @Override
                 public Request authenticate(Route route, Response response) throws IOException {
                     final String basicAuth = Credentials.basic(httpUsername, httpPassword);
@@ -121,7 +131,7 @@ public class RequestManager {
             });
         }
 
-        OkHttpClient mClient = mClientBuilder.build();
+        OkHttpClient mClient = getClientBuilder().build();
         final int method = relevantMethod(geofence, eventType);
         final RequestBody body = new FormBody.Builder()
                 .add("latitude", String.valueOf(geofence.latitude))
