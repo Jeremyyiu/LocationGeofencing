@@ -14,11 +14,13 @@ interface UrlEncoderInterface {
 
 @TargetApi(Build.VERSION_CODES.KITKAT)
 class Api19Encoder implements UrlEncoderInterface {
+    private static final String ENCODING = "utf-8";
+
     @Override
     @Nullable
     public String encode(String string) {
         try {
-            return URLEncoder.encode(string, StandardCharsets.UTF_8.toString());
+            return URLEncoder.encode(string, ENCODING);
         } catch (Exception ex) {
             return null;
         }
