@@ -1,6 +1,7 @@
 ## Locative for Android
 
-[![Slack](http://slack.locative.io/badge.svg)](http://slack.locative.io/)
+### [Locative has been discontinued, click here to read more.](http://blog.locative.io/bye-everyone-df01871fe949)
+
 [![Build Status](https://travis-ci.org/LocativeHQ/Locative-Android.svg?branch=master)](https://travis-ci.org/LocativeHQ/Locative-Android)
 
 [http://www.locative.io](http://locative.io)
