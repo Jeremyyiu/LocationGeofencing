@@ -1,6 +1,4 @@
-## Locative for Android
-
-### [Locative has been discontinued, click here to read more.](http://blog.locative.io/bye-everyone-df01871fe949)
+## Locative for Android [Discontinued, click here to read more.](http://blog.locative.io/bye-everyone-df01871fe949)
 
 [![Build Status](https://travis-ci.org/LocativeHQ/Locative-Android.svg?branch=master)](https://travis-ci.org/LocativeHQ/Locative-Android)
 
