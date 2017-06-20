@@ -78,15 +78,6 @@ public class SettingsActivity extends BaseActivity {
     @BindView(R.id.notification_sound_switch)
     Switch mNotificationSoundSwitch;
 
-    @BindView(R.id.login_button)
-    Button mLoginButton;
-
-    @BindView(R.id.signup_button)
-    Button mSignupButton;
-
-    @BindView(R.id.lostpass_button)
-    Button mLostpassButton;
-
     @BindView(R.id.trigger_threshold_enabled_switch)
     Switch mTriggerThresholdEnabled;
 
@@ -95,9 +86,6 @@ public class SettingsActivity extends BaseActivity {
 
     @BindView(R.id.trigger_threshold_notice)
     TextView mTriggerThresholdNotice;
-
-    @Inject
-    LocativeApiWrapper mLocativeNetworkingWrapper;
 
     @Inject
     RequestManager mRequestManager;
@@ -198,38 +186,6 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public void onResume() {
         super.onResume();
-
-        if (getIntent() != null && getIntent().getData() != null && getIntent().getData().getHost().equals("login")) {
-            // Login intent via redirect
-            String sessionId = getIntent().getData().getQueryParameter("token");
-            if (sessionId != null && sessionId.length() > 0) {
-                // Let's login using our token then
-                Log.d(Constants.LOG, "Login success with SessionID: " + sessionId);
-                mSessionManager.setSessionId(sessionId);
-                adjustUiToLoginState();
-                mLocativeNetworkingWrapper.doGetAccount(sessionId, new GetAccountCallback() {
-                    @Override
-                    public void onSuccess(Account account) {
-                        mSessionManager.setAccount(account);
-                    }
-
-                    @Override
-                    public void onFailure() {
-
-                    }
-                });
-            }
-        }
-
-        mLocativeNetworkingWrapper.doCheckSession(mSessionManager.getSessionId(), new CheckSessionCallback() {
-            @Override
-            public void onFinished(boolean isValid) {
-                if (!isValid) {
-                    mSessionManager.clearSession();
-                    adjustUiToLoginState();
-                }
-            }
-        });
     }
 
 
@@ -254,63 +210,17 @@ public class SettingsActivity extends BaseActivity {
         mGlobalHttpAuthPassword.setEnabled(mGlobalHttpAuthSwitch.isChecked());
     }
 
-    @OnClick(R.id.signup_button)
-    public void signup() {
-        Intent browserIntent = new Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://my.locative.io/signup")
-        );
-        startActivity(browserIntent);
-        finish();
-    }
-
-    @OnClick(R.id.login_button)
-    public void loginOrLogout() {
-        if (!mSessionManager.hasSession()) {
-            Intent browserIntent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://my.locative.io/mobile-login?origin=" + Constants.API_ORIGIN + "&sandbox=false&fcm=" + FirebaseInstanceId.getInstance().getToken())
-            );
-            startActivity(browserIntent);
-            finish();
-        } else {
-            // TODO: Implement Logout via API (needs to be implemented on Server-Side)
-            mSessionManager.clearSession();
-            adjustUiToLoginState();
-        }
-    }
-
-    @OnClick(R.id.lostpass_button)
-    public void lostPassword() {
-        Intent browserIntent = new Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://my.locative.io/lostpassword")
-        );
-        startActivity(browserIntent);
-        finish();
-    }
-
     @OnClick(R.id.send_test_button)
     public void sendTestRequest() {
 
         final String locationId = "test";
-        final String sessionId = mSessionManager.getSessionId();
 
         if (mUrlText.getText().length() == 0) {
-            if (sessionId == null) {
-                new AlertDialog.Builder(this)
-                        .setTitle(R.string.note)
-                        .setMessage(R.string.please_login_to_test_request)
-                        .setNeutralButton(R.string.ok, null)
-                        .show();
-                return;
-            }
-            Fencelog fencelog = new Fencelog();
-            fencelog.locationId = locationId;
-            fencelog.eventType = EventType.ENTER;
-            showProgressDialog(getResources().getString(R.string.please_wait));
-            mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, mNetworkingCallback);
-
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.note)
+                    .setMessage(R.string.please_login_to_test_request)
+                    .setNeutralButton(R.string.ok, null)
+                    .show();
             return;
         }
 
@@ -379,10 +289,6 @@ public class SettingsActivity extends BaseActivity {
             // User is logged in
             visibility = LinearLayout.GONE;
         }
-
-        mLoginButton.setText((visibility == LinearLayout.VISIBLE) ? "Login" : "Logout");
-        mSignupButton.setVisibility(visibility);
-        mLostpassButton.setVisibility(visibility);
     }
 
     private void simpleAlert(String msg) {

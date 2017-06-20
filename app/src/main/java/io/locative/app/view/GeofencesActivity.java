@@ -92,9 +92,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     LocativeApiWrapper mLocativeNetworkingWrapper;
 
     @Inject
-    SessionManager mSessionManager;
-
-    @Inject
     Storage mStorage;
 
     private GeofenceFragment mGeofenceFragment = null;
@@ -236,11 +233,8 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
         class DRAWER_ITEMS {
             final static int GEOFENCES = 1;
-            final static int FENCELOGS = 2;
-            final static int NOTIFICATIONS = 3;
-            final static int SETTINGS = 4;
-            final static int SUPPORT = 5;
-
+            final static int SETTINGS = 2;
+            final static int SUPPORT = 3;
         }
 
         mDrawer = new DrawerBuilder()
@@ -249,8 +243,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 .withToolbar(mToolbar)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getResources().getString(R.string.title_geofences)),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.fencelogs)),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.notifications)),
                         new PrimaryDrawerItem().withName(getResources().getString(R.string.title_settings)).withSelectable(false),
                         new PrimaryDrawerItem().withName(getResources().getString(R.string.title_support)).withSelectable(false)
                         )
@@ -294,62 +286,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                                 fragmentTag = GeofenceFragment.TAG;
                                 mFabButton.show();
                                 setTitle(getResources().getString(R.string.app_name));
-                                break;
-                            case DRAWER_ITEMS.FENCELOGS:
-                                if (!mSessionManager.hasSession()) {
-                                    // don't try to show FencelogsFragment if user is not logged in
-                                    // instead show AlertDialog and offer chance to log in / create account
-                                    new AlertDialog.Builder(self)
-                                            .setTitle(R.string.not_logged_in)
-                                            .setMessage(R.string.need_login)
-                                            .setPositiveButton(R.string.login, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    startActivity(new Intent(self, SettingsActivity.class));
-                                                }
-                                            })
-                                            .setNegativeButton(R.string.cancel, null)
-                                            .setCancelable(true)
-                                            .create().show();
-                                    cancelled = true;
-                                    break;
-                                }
-                                // in case the user is logged in, just continue as usual
-                                if (mFenceLogsFragment == null) {
-                                    mFenceLogsFragment = new FencelogsFragment();
-                                }
-                                fragment = mFenceLogsFragment;
-                                fragmentTag = FencelogsFragment.TAG;
-                                mFabButton.hide();
-                                setTitle(((PrimaryDrawerItem)drawerItem).getName().getText());
-                                break;
-                            case DRAWER_ITEMS.NOTIFICATIONS:
-                                if (!mSessionManager.hasSession()) {
-                                    // don't try to show FencelogsFragment if user is not logged in
-                                    // instead show AlertDialog and offer chance to log in / create account
-                                    new AlertDialog.Builder(self)
-                                            .setTitle(R.string.not_logged_in)
-                                            .setMessage(R.string.need_login)
-                                            .setPositiveButton(R.string.login, new DialogInterface.OnClickListener() {
-                                                @Override
-                                                public void onClick(DialogInterface dialogInterface, int i) {
-                                                    startActivity(new Intent(self, SettingsActivity.class));
-                                                }
-                                            })
-                                            .setNegativeButton(R.string.cancel, null)
-                                            .setCancelable(true)
-                                            .create().show();
-                                    cancelled = true;
-                                    break;
-                                }
-                                // in case the user is logged in, just continue as usual
-                                if (mNotificationsFragment == null) {
-                                    mNotificationsFragment = new NotificationsFragment();
-                                }
-                                fragment = mNotificationsFragment;
-                                fragmentTag = NotificationsFragment.TAG;
-                                mFabButton.hide();
-                                setTitle(((PrimaryDrawerItem)drawerItem).getName().getText());
                                 break;
                             case DRAWER_ITEMS.SETTINGS:
                                 startActivity(new Intent(self, SettingsActivity.class));
@@ -538,34 +474,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     @SuppressWarnings("unused")
     @OnClick(R.id.add_geofence)
     public void addGeofenceClick() {
-
-        if (!mSessionManager.hasSession()) {
-            // We're not logged in, automatically go to create new Geofence and omit import
-            createGeofence();
-            return;
-        }
-
-        // use is logged in, let him chose between creating or importing Geofences
-        AddGeofenceDialog geofenceDialog = AddGeofenceDialogFragment.createInstance();
-        geofenceDialog.setLocallyListener(new AddGeofenceDialogFragment.AddGeofenceResultListener() {
-            @Override
-            public void onResult() {
-                createGeofence();
-            }
-        });
-        geofenceDialog.setImportListener(new AddGeofenceDialogFragment.AddGeofenceResultListener() {
-            @Override
-            public void onResult() {
-                // TODO we better create an extra activity because currently when the user clicks back he leaves the app
-                Fragment fragment = new ImportGeofenceFragment();
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.container, fragment, "").commit();
-                setTitle(R.string.geofence_import);
-                mFabButton.hide();
-            }
-        });
-        geofenceDialog.show(getFragmentManager());
+        createGeofence();
     }
 
     private void createGeofence() {
