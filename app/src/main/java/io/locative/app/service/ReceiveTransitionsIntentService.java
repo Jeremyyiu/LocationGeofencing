@@ -18,9 +18,7 @@ import javax.inject.Inject;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.Geofences;
-import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.network.RequestManager;
-import io.locative.app.network.SessionManager;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.persistent.Storage;
@@ -31,12 +29,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
     public static final String TRANSITION_INTENT_SERVICE = "ReceiveTransitionsIntentService";
 
     private final String TAG = "TRANSITION";
-
-    @Inject
-    LocativeApiWrapper mLocativeNetworkingWrapper;
-
-    @Inject
-    SessionManager mSessionManager;
 
     @Inject
     RequestManager mRequestManager;

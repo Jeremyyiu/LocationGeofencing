@@ -4,12 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import javax.inject.Singleton;
-
 import dagger.Module;
 import dagger.Provides;
 import io.locative.app.LocativeApplication;
-import io.locative.app.network.SessionManager;
 import io.locative.app.persistent.Storage;
 
 @Module
@@ -25,12 +22,6 @@ public class PersistencyModule {
     @Provides
     Storage provideStorage(Context context) {
         return new Storage(context);
-    }
-
-    @Provides
-    @Singleton
-    SessionManager provideSessionManager() {
-        return new SessionManager(mApp.getComponent());
     }
 
     @SuppressWarnings("unused")

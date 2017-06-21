@@ -39,9 +39,6 @@ public class RequestManager {
     SharedPreferences mPreferences;
 
     @Inject
-    LocativeApiWrapper mLocativeNetworkingWrapper;
-
-    @Inject
     Context mContext;
 
     @Inject
@@ -159,19 +156,11 @@ public class RequestManager {
             @Override
             public void onFailure(Call call, IOException e) {
                 conditionallyShowFailureNotification(geofence, mContext.getString(R.string.error_http_request, mContext.getString((eventType == EventType.ENTER ? R.string.entering : R.string.exiting))));
-                dispatchFencelog(geofence, eventType, relevantUrl(geofence, eventType), fromMethod(method), 0);
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 conditionallyShowSuccessNotification(geofence, eventType, response);
-                dispatchFencelog(
-                        geofence,
-                        eventType,
-                        relevantUrl(geofence, eventType),
-                        fromMethod(method),
-                        response.code()
-                );
             }
         });
     }
@@ -196,26 +185,6 @@ public class RequestManager {
                         response.code()
                 )
         );
-    }
-
-    public void dispatchFencelog(final Geofences.Geofence geofence,
-                          final EventType eventType,
-                          final String httpUrl,
-                          final String httpMethod,
-                          final int httpResponseCode) {
-        String sessionId = mPreferences.getString(Preferences.SESSION_ID, null);
-        if (sessionId != null && eventType != null) {
-            Fencelog fencelog = new Fencelog();
-            fencelog.locationId = geofence.getRelevantId();
-            fencelog.latitude = geofence.latitude;
-            fencelog.longitude = geofence.longitude;
-            fencelog.eventType = eventType;
-            fencelog.origin = Build.MODEL;
-            fencelog.httpUrl = httpUrl;
-            fencelog.httpMethod = httpMethod;
-            fencelog.httpResponseCode = String.valueOf(httpResponseCode);
-            mLocativeNetworkingWrapper.doDispatchFencelog(sessionId, fencelog, null);
-        }
     }
 
     private String fromMethod(int method) {

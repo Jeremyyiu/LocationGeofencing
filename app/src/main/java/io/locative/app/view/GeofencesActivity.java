@@ -24,13 +24,11 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.mikepenz.iconics.IconicsDrawable;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
@@ -55,22 +53,16 @@ import io.locative.app.R;
 import io.locative.app.geo.LocativeGeocoder;
 import io.locative.app.model.Account;
 import io.locative.app.model.Geofences;
-import io.locative.app.network.LocativeApiWrapper;
-import io.locative.app.network.LocativeConnect;
-import io.locative.app.service.LocativeService;
-import io.locative.app.network.SessionManager;
-import io.locative.app.network.callback.CheckSessionCallback;
-import io.locative.app.network.callback.GetAccountCallback;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.persistent.Storage;
+import io.locative.app.service.LocativeService;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.Dialog;
 import io.locative.app.utils.Preferences;
 
 public class GeofencesActivity extends BaseActivity implements GeofenceFragment.OnFragmentInteractionListener,
-        LoaderManager.LoaderCallbacks<Cursor>, ImportGeofenceFragment.OnGeofenceSelection {
+        LoaderManager.LoaderCallbacks<Cursor> {
     public static final String NOTIFICATION_CLICK = "notification_click";
-    private final LocativeConnect connect = new LocativeConnect();
 
     private AccountHeader mHeader;
 
@@ -89,14 +81,9 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     Toolbar mToolbar;
 
     @Inject
-    LocativeApiWrapper mLocativeNetworkingWrapper;
-
-    @Inject
     Storage mStorage;
 
     private GeofenceFragment mGeofenceFragment = null;
-    private FencelogsFragment mFenceLogsFragment = null;
-    private NotificationsFragment mNotificationsFragment = null;
 
     private boolean firstResume = false; // never open drawer initially
 
@@ -128,41 +115,11 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     }
 
     private void updateDrawerHeader() {
-        if (!mSessionManager.hasSession()) {
-            // remove eventually stored session
+        if (mPrefs.getString(Preferences.ACCOUNT, null) != null) {
             mPrefs.edit().remove(Preferences.ACCOUNT).apply();
-            // update header in drawer
-            updateHeaderWithAccount(null);
-        } else {
-            updateHeaderWithAccount(mSessionManager.getAccount());
-            mLocativeNetworkingWrapper.doCheckSession(mSessionManager.getSessionId(), new CheckSessionCallback() {
-                @Override
-                public void onFinished(boolean isValid) {
-                    if (!isValid) {
-                        mSessionManager.clearSession();
-                        return;
-                    }
-                    mLocativeNetworkingWrapper.doGetAccount(mSessionManager.getSessionId(), new GetAccountCallback() {
-                        @Override
-                        public void onSuccess(Account account) {
-                            // Store account object so we don't show an empty / logged out state
-                            // when e.g. rotating the device
-                            mSessionManager.setAccount(account);
-                            // apply profile to drawer
-                            updateHeaderWithAccount(account);
-                        }
-
-                        @Override
-                        public void onFailure() {
-                            // ignore errors for now
-                            // todo: we should probably propagate a reason here
-                            // in case the session is invalid we should remove the stored account
-                        }
-                    });
-                }
-            });
-
         }
+        // update header in drawer
+        updateHeaderWithAccount(null);
     }
 
     private void setupDrawer() {
@@ -234,7 +191,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
         class DRAWER_ITEMS {
             final static int GEOFENCES = 1;
             final static int SETTINGS = 2;
-            final static int SUPPORT = 3;
         }
 
         mDrawer = new DrawerBuilder()
@@ -243,8 +199,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 .withToolbar(mToolbar)
                 .addDrawerItems(
                         new PrimaryDrawerItem().withName(getResources().getString(R.string.title_geofences)),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.title_settings)).withSelectable(false),
-                        new PrimaryDrawerItem().withName(getResources().getString(R.string.title_support)).withSelectable(false)
+                        new PrimaryDrawerItem().withName(getResources().getString(R.string.title_settings)).withSelectable(false)
                         )
                 .withOnDrawerListener(new Drawer.OnDrawerListener() {
                     @Override
@@ -290,10 +245,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                             case DRAWER_ITEMS.SETTINGS:
                                 startActivity(new Intent(self, SettingsActivity.class));
                                 break;
-                            case DRAWER_ITEMS.SUPPORT:
-                                startActivity(new Intent(Intent.ACTION_VIEW).setData(Uri.parse(Constants.SUPPORT_URI)));
-                                mDrawer.closeDrawer();
-                                break;
                             default:
                                 break;
                         }
@@ -335,18 +286,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
             firstResume = true;
         }*/
 
-        if (getIntent() != null) {
-            Intent intent = getIntent();
-            if (intent.getBooleanExtra(NOTIFICATION_CLICK, false)) {
-                if (mFenceLogsFragment == null)
-                    mFenceLogsFragment = new FencelogsFragment();
-                FragmentManager fragmentManager = getFragmentManager();
-                FragmentTransaction transaction = fragmentManager.beginTransaction();
-                transaction.replace(R.id.container, mFenceLogsFragment, "").commit();
-                mFabButton.hide();
-            }
-        }
-
         if (mToolbar != null) {
             mToolbar.setNavigationIcon(R.drawable.ic_menu_white_24px);
             mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -375,9 +314,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     protected void onStart() {
         super.onStart();
 
-        // FCM token
-        updateFcmToken();
-
         FragmentManager fragman = getFragmentManager();
         switch (fragmentTag) {
             case GeofenceFragment.TAG: {
@@ -390,30 +326,7 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 }
                 break;
             }
-            case FencelogsFragment.TAG: {
-                Fragment f = fragman.getFragment(new Bundle(), FencelogsFragment.TAG);
-                if (mFenceLogsFragment == null)
-                    mFenceLogsFragment = f != null ? (FencelogsFragment) f : new FencelogsFragment();
-                fragman.beginTransaction().replace(R.id.container, mFenceLogsFragment, FencelogsFragment.TAG).commit();
-                break;
-            }
-            case NotificationsFragment.TAG: {
-                Fragment f = fragman.getFragment(new Bundle(), NotificationsFragment.TAG);
-                if (mNotificationsFragment == null)
-                    mNotificationsFragment = f != null ? (NotificationsFragment) f : new NotificationsFragment();
-                fragman.beginTransaction().replace(R.id.container, mNotificationsFragment, NotificationsFragment.TAG).commit();
-                break;
-            }
         }
-    }
-
-    private void updateFcmToken() {
-        String token = FirebaseInstanceId.getInstance().getToken();
-        Log.d(Constants.LOG, "FCM Token: " + token);
-        if (token == null) {
-            return;
-        }
-        connect.updateSession(mSessionManager.getSessionId(), token, false);
     }
 
     public void load() {

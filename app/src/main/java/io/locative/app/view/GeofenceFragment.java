@@ -21,7 +21,6 @@ import java.util.List;
 
 import io.locative.app.R;
 import io.locative.app.model.Geofences;
-import io.locative.app.network.LocativeApiWrapper;
 import io.locative.app.utils.Constants;
 
 /**

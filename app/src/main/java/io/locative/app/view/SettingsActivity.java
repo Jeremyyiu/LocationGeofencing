@@ -32,21 +32,13 @@ import io.locative.app.model.Account;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Fencelog;
 import io.locative.app.model.Geofences;
-import io.locative.app.network.LocativeApiWrapper;
-import io.locative.app.network.LocativeNetworkingAdapter;
-import io.locative.app.network.LocativeNetworkingCallback;
 import io.locative.app.network.RequestManager;
-import io.locative.app.network.callback.CheckSessionCallback;
-import io.locative.app.network.callback.GetAccountCallback;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.Preferences;
 
 public class SettingsActivity extends BaseActivity {
 
     private Constants.HttpMethod mHttpMethod = Constants.HttpMethod.POST;
-
-    private ProgressDialog mProgressDialog = null;
-    private LocativeNetworkingCallback mNetworkingCallback;
 
     @BindView(R.id.global_http_url)
     EditText mUrlText;
@@ -133,8 +125,6 @@ public class SettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         ((LocativeApplication) getApplication()).getComponent().inject(this);
 
-        adjustUiToLoginState();
-
         mUrlText.setText(mPrefs.getString(Preferences.HTTP_URL, null));
         mGlobalHttpMethodButton.setText(
                 mPrefs.getInt(Preferences.HTTP_METHOD, 0) == 0 ? "POST" : "GET"
@@ -151,15 +141,6 @@ public class SettingsActivity extends BaseActivity {
         mNotificationOnlyLatestSwitch.setChecked(mPrefs.getBoolean(Preferences.NOTIFICATION_SHOW_ONLY_LATEST, false));
         mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(Preferences.NOTIFICATION_SOUND, false));
         mHttpMethod = (Constants.HttpMethod.POST.ordinal() == mPrefs.getInt(Preferences.HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
-
-        mNetworkingCallback = new LocativeNetworkingAdapter() {
-            @Override
-            public void onDispatchFencelogFinished(boolean success) {
-                mProgressDialog.dismiss();
-                simpleAlert(success ? "Your Fencelog was submitted successfully!" : "There was an error submitting your Fencelog.");
-            }
-        };
-
     }
 
     @Override
@@ -270,31 +251,6 @@ public class SettingsActivity extends BaseActivity {
                         mHttpMethod = Constants.HttpMethod.GET;
                     }
                 })
-                .show();
-    }
-
-
-    private void showProgressDialog(String message) {
-        mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setTitle(R.string.loading);
-        mProgressDialog.setMessage(message);
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.show();
-    }
-
-    private void adjustUiToLoginState() {
-        int visibility = LinearLayout.VISIBLE;
-
-        if (mSessionManager.hasSession()) {
-            // User is logged in
-            visibility = LinearLayout.GONE;
-        }
-    }
-
-    private void simpleAlert(String msg) {
-        new AlertDialog.Builder(this)
-                .setMessage(msg)
-                .setNeutralButton("OK", null)
                 .show();
     }
 

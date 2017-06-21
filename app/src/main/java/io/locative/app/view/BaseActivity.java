@@ -21,14 +21,12 @@ import io.locative.app.R;
 import javax.inject.Inject;
 
 import io.locative.app.LocativeApplication;
-import io.locative.app.network.SessionManager;
 
 public abstract class BaseActivity extends AppCompatActivity {
   @BindView(R.id.toolbar_actionbar) protected Toolbar mToolbar;
 
   @BindString(R.string.error_permission_refused) String error_permission_refused;
 
-  @Inject protected SessionManager mSessionManager;
   @Inject protected SharedPreferences mPrefs;
 
   private static final int REQUEST_FINE_LOCATION = 1;

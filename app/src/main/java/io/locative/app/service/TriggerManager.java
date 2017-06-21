@@ -46,14 +46,6 @@ public class TriggerManager {
                         transitionType
                 );
             }
-            Log.d(Constants.LOG, "Dispatching Fencelog for " + fence.uuid);
-            mRequestManager.dispatchFencelog(
-                    fence,
-                    getEventType(transitionType),
-                    null,
-                    null,
-                    0
-            );
         } else {
             Log.d(Constants.LOG, "Dispatching Request for " + fence.uuid);
             mRequestManager.dispatch(fence, getEventType(transitionType));
