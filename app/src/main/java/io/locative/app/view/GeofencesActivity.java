@@ -94,7 +94,6 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
     private ProfileDrawerItem getEmptyProfileDrawerItem() {
         return new ProfileDrawerItem()
                 .withIdentifier(0)
-                .withName(getString(R.string.drawer_header_username_placeholder))
                 .withIcon(ContextCompat.getDrawable(this, R.drawable.logo_round_512px));
     }
 

@@ -75,9 +75,6 @@
     <string name="left">left</string>
     <string name="visited">visited</string>
 
-    <!-- Drawer -->
-    <string name="drawer_header_username_placeholder">Click here to log in</string>
-
     <!-- Trigger Errors -->
     <string name="trigger_error_invalid_url_notification">Webhook could not be sent. Invalid URL.</string>
 </resources>
