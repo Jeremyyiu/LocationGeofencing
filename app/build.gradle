@@ -32,8 +32,8 @@ android {
         applicationId "io.locative.app"
         minSdkVersion 16
         targetSdkVersion 25
-        versionCode 34
-        versionName "3.0.0"
+        versionCode 35
+        versionName "3.0.1"
         multiDexEnabled true
     }
 
