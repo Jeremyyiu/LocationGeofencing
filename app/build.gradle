@@ -1,20 +1,19 @@
 buildscript {
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.0'
         classpath 'io.fabric.tools:gradle:1.+'
         classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
     }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'android-apt'
 apply plugin: 'io.fabric'
-apply plugin: 'com.neenbedankt.android-apt'
 
 repositories {
     jcenter()
     maven { url 'https://maven.fabric.io/public' }
     maven { url "https://jitpack.io" }
+    google()
 }
 
 allprojects {
@@ -27,7 +26,7 @@ allprojects {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.1'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "io.locative.app"
@@ -75,18 +74,6 @@ buildscript {
         mavenCentral()
         maven { url 'https://maven.fabric.io/public' }
     }
-    dependencies {
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
-    }
-}
-
-apt {
-    arguments {
-        // applicationId != package in our case (package has .app)
-        //resourcePackageName android.defaultConfig.applicationId
-        resourcePackageName "io.locative.app"
-        androidManifestFile variant.outputs[0]?.processResources?.manifestFile
-    }
 }
 
 def butterknifeVersion = '8.2.1'
@@ -96,10 +83,10 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     compile "com.jakewharton:butterknife:$butterknifeVersion"
-    apt "com.jakewharton:butterknife-compiler:$butterknifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterknifeVersion"
 
     compile "com.google.dagger:dagger:$daggerVersion"
-    apt "com.google.dagger:dagger-compiler:$daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 
     compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
         transitive = true;

@@ -3,6 +3,7 @@ allprojects {
         repositories {
             mavenCentral()
             jcenter()
+            google()
         }
         dependencies {
             classpath 'com.google.gms:google-services:3.0.0'
