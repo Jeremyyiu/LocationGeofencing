@@ -18,7 +18,6 @@ import javax.inject.Inject;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.model.Geofences;
-import io.locative.app.network.RequestManager;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.persistent.Storage;
@@ -29,9 +28,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
     public static final String TRANSITION_INTENT_SERVICE = "ReceiveTransitionsIntentService";
 
     private final String TAG = "TRANSITION";
-
-    @Inject
-    RequestManager mRequestManager;
 
     @Inject
     SharedPreferences mPreferences;
@@ -91,13 +87,8 @@ public class ReceiveTransitionsIntentService extends IntentService {
         Geofences.Geofence fence = GeofenceProvider.fromCursor(cursor);
         cursor.close();
 
-        boolean hasRelevantUrl = mPreferences.getString(Preferences.HTTP_URL, "").length() > 0;
         if (transitionType == Geofence.GEOFENCE_TRANSITION_ENTER ||
                 transitionType == Geofence.GEOFENCE_TRANSITION_DWELL) {
-
-            if (fence.enterUrl != null && fence.enterUrl.length() > 0) {
-                hasRelevantUrl = true;
-            }
 
             // If trigger threshold and we're not dwelling: bail out
             if (mPreferences.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false)) {
@@ -117,13 +108,9 @@ public class ReceiveTransitionsIntentService extends IntentService {
 
             this.stopService(new Intent(this, TransitionService.class));
 
-            mTriggerManager.triggerTransition(fence, transitionType, hasRelevantUrl);
+            mTriggerManager.triggerTransition(fence, transitionType);
 
         } else if (transitionType == Geofence.GEOFENCE_TRANSITION_EXIT) {
-
-            if (fence.exitUrl != null && fence.exitUrl.length() > 0) {
-                hasRelevantUrl = true;
-            }
 
             // If trigger threshold and we haven't entered the location yet: bail out
             if (mPreferences.getBoolean(Preferences.TRIGGER_THRESHOLD_ENABLED, false)) {
@@ -134,7 +121,6 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 Intent service = new Intent(this, TransitionService.class);
                 service.putExtra(TransitionService.EXTRA_GEOFENCE, fence);
                 service.putExtra(TransitionService.EXTRA_TRANSITION_TYPE, transitionType);
-                service.putExtra(TransitionService.EXTRA_HAS_RELEVANT_URL, hasRelevantUrl);
                 this.startService(service);
                 return;
             }
@@ -142,7 +128,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
             fence.currentlyEntered = 0;
             mStorage.insertOrUpdateFence(fence);
 
-            mTriggerManager.triggerTransition(fence, transitionType, hasRelevantUrl);
+            mTriggerManager.triggerTransition(fence, transitionType);
         }
     }
 

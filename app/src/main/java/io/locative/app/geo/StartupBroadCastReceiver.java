@@ -13,12 +13,13 @@ import java.util.ArrayList;
 
 import io.locative.app.R;
 import io.locative.app.model.Geofences;
-import io.locative.app.service.LocativeService;
 import io.locative.app.persistent.GeofenceProvider;
+import io.locative.app.service.LocativeService;
 
 public class StartupBroadCastReceiver extends BroadcastReceiver {
 
     public static final String TAG = "Locative";
+
     @Override
     public void onReceive(final Context context, final Intent intent) {
         Log.i(TAG, "Starting Locative service.");
@@ -33,7 +34,7 @@ public class StartupBroadCastReceiver extends BroadcastReceiver {
                 if (data != null) {
                     while (data.moveToNext()) {
                         Geofences.Geofence item = GeofenceProvider.fromCursor(data);
-                        Log.i(TAG, "Found geofence " +item.uuid);
+                        Log.i(TAG, "Found geofence " + item.uuid);
                         items.add(item);
                     }
                 }

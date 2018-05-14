@@ -8,7 +8,6 @@ import com.jakewharton.threetenabp.AndroidThreeTen;
 
 import io.fabric.sdk.android.Fabric;
 import io.locative.app.modules.AppModule;
-import io.locative.app.modules.NetworkingModule;
 import io.locative.app.modules.PersistencyModule;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.service.ReceiveTransitionsIntentService;
@@ -34,7 +33,6 @@ public class LocativeApplication extends Application {
 
         mComponent = DaggerLocativeComponent.builder()
                 .appModule(new AppModule(this))
-                .networkingModule(new NetworkingModule())
                 .persistencyModule(new PersistencyModule(this))
                 .build();
         AndroidThreeTen.init(this);

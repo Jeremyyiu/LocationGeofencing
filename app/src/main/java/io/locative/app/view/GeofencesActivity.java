@@ -18,9 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
@@ -51,12 +49,10 @@ import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
 import io.locative.app.geo.LocativeGeocoder;
-import io.locative.app.model.Account;
 import io.locative.app.model.Geofences;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.persistent.Storage;
 import io.locative.app.service.LocativeService;
-import io.locative.app.utils.Constants;
 import io.locative.app.utils.Dialog;
 import io.locative.app.utils.Preferences;
 
@@ -68,8 +64,8 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
 
     private Drawer mDrawer;
 
-    @BindView(R.id.nav_view)
-    NavigationView mNavigationView;
+    //@BindView(R.id.nav_view)
+    //NavigationView mNavigationView;
 
     @BindView(R.id.container)
     FrameLayout mContentFrame;
@@ -97,28 +93,10 @@ public class GeofencesActivity extends BaseActivity implements GeofenceFragment.
                 .withIcon(ContextCompat.getDrawable(this, R.drawable.logo_round_512px));
     }
 
-    private void updateHeaderWithAccount(@Nullable Account account) {
-        if (account == null) {
-            mHeader.updateProfile(
-                    getEmptyProfileDrawerItem()
-            );
-            return;
-        }
-        mHeader.updateProfile(
-                new ProfileDrawerItem()
-                        .withIdentifier(0)
-                        .withName(account.getUsername())
-                        .withEmail(account.getEmail())
-                        .withIcon(account.getAvatarUrl())
-        );
-    }
-
     private void updateDrawerHeader() {
         if (mPrefs.getString(Preferences.ACCOUNT, null) != null) {
             mPrefs.edit().remove(Preferences.ACCOUNT).apply();
         }
-        // update header in drawer
-        updateHeaderWithAccount(null);
     }
 
     private void setupDrawer() {

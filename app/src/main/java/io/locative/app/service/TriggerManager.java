@@ -13,7 +13,6 @@ import javax.inject.Inject;
 import io.locative.app.LocativeApplication;
 import io.locative.app.model.EventType;
 import io.locative.app.model.Geofences;
-import io.locative.app.network.RequestManager;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.Preferences;
@@ -21,9 +20,6 @@ import io.locative.app.utils.Preferences;
 import static io.locative.app.LocativeApplication.getApplication;
 
 public class TriggerManager {
-
-    @Inject
-    RequestManager mRequestManager;
 
     @Inject
     SharedPreferences mPreferences;
@@ -35,20 +31,15 @@ public class TriggerManager {
         ((LocativeApplication) getApplication()).inject(this);
     }
 
-    public void triggerTransition(Geofences.Geofence fence, int transitionType, boolean hasRelevantUrl) {
-        if (!hasRelevantUrl) {
-            // not global url is set, bail out and show classic notification
-            Log.d(Constants.LOG, "Presenting classic notification for " + fence.uuid);
-            if (mPreferences.getBoolean(Preferences.NOTIFICATION_SUCCESS, false)) {
-                mNotificationManager.showNotification(
-                        fence.getRelevantId(),
-                        new Random().nextInt(),
-                        transitionType
-                );
-            }
-        } else {
-            Log.d(Constants.LOG, "Dispatching Request for " + fence.uuid);
-            mRequestManager.dispatch(fence, getEventType(transitionType));
+    public void triggerTransition(Geofences.Geofence fence, int transitionType) {
+        // not global url is set, bail out and show classic notification
+        Log.d(Constants.LOG, "Presenting classic notification for " + fence.uuid);
+        if (mPreferences.getBoolean(Preferences.NOTIFICATION_SUCCESS, false)) {
+            mNotificationManager.showNotification(
+                    fence.getRelevantId(),
+                    new Random().nextInt(),
+                    transitionType
+            );
         }
     }
 

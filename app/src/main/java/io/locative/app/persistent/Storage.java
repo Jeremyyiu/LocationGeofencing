@@ -65,13 +65,8 @@ public class Storage {
         values.put(GeofenceProvider.Geofence.KEY_RADIUS, fence.radiusMeters);
         values.put(GeofenceProvider.Geofence.KEY_CUSTOMID, fence.customId);
         values.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, fence.enterMethod);
-        values.put(GeofenceProvider.Geofence.KEY_ENTER_URL, fence.enterUrl);
         values.put(GeofenceProvider.Geofence.KEY_TRIGGER, fence.triggers);
         values.put(GeofenceProvider.Geofence.KEY_EXIT_METHOD, fence.exitMethod);
-        values.put(GeofenceProvider.Geofence.KEY_EXIT_URL, fence.exitUrl);
-        values.put(GeofenceProvider.Geofence.KEY_HTTP_AUTH, fence.httpAuth);
-        values.put(GeofenceProvider.Geofence.KEY_HTTP_USERNAME, fence.httpUsername);
-        values.put(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD, fence.httpPassword);
         values.put(GeofenceProvider.Geofence.KEY_LATITUDE, fence.latitude);
         values.put(GeofenceProvider.Geofence.KEY_LONGITUDE, fence.longitude);
         values.put(GeofenceProvider.Geofence.KEY_CURRENTLY_ENTERED, fence.currentlyEntered);

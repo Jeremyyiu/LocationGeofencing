@@ -4,7 +4,6 @@ import javax.inject.Singleton;
 
 import dagger.Component;
 import io.locative.app.modules.AppModule;
-import io.locative.app.modules.NetworkingModule;
 import io.locative.app.modules.PersistencyModule;
 import io.locative.app.notification.NotificationManager;
 import io.locative.app.service.ReceiveTransitionsIntentService;
@@ -16,7 +15,7 @@ import io.locative.app.view.GeofencesActivity;
 import io.locative.app.view.SettingsActivity;
 
 @Singleton
-@Component(modules = {AppModule.class, NetworkingModule.class, PersistencyModule.class})
+@Component(modules = {AppModule.class, PersistencyModule.class})
 public interface LocativeComponent {
     void inject(ReceiveTransitionsIntentService object);
     void inject(GeofencesActivity object);

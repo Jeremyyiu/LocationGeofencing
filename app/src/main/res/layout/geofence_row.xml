@@ -40,6 +40,6 @@
         android:textSize="10dp"
         android:layout_marginTop="1dp"
         android:layout_toRightOf="@+id/thumbnail"
-        android:text="http://myserver.com/geo/checkin" />
+        android:text="ID number" />
 
 </RelativeLayout>

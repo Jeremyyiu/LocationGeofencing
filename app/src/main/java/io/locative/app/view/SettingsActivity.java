@@ -1,62 +1,21 @@
 package io.locative.app.view;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-
-import java.util.UUID;
-
-import javax.inject.Inject;
-
 import butterknife.BindView;
-import butterknife.OnClick;
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
-import io.locative.app.model.Account;
-import io.locative.app.model.EventType;
-import io.locative.app.model.Fencelog;
-import io.locative.app.model.Geofences;
-import io.locative.app.network.RequestManager;
-import io.locative.app.utils.Constants;
 import io.locative.app.utils.Preferences;
 
 public class SettingsActivity extends BaseActivity {
-
-    private Constants.HttpMethod mHttpMethod = Constants.HttpMethod.POST;
-
-    @BindView(R.id.global_http_url)
-    EditText mUrlText;
-
-    @BindView(R.id.global_http_method_button)
-    Button mGlobalHttpMethodButton;
-
-    @BindView(R.id.global_auth_switch)
-    Switch mGlobalHttpAuthSwitch;
-
-    @BindView(R.id.global_auth_username)
-    EditText mGlobalHttpAuthUsername;
-
-    @BindView(R.id.global_auth_password)
-    EditText mGlobalHttpAuthPassword;
-
-    @BindView(R.id.send_test_button)
-    Button mSendTestButton;
 
     @BindView(R.id.notification_success_switch)
     Switch mNotificationSuccessSwitch;
@@ -79,8 +38,6 @@ public class SettingsActivity extends BaseActivity {
     @BindView(R.id.trigger_threshold_notice)
     TextView mTriggerThresholdNotice;
 
-    @Inject
-    RequestManager mRequestManager;
 
     private void updateThresholdNotice() {
         if (mTriggerThresholdEnabled.isChecked()) {
@@ -125,22 +82,11 @@ public class SettingsActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         ((LocativeApplication) getApplication()).getComponent().inject(this);
 
-        mUrlText.setText(mPrefs.getString(Preferences.HTTP_URL, null));
-        mGlobalHttpMethodButton.setText(
-                mPrefs.getInt(Preferences.HTTP_METHOD, 0) == 0 ? "POST" : "GET"
-        );
-        mGlobalHttpAuthSwitch.setChecked(
-                mPrefs.getBoolean(Preferences.HTTP_AUTH, false)
-        );
-        switchHttpAuth();
-
-        mGlobalHttpAuthUsername.setText(mPrefs.getString(Preferences.HTTP_USERNAME, null));
-        mGlobalHttpAuthPassword.setText(mPrefs.getString(Preferences.HTTP_PASSWORD, null));
         mNotificationSuccessSwitch.setChecked(mPrefs.getBoolean(Preferences.NOTIFICATION_SUCCESS, false));
         mNotificationFailSwitch.setChecked(mPrefs.getBoolean(Preferences.NOTIFICATION_FAIL, false));
         mNotificationOnlyLatestSwitch.setChecked(mPrefs.getBoolean(Preferences.NOTIFICATION_SHOW_ONLY_LATEST, false));
         mNotificationSoundSwitch.setChecked(mPrefs.getBoolean(Preferences.NOTIFICATION_SOUND, false));
-        mHttpMethod = (Constants.HttpMethod.POST.ordinal() == mPrefs.getInt(Preferences.HTTP_METHOD, 0)) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
+
     }
 
     @Override
@@ -185,82 +131,8 @@ public class SettingsActivity extends BaseActivity {
         return R.menu.settings;
     }
 
-    @OnClick(R.id.global_auth_switch)
-    public void switchHttpAuth() {
-        mGlobalHttpAuthUsername.setEnabled(mGlobalHttpAuthSwitch.isChecked());
-        mGlobalHttpAuthPassword.setEnabled(mGlobalHttpAuthSwitch.isChecked());
-    }
-
-    @OnClick(R.id.send_test_button)
-    public void sendTestRequest() {
-
-        final String locationId = "test";
-
-        if (mUrlText.getText().length() == 0) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.note)
-                    .setMessage(R.string.please_login_to_test_request)
-                    .setNeutralButton(R.string.ok, null)
-                    .show();
-            return;
-        }
-
-        Geofences.Geofence geofence = new Geofences.Geofence(
-                UUID.randomUUID().toString(), // ID
-                locationId, // Custom ID
-                "Test Location", // Name
-                0, // Triggers
-                0.00f, // Lat
-                0.00f, // Lng
-                50, // Radius
-                0, // Auth
-                null, // Auth User
-                null, // Auth Passwd
-                0, // Enter Method
-                null, // Enter Url
-                0, // Exit Method
-                null, // Exit Url
-                0 // Currently Entered
-        );
-
-        mRequestManager.dispatch(geofence, EventType.ENTER);
-
-        new AlertDialog.Builder(this)
-                .setTitle(R.string.note)
-                .setMessage(R.string.test_request_sent_message)
-                .setNeutralButton(R.string.ok, null)
-                .show();
-    }
-
-    @OnClick(R.id.global_http_method_button)
-    public void selectMethodForTriggerType() {
-
-        new AlertDialog.Builder(this)
-                .setMessage("Choose HTTP Method")
-                .setPositiveButton("POST", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mGlobalHttpMethodButton.setText("POST");
-                        mHttpMethod = Constants.HttpMethod.POST;
-                    }
-                })
-                .setNeutralButton("GET", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        mGlobalHttpMethodButton.setText("GET");
-                        mHttpMethod = Constants.HttpMethod.GET;
-                    }
-                })
-                .show();
-    }
-
     private void save(boolean finish) {
         SharedPreferences.Editor editor = mPrefs.edit();
-        editor.putString(Preferences.HTTP_URL, mUrlText.getText().toString());
-        editor.putInt(Preferences.HTTP_METHOD, mHttpMethod.ordinal());
-        editor.putBoolean(Preferences.HTTP_AUTH, mGlobalHttpAuthSwitch.isChecked());
-        editor.putString(Preferences.HTTP_USERNAME, mGlobalHttpAuthUsername.getText().toString());
-        editor.putString(Preferences.HTTP_PASSWORD, mGlobalHttpAuthPassword.getText().toString());
         editor.putBoolean(Preferences.NOTIFICATION_SUCCESS, mNotificationSuccessSwitch.isChecked());
         editor.putBoolean(Preferences.NOTIFICATION_FAIL, mNotificationFailSwitch.isChecked());
         editor.putBoolean(Preferences.NOTIFICATION_SHOW_ONLY_LATEST, mNotificationOnlyLatestSwitch.isChecked());

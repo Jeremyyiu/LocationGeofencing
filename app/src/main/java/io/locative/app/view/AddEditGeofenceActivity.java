@@ -54,7 +54,6 @@ import io.locative.app.map.WorkaroundMapFragment;
 import io.locative.app.persistent.GeofenceProvider;
 import io.locative.app.utils.Constants;
 import io.locative.app.utils.GeocodeHandler;
-import io.locative.app.utils.UrlValidator;
 
 public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyCallback {
 
@@ -75,32 +74,11 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     @BindView(R.id.trigger_exit)
     Switch mTriggerExit;
 
-    @BindView(R.id.enter_method_button)
-    Button mEnterMethodButton;
-
-    @BindView(R.id.enter_url_text)
-    EditText mEnterUrl;
-
-    @BindView(R.id.exit_method_button)
-    Button mExitMethodButton;
-
-    @BindView(R.id.exit_url_text)
-    EditText mExitUrl;
-
     @BindView(R.id.radius_slider)
     SeekBar mRadiusSlider;
 
     @BindView(R.id.radius_label)
     TextView mRadiusLabel;
-
-    @BindView(R.id.basic_auth_switch)
-    Switch mBasicAuthSwitch;
-
-    @BindView(R.id.basic_auth_username)
-    EditText mBasicAuthUsername;
-
-    @BindView(R.id.basic_auth_password)
-    EditText mBasicAuthPassword;
 
     @BindView(R.id.scrollView)
     NestedScrollView mScrollView;
@@ -182,8 +160,14 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     }
 
 
+    /**
+     * Allows the user to enter an address manually, this moves the marker automatically to the
+     * location.
+     *
+     * @param view
+     */
     @SuppressWarnings("unsed")
-    @OnClick({R.id.address_button, R.id.enter_method_button, R.id.exit_method_button})
+    @OnClick(R.id.address_button)
     public void onButtonClick(View view) {
         int id = view.getId();
         switch (id) {
@@ -207,16 +191,9 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
                         })
                         .show();
                 break;
-            case R.id.enter_method_button:
-                selectMethodForTriggerType(Constants.TriggerType.ARRIVAL);
-                break;
-            case R.id.exit_method_button:
-                selectMethodForTriggerType(Constants.TriggerType.DEPARTURE);
-                break;
         }
-
-
     }
+
 
     /**
      * Manipulates the map once available.
@@ -262,20 +239,6 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
                 int triggers = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_TRIGGER));
                 mTriggerEnter.setChecked(((triggers & GeofenceProvider.TRIGGER_ON_ENTER) == GeofenceProvider.TRIGGER_ON_ENTER));
                 mTriggerExit.setChecked(((triggers & GeofenceProvider.TRIGGER_ON_EXIT) == GeofenceProvider.TRIGGER_ON_EXIT));
-
-                int enterMethod = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_ENTER_METHOD));
-                mEnterMethodButton.setText(enterMethod == 0 ? "POST" : "GET");
-                mEnterMethod = (Constants.HttpMethod.POST.ordinal() == enterMethod) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
-                mEnterUrl.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_ENTER_URL)));
-
-                int exitMethod = cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_EXIT_METHOD));
-                mExitMethodButton.setText(exitMethod == 0 ? "POST" : "GET");
-                mExitMethod = (Constants.HttpMethod.POST.ordinal() == enterMethod) ? Constants.HttpMethod.POST : Constants.HttpMethod.GET;
-                mExitUrl.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_EXIT_URL)));
-
-                mBasicAuthSwitch.setChecked(cursor.getInt(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_HTTP_AUTH)) != 0);
-                mBasicAuthUsername.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_HTTP_USERNAME)));
-                mBasicAuthPassword.setText(cursor.getString(cursor.getColumnIndex(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD)));
             }
         }
 
@@ -344,11 +307,6 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         int id = item.getItemId();
         if (id == R.id.action_save) {
 
-            // Bail out ealy if webhook urls are borked
-            if (!validateUrls()) {
-                return false;
-            }
-
             // Save Geofence / Add new one
             if (!mAddressIsDirty) {
                 this.save(true);
@@ -373,36 +331,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         return super.onOptionsItemSelected(item);
     }
 
-    private boolean validateUrls() {
-        // Check for valid 'Enter' URL, or bail out.
-        if (mEnterUrl.getText().length() > 0 &&
-                !new UrlValidator(mEnterUrl.getText().toString()).validate()) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.save_error_title)
-                    .setMessage(R.string.save_error_invalid_enter_url)
-                    .setNeutralButton(R.string.ok, null)
-                    .show();
-            return false;
-        }
-
-        // Check for valid 'Exit' URL, or bail out.
-        if (mExitUrl.getText().length() > 0 &&
-                !new UrlValidator(mExitUrl.getText().toString()).validate()) {
-            new AlertDialog.Builder(this)
-                    .setTitle(R.string.save_error_title)
-                    .setMessage(R.string.save_error_invalid_exit_url)
-                    .setNeutralButton(R.string.ok, null)
-                    .show();
-            return false;
-        }
-        return true;
-    }
-
     public void save(boolean finish) {
-
-        if (!validateUrls()) {
-            return;
-        }
 
         Log.i(Constants.LOG, "Saved #1: " + mSaved);
 
@@ -443,13 +372,8 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         values.put(GeofenceProvider.Geofence.KEY_RADIUS, mCircle.getRadius()); // in meters
         values.put(GeofenceProvider.Geofence.KEY_CUSTOMID, custom_id);
         values.put(GeofenceProvider.Geofence.KEY_ENTER_METHOD, this.methodForTriggerType(Constants.TriggerType.ARRIVAL).ordinal());
-        values.put(GeofenceProvider.Geofence.KEY_ENTER_URL, mEnterUrl.getText().toString());
         values.put(GeofenceProvider.Geofence.KEY_TRIGGER, triggers);
         values.put(GeofenceProvider.Geofence.KEY_EXIT_METHOD, this.methodForTriggerType(Constants.TriggerType.DEPARTURE).ordinal());
-        values.put(GeofenceProvider.Geofence.KEY_EXIT_URL, mExitUrl.getText().toString());
-        values.put(GeofenceProvider.Geofence.KEY_HTTP_AUTH, mBasicAuthSwitch.isChecked() ? 1 : 0);
-        values.put(GeofenceProvider.Geofence.KEY_HTTP_USERNAME, mBasicAuthUsername.getText().toString());
-        values.put(GeofenceProvider.Geofence.KEY_HTTP_PASSWORD, mBasicAuthPassword.getText().toString());
         values.put(GeofenceProvider.Geofence.KEY_LATITUDE, mCircle.getCenter().latitude);
         values.put(GeofenceProvider.Geofence.KEY_LONGITUDE, mCircle.getCenter().longitude);
 
@@ -607,38 +531,6 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
         }
     }
 
-    private void selectMethodForTriggerType(final Constants.TriggerType t) {
-
-        new AlertDialog.Builder(this)
-                .setMessage("Choose HTTP Method")
-                .setPositiveButton("POST", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (t == Constants.TriggerType.ARRIVAL) {
-                            mEnterMethodButton.setText("POST");
-                            mEnterMethod = Constants.HttpMethod.POST;
-                        } else {
-                            mExitMethodButton.setText("POST");
-                            mExitMethod = Constants.HttpMethod.POST;
-                        }
-                        dialog.dismiss();
-                    }
-                })
-                .setNeutralButton("GET", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (t == Constants.TriggerType.ARRIVAL) {
-                            mEnterMethodButton.setText("GET");
-                            mEnterMethod = Constants.HttpMethod.GET;
-                        } else {
-                            mExitMethodButton.setText("GET");
-                            mExitMethod = Constants.HttpMethod.GET;
-                        }
-                        dialog.dismiss();
-                    }
-                })
-                .show();
-    }
 
     private Constants.HttpMethod methodForTriggerType(Constants.TriggerType t) {
         if (t == Constants.TriggerType.ARRIVAL) {

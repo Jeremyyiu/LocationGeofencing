@@ -77,7 +77,7 @@ public class TransitionService extends Service {
                     mStorage.insertOrUpdateFence(mGeofence);
                 }
                 Log.d(Constants.LOG, "Triggering Transition from TransitionService, hasRelevantUrl: " + mHasRelevantUrl);
-                mTriggerManager.triggerTransition(mGeofence, mTransitionType, mHasRelevantUrl);
+                mTriggerManager.triggerTransition(mGeofence, mTransitionType);
             }
         }.start();
         return super.onStartCommand(intent, flags, startId);

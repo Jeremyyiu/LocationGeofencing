@@ -76,7 +76,7 @@ public class MapAreaManager implements OnMarkerDragListener {
 	 * @param map
 	 * @param strokeWidth circle stroke with in pixels
      * @param strokeColor circle stroke color
-     * @param fillColor circle fill color
+     * @param circleColor circle fill color
 	 * @param moveDrawableId
 	 * @param moveDrawableId drawable ressource id for positioning marker. If not set a default geomarker is used
      * @param moveDrawableAnchorU horizontal anchor for move drawable

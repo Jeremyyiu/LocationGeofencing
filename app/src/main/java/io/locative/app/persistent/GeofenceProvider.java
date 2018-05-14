@@ -5,11 +5,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.widget.Toast;
 
+import io.locative.app.R;
+import io.locative.app.model.Geofences;
+
 import de.triplet.simpleprovider.AbstractProvider;
 import de.triplet.simpleprovider.Column;
 import de.triplet.simpleprovider.Table;
-import io.locative.app.R;
-import io.locative.app.model.Geofences;
 
 public class GeofenceProvider extends AbstractProvider {
 
@@ -93,15 +94,6 @@ public class GeofenceProvider extends AbstractProvider {
 
         @Column(Column.FieldType.TEXT)
         public static final String KEY_HTTP_PASSWORD = "http_password";
-
-        @Column(Column.FieldType.INTEGER)
-        public static final String KEY_IBEACON_MINOR = "ibeacon_minor";
-
-        @Column(Column.FieldType.INTEGER)
-        public static final String KEY_IBEACON_MAJOR = "ibeacon_major";
-
-        @Column(Column.FieldType.TEXT)
-        public static final String KEY_IBEACON_UUID = "ibeacon_uuid";
 
         @Column(Column.FieldType.FLOAT)
         public static final String KEY_LONGITUDE = "longitude";

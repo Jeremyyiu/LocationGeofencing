@@ -4,16 +4,12 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import com.google.android.gms.location.Geofence;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import javax.inject.Inject;
 
 import io.locative.app.LocativeApplication;
 import io.locative.app.persistent.GeofenceProvider;
@@ -49,13 +45,8 @@ public class Geofences {
         public double latitude;
         public double longitude;
         public int radiusMeters;
-        public int httpAuth;
-        public String httpUsername;
-        public String httpPassword;
         public int enterMethod;
-        public String enterUrl;
         public int exitMethod;
-        public String exitUrl;
         public int currentlyEntered;
 
         public String getRelevantId() {
@@ -92,21 +83,9 @@ public class Geofences {
             this.latitude = latitude;
             this.longitude = longitude;
             this.radiusMeters = radiusMeters;
-            this.httpAuth = httpAuth;
-            this.httpUsername = httpUsername;
-            this.httpPassword = httpPassword;
             this.enterMethod = enterMethod;
-            this.enterUrl = enterUrl;
             this.exitMethod = exitMethod;
-            this.exitUrl = exitUrl;
             this.currentlyEntered = currentlyEntered;
-        }
-
-        public boolean hasAuthentication() {
-            if (this.httpUsername == null || this.httpPassword == null) {
-                return false;
-            }
-            return this.httpAuth == 1 && (this.httpUsername.length() > 0 && this.httpPassword.length() > 0);
         }
 
         @Override

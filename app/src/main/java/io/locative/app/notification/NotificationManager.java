@@ -4,20 +4,16 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
-
-import com.bumptech.glide.load.engine.Resource;
-import com.google.android.gms.location.Geofence;
-
-import javax.inject.Inject;
 
 import io.locative.app.LocativeApplication;
 import io.locative.app.R;
-import io.locative.app.model.Notification;
 import io.locative.app.utils.Preferences;
 import io.locative.app.utils.ResourceUtils;
 import io.locative.app.view.GeofencesActivity;
+import com.google.android.gms.location.Geofence;
+
+import javax.inject.Inject;
 
 import static io.locative.app.LocativeApplication.getApplication;
 
