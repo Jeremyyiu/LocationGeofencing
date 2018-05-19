@@ -67,13 +67,8 @@ public class Geofences {
                 double latitude,
                 double longitude,
                 int radiusMeters,
-                int httpAuth,
-                String httpUsername,
-                String httpPassword,
                 int enterMethod,
-                String enterUrl,
                 int exitMethod,
-                String exitUrl,
                 int currentlyEntered
         ) {
             this.uuid = (uuid == null) ? UUID.randomUUID().toString() : uuid;

@@ -48,13 +48,8 @@ public class GeofenceProvider extends AbstractProvider {
                 cursor.getFloat(cursor.getColumnIndex(Geofence.KEY_LATITUDE)),
                 cursor.getFloat(cursor.getColumnIndex(Geofence.KEY_LONGITUDE)),
                 cursor.getInt(cursor.getColumnIndex(Geofence.KEY_RADIUS)),
-                cursor.getInt(cursor.getColumnIndex(Geofence.KEY_HTTP_AUTH)),
-                cursor.getString(cursor.getColumnIndex(Geofence.KEY_HTTP_USERNAME)),
-                cursor.getString(cursor.getColumnIndex(Geofence.KEY_HTTP_PASSWORD)),
                 cursor.getInt(cursor.getColumnIndex(Geofence.KEY_ENTER_METHOD)),
-                cursor.getString(cursor.getColumnIndex(Geofence.KEY_ENTER_URL)),
                 cursor.getInt(cursor.getColumnIndex(Geofence.KEY_EXIT_METHOD)),
-                cursor.getString(cursor.getColumnIndex(Geofence.KEY_EXIT_URL)),
                 cursor.getInt(cursor.getColumnIndex(Geofence.KEY_CURRENTLY_ENTERED))
                 );
         return geofence;
@@ -77,23 +72,8 @@ public class GeofenceProvider extends AbstractProvider {
         @Column(Column.FieldType.INTEGER)
         public static final String KEY_ENTER_METHOD = "enter_method";
 
-        @Column(Column.FieldType.TEXT)
-        public static final String KEY_ENTER_URL = "enter_url";
-
         @Column(Column.FieldType.INTEGER)
         public static final String KEY_EXIT_METHOD = "exit_method";
-
-        @Column(Column.FieldType.TEXT)
-        public static final String KEY_EXIT_URL = "exit_url";
-
-        @Column(Column.FieldType.INTEGER)
-        public static final String KEY_HTTP_AUTH = "http_auth";
-
-        @Column(Column.FieldType.TEXT)
-        public static final String KEY_HTTP_USERNAME = "http_username";
-
-        @Column(Column.FieldType.TEXT)
-        public static final String KEY_HTTP_PASSWORD = "http_password";
 
         @Column(Column.FieldType.FLOAT)
         public static final String KEY_LONGITUDE = "longitude";

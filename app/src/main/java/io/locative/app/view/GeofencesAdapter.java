@@ -28,9 +28,6 @@ public class GeofencesAdapter extends SimpleAdapter {
         ImageView imageView = (ImageView) view.findViewById(R.id.image);
         imageView.setImageResource(R.drawable.ic_launcher);
 
-        // TextView subtitle = (TextView) view.findViewById(R.id.subtitle);
-        // subtitle.setText("ID: " + subtitle.getText().toString());
-
         return view;
     }
 

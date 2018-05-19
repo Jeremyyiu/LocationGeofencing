@@ -44,12 +44,6 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     if (mToolbar != null) {
       setSupportActionBar(mToolbar);
-      mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24px);
-      mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
-        @Override public void onClick(View v) {
-          onBackPressed();
-        }
-      });
     }
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

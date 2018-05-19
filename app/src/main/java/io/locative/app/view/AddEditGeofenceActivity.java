@@ -207,7 +207,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.getUiSettings().setZoomControlsEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
         mMap.getUiSettings().setAllGesturesEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
 
@@ -223,7 +223,7 @@ public class AddEditGeofenceActivity extends BaseActivity implements OnMapReadyC
             // we have permission since requested on app install
             mMap.setMyLocationEnabled(true);
         }
-        mMap.getUiSettings().setZoomControlsEnabled(false);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
 
         Cursor cursor = null;
         if (mIsEditingGeofence) {

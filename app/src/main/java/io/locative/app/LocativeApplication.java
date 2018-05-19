@@ -2,11 +2,6 @@ package io.locative.app;
 
 import android.app.Application;
 
-import com.crashlytics.android.Crashlytics;
-import com.facebook.stetho.Stetho;
-import com.jakewharton.threetenabp.AndroidThreeTen;
-
-import io.fabric.sdk.android.Fabric;
 import io.locative.app.modules.AppModule;
 import io.locative.app.modules.PersistencyModule;
 import io.locative.app.notification.NotificationManager;
@@ -23,19 +18,10 @@ public class LocativeApplication extends Application {
         super.onCreate();
         mInstance = this;
 
-        if (BuildConfig.USE_CRASHLYTICS) {
-            Fabric.with(this, new Crashlytics());
-        }
-
-        if (BuildConfig.DEBUG) {
-            Stetho.initializeWithDefaults(this);
-        }
-
         mComponent = DaggerLocativeComponent.builder()
                 .appModule(new AppModule(this))
                 .persistencyModule(new PersistencyModule(this))
                 .build();
-        AndroidThreeTen.init(this);
     }
 
     public void inject(ReceiveTransitionsIntentService object) {

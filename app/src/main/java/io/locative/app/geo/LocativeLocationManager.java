@@ -104,7 +104,7 @@ public class LocativeLocationManager {
 
     LocationListener locationListenerGps = new LocationListener() {
         public void onLocationChanged(Location location) {
-            Log.i(TAG, "Canceling location udpater");
+            Log.i(TAG, "Canceling location updater"); //TODO: Fix tag - was spelling mistake here
             timer1.cancel();
             locationResult.gotLocation(location);
             try {
